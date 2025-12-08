@@ -133,9 +133,11 @@
   <ItemGroup>
     <ClInclude Include="Renderer.h" />
     <ClInclude Include="stdafx.h" />
+    <ClInclude Include="WindowManager.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Renderer.cpp" />
+    <ClCompile Include="WindowManager.cpp" />
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="..\Asset\Shader\PixelShader\PSPostProcessing.hlsl">

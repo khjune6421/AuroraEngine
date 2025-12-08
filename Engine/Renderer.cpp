@@ -4,22 +4,66 @@
 using namespace std;
 using namespace DirectX;
 
-Renderer::Renderer(HWND hWnd) : m_hWnd(hWnd) {}
-
 Renderer::~Renderer()
 {
 }
 
-void Renderer::Initialize()
+void Renderer::Initialize(HWND hWnd)
 {
 	CreateDeviceAndContext();
-	CreateSwapChain();
+	CreateSwapChain(hWnd);
 	CreateBackBufferRenderTarget();
 	CreateBackBufferVertexBufferAndShaders();
 	CreateSceneRenderTarget();
 	SetViewport();
 	CreateRasterStates();
 	CreateSamplerStates();
+}
+
+void Renderer::BeginFrame(const std::array<FLOAT, 4>& clearColor)
+{
+	// 씬 렌더 타겟으로 설정
+	m_deviceContext->OMSetRenderTargets
+	(
+		1,
+		m_sceneBuffer.renderTargetView.GetAddressOf(),
+		m_sceneBuffer.depthStencilView.Get()
+	);
+
+	// 씬 렌더 타겟 클리어
+	ClearRenderTarget(m_sceneBuffer, clearColor);
+}
+
+void Renderer::EndFrame()
+{
+	HRESULT hr = S_OK;
+
+	// 백 버퍼 렌더 타겟으로 설정
+	m_deviceContext->OMSetRenderTargets(1, m_backBuffer.renderTargetView.GetAddressOf(), m_sceneBuffer.depthStencilView.Get());
+
+	// 백 버퍼 클리어
+	constexpr array<FLOAT, 4> clearColor = { 0.0f, 0.0f, 0.0f, 1.0f };
+	ClearRenderTarget(m_backBuffer, clearColor);
+
+	// 전체 화면 삼각형 렌더링
+	constexpr UINT stride = sizeof(BackBufferVertex);
+	constexpr UINT offset = 0;
+
+	m_deviceContext->IASetVertexBuffers(0, 1, m_backBufferVertexBuffer.GetAddressOf(), &stride, &offset);
+	m_deviceContext->IASetInputLayout(m_backBufferInputLayout.Get());
+	m_deviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+
+	m_deviceContext->VSSetShader(m_backBufferVertexShader.Get(), nullptr, 0);
+	m_deviceContext->PSSetShader(m_backBufferPixelShader.Get(), nullptr, 0);
+
+	m_deviceContext->PSSetShaderResources(0, 1, m_sceneShaderResourceView.GetAddressOf());
+	m_deviceContext->PSSetSamplers(0, 1, m_samplerStates[SSBackBuffer].GetAddressOf());
+
+	m_deviceContext->Draw(3, 0);
+
+	// 스왑 체인 프레젠트
+	hr = m_swapChain->Present(1, 0);
+	CheckResult(hr, "스왑 체인 프레젠트 실패.");
 }
 
 HRESULT Renderer::Resize(UINT width, UINT height)
@@ -90,7 +134,7 @@ void Renderer::CreateDeviceAndContext()
 	CheckResult(hr, "디바이스 및 디바이스 컨텍스트 생성 실패.");
 }
 
-void Renderer::CreateSwapChain()
+void Renderer::CreateSwapChain(HWND hWnd)
 {
 	HRESULT hr = S_OK;
 
@@ -109,7 +153,7 @@ void Renderer::CreateSwapChain()
 	hr = dxgiFactory->CreateSwapChainForHwnd
 	(
 		dxgiDevice.Get(),
-		m_hWnd,
+		hWnd,
 		&m_swapChainDesc,
 		nullptr,
 		nullptr,
@@ -143,11 +187,6 @@ void Renderer::CreateBackBufferVertexBufferAndShaders()
 {
 	HRESULT hr = S_OK;
 
-	struct BackBufferVertex
-	{
-		XMFLOAT4 position = {};
-		XMFLOAT2 UV = {};
-	};
 	constexpr array<BackBufferVertex, 3> backBufferVertices = // 전체 화면 삼각형 버텍스 데이터
 	{
 		BackBufferVertex{ .position = { -1.0f, -1.0f, 0.0f, 0.0f }, .UV = { 0.0f, 1.0f } },
@@ -258,6 +297,7 @@ void Renderer::CreateSceneRenderTarget()
 		.Width = m_swapChainDesc.Width,
 		.Height = m_swapChainDesc.Height,
 		.Format = DXGI_FORMAT_D32_FLOAT_S8X24_UINT, // 깊이: 32비트 실수, 스텐실: 8비트 정수
+		.SampleDesc = textureDesc.SampleDesc,
 		.BindFlags = D3D11_BIND_DEPTH_STENCIL,
 	};
 	hr = m_device->CreateTexture2D(&depthStencilDesc, nullptr, m_sceneBuffer.depthStencilTexture.GetAddressOf());
@@ -267,7 +307,7 @@ void Renderer::CreateSceneRenderTarget()
 	const D3D11_DEPTH_STENCIL_VIEW_DESC dsvDesc =
 	{
 		.Format = depthStencilDesc.Format,
-		.ViewDimension = D3D11_DSV_DIMENSION_TEXTURE2D
+		.ViewDimension = depthStencilDesc.SampleDesc.Count > 1 ? D3D11_DSV_DIMENSION_TEXTURE2DMS : D3D11_DSV_DIMENSION_TEXTURE2D
 	};
 	hr = m_device->CreateDepthStencilView(m_sceneBuffer.depthStencilTexture.Get(), &dsvDesc, m_sceneBuffer.depthStencilView.GetAddressOf());
 	CheckResult(hr, "씬 깊이-스텐실 뷰 생성 실패.");
@@ -413,4 +453,10 @@ HRESULT Renderer::CompileShader(filesystem::path shaderName, _Out_ ID3DBlob** sh
 	if (errorBlob) cerr << shaderName.string() << " 셰이더 컴파일 오류: " << static_cast<const char*>(errorBlob->GetBufferPointer()) << endl;
 
 	return hr;
+}
+
+void Renderer::ClearRenderTarget(RenderTarget& target, const array<FLOAT, 4>& clearColor)
+{
+	m_deviceContext->ClearRenderTargetView(target.renderTargetView.Get(), clearColor.data());
+	if (target.depthStencilView) m_deviceContext->ClearDepthStencilView(target.depthStencilView.Get(), D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
 }

@@ -2,8 +2,6 @@
 
 class Renderer
 {
-	HWND m_hWnd = nullptr;
-
 	const std::array<D3D_FEATURE_LEVEL, 3> m_featureLevels = // 지원할 Direct3D 버전
 	{
 		D3D_FEATURE_LEVEL_11_0,
@@ -21,6 +19,7 @@ class Renderer
 		.SwapEffect = DXGI_SWAP_EFFECT_FLIP_DISCARD,
 		.Flags = DXGI_SWAP_CHAIN_FLAG_ALLOW_MODE_SWITCH
 	};
+	// TODO: 나중에 전체 화면 설정도 멤버 변수로 추가 DXGI_SWAP_CHAIN_FULLSCREEN_DESC
 
 	com_ptr<ID3D11Device> m_device = nullptr; // 디바이스
 	com_ptr<ID3D11DeviceContext> m_deviceContext = nullptr; // 디바이스 컨텍스트
@@ -36,6 +35,11 @@ class Renderer
 	};
 
 	RenderTarget m_backBuffer; // 백 버퍼 렌더 타겟 // 화면에 출력되는 버퍼 // UI만을 직접적으로 랜더
+	struct BackBufferVertex
+	{
+		DirectX::XMFLOAT4 position = {};
+		DirectX::XMFLOAT2 UV = {};
+	};
 	com_ptr<ID3D11Buffer> m_backBufferVertexBuffer = nullptr; // 백 버퍼용 버텍스 버퍼
 	com_ptr<ID3D11VertexShader> m_backBufferVertexShader = nullptr; // 백 버퍼용 버텍스 셰이더
 	com_ptr<ID3D11InputLayout> m_backBufferInputLayout = nullptr; // 백 버퍼용 입력 레이아웃
@@ -65,7 +69,7 @@ class Renderer
 	std::array<com_ptr<ID3D11SamplerState>, SSCount> m_samplerStates = {}; // 샘플러 상태 배열
 
 public:
-	Renderer(HWND hwnd);
+	Renderer() = default;
 	~Renderer();
 	Renderer(const Renderer&) = delete;
 	Renderer& operator=(const Renderer&) = delete;
@@ -73,7 +77,10 @@ public:
 	Renderer& operator=(Renderer&&) = delete;
 
 	// 렌더러 초기화 // 렌더러 사용 전 반드시 호출해야 함
-	void Initialize();
+	void Initialize(HWND hWnd);
+
+	void BeginFrame(const std::array<FLOAT, 4>& clearColor);
+	void EndFrame();
 
 	// 화면 크기 조정
 	HRESULT Resize(UINT width, UINT height);
@@ -89,7 +96,7 @@ private:
 	// 디바이스 및 디바이스 컨텍스트 생성
 	void CreateDeviceAndContext();
 	// 스왑 체인 생성
-	void CreateSwapChain();
+	void CreateSwapChain(HWND hWnd);
 	// 백 버퍼 렌더 타겟 생성
 	void CreateBackBufferRenderTarget();
 	// 백 버퍼 셰이더 및 상수 버퍼 생성
@@ -108,4 +115,6 @@ private:
 	void CheckResult(HRESULT hr, const char* msg) const;
 	// 셰이더 컴파일
 	HRESULT CompileShader(std::filesystem::path shaderName, _Out_ ID3DBlob** shaderCode, const char* shaderModel);
+
+	void ClearRenderTarget(RenderTarget& target, const std::array<FLOAT, 4>& clearColor);
 };
