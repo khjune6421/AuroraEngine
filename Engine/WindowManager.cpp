@@ -3,12 +3,25 @@
 
 using namespace std;
 
+LRESULT CALLBACK WindowManager::WindowProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
+{
+	switch (message)
+	{
+	case WM_DESTROY:
+		PostQuitMessage(0);
+		return 0;
+
+	default:
+		return DefWindowProc(hWnd, message, wParam, lParam);
+	}
+}
+
 void WindowManager::Initialize(const wchar_t* windowTitle, int width, int height, const wchar_t* className)
 {
-	const WNDCLASS wc = 
+	const WNDCLASS wc =
 	{
 		.style = CS_HREDRAW | CS_VREDRAW,
-		.lpfnWndProc = DefWindowProc, // TODO: 나중에 커스텀 윈도우 프로시저로 변경
+		.lpfnWndProc = WindowProc,
 		.hInstance = m_hInstance,
 		.lpszClassName = className
 	};
