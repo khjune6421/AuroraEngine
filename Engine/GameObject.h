@@ -68,7 +68,7 @@ public:
 	void CreateShaders(const std::wstring& vsShaderName, const std::wstring& psShaderName, const std::vector<D3D11_INPUT_ELEMENT_DESC>& inputElementDescs); // 셰이더 생성
 	void SetActive(bool isActive) { m_isActive = isActive; } // 활성화 설정
 
-	virtual void Update(float deltaTime) { m_rotation = DirectX::XMVectorAdd(m_rotation, DirectX::XMVectorSet(0.0f, deltaTime, 0.0f, 0.0f)); m_isDirty = true; } // 매 프레임 업데이트
+	virtual void Update(float deltaTime) {} // 매 프레임 업데이트
 	void UpdateWorldMatrix(); // 월드 행렬 갱신
 	void Render(DirectX::XMMATRIX viewMatrix, DirectX::XMMATRIX projectionMatrix); // 렌더링
 };
