@@ -18,7 +18,7 @@ int main()
 
 	while (windowManager.ProcessMessages())
 	{
-		testScene.Update(0.005f);
+		testScene.Update(0.015f);
 		testScene.TransformGameObjects();
 		testScene.Render();
 	};

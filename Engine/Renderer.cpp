@@ -218,9 +218,9 @@ void Renderer::CreateBackBufferVertexBufferAndShaders()
 
 	constexpr array<BackBufferVertex, 3> backBufferVertices = // 전체 화면 삼각형 버텍스 데이터
 	{
-		BackBufferVertex{ .position = { -1.0f, -1.0f, 0.0f, 0.0f }, .UV = { 0.0f, 1.0f } },
-		BackBufferVertex{ .position = { -1.0f, 3.0f, 0.0f, 0.0f }, .UV = { 0.0f, -1.0f } },
-		BackBufferVertex{ .position = { 3.0f, -1.0f, 0.0f, 0.0f }, .UV = { 2.0f, 1.0f } }
+		BackBufferVertex{ .position = { -1.0f, -1.0f, 0.0f, 1.0f }, .UV = { 0.0f, 1.0f } },
+		BackBufferVertex{ .position = { -1.0f, 3.0f, 0.0f, 1.0f }, .UV = { 0.0f, -1.0f } },
+		BackBufferVertex{ .position = { 3.0f, -1.0f, 0.0f, 1.0f }, .UV = { 2.0f, 1.0f } }
 	};
 	constexpr D3D11_BUFFER_DESC bufferDesc =
 	{

@@ -138,6 +138,8 @@ void GameObject::UpdateWorldMatrix()
 	m_scaleMatrix = XMMatrixScaling(m_scale.x, m_scale.y, m_scale.z);
 
 	m_worldMatrix = m_scaleMatrix * m_rotationMatrix * m_positionMatrix;
+
+	m_isDirty = false;
 }
 
 void GameObject::Render(XMMATRIX viewMatrix, XMMATRIX projectionMatrix)

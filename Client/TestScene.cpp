@@ -5,19 +5,22 @@ using namespace std;
 
 void TestScene::Begin()
 {
-	m_mainCamera.SetPosition({ 0.0f, 0.0f, -1.0f, 1.0f });
+	m_mainCamera.SetPosition({ 0.0f, 0.0f, -5.0f, 1.0f });
 
 	unique_ptr<GameObject> triangle = make_unique<GameObject>();
 	GameObject* trianglePtr = triangle.get();
 	AddGameObject(move(triangle));
 
+	trianglePtr->SetPosition({ 0.0f, 0.0f, 1.0f, 1.0f });
+	trianglePtr->SetRotation({ 0.0f, 0.0f, 0.0f, 0.0f });
+
 	trianglePtr->CreateConstantBuffer();
 
 	const vector<GameObject::Vertex> vertices =
 	{
-		{ .position = { 0.0f, 1.0f, 0.0f, 1.0f }, .color = { 1.0f, 0.0f, 0.0f, 1.0f } },
-		{ .position = { 1.0f, -1.0f, 0.0f, 1.0f }, .color = { 0.0f, 1.0f, 0.0f, 1.0f } },
-		{ .position = { -1.0f, -1.0f, 0.0f, 1.0f }, .color = { 0.0f, 0.0f, 1.0f, 1.0f } }
+		{ .position = { 0.0f, 0.5f, 0.0f, 1.0f }, .color = { 1.0f, 0.0f, 0.0f, 1.0f } },
+		{ .position = { 0.5f, -0.5f, 0.0f, 1.0f }, .color = { 0.0f, 1.0f, 0.0f, 1.0f } },
+		{ .position = { -0.5f, -0.5f, 0.0f, 1.0f }, .color = { 0.0f, 0.0f, 1.0f, 1.0f } }
 	};
 	trianglePtr->CreateVertexBuffer(vertices);
 
