@@ -95,14 +95,97 @@ HRESULT Renderer::SetRasterState(RasterState state)
 
 	m_rasterState = state;
 	m_deviceContext->RSSetState(m_rasterStates[state].Get());
+
 	return S_OK;
 }
 
-HRESULT Renderer::CompileShader(filesystem::path shaderName, _Out_ ID3DBlob** shaderCode, const char* shaderModel)
+com_ptr<ID3D11Buffer> Renderer::GetConstantBuffer(UINT bufferSize)
+{
+	// 기존에 생성된 상수 버퍼가 있으면 재사용
+	auto it = m_constantBuffers.find(bufferSize);
+	if (it != m_constantBuffers.end()) return it->second;
+
+	HRESULT hr = S_OK;
+
+	com_ptr<ID3D11Buffer> constantBuffer = nullptr;
+	const D3D11_BUFFER_DESC bufferDesc =
+	{
+		.ByteWidth = bufferSize,
+		.Usage = D3D11_USAGE_DEFAULT,
+		.BindFlags = D3D11_BIND_CONSTANT_BUFFER,
+		.CPUAccessFlags = 0,
+		.MiscFlags = 0,
+		.StructureByteStride = 0
+	};
+	hr = m_device->CreateBuffer(&bufferDesc, nullptr, constantBuffer.GetAddressOf());
+	CheckResult(hr, "상수 버퍼 생성 실패.");
+
+	m_constantBuffers[bufferSize] = constantBuffer;
+
+	return constantBuffer;
+}
+
+pair<com_ptr<ID3D11VertexShader>, com_ptr<ID3D11InputLayout>> Renderer::GetVertexShaderAndInputLayout(wstring shaderName, const vector<D3D11_INPUT_ELEMENT_DESC>& inputElementDescs)
+{
+	// 기존에 생성된 셰이더 및 입력 레이아웃이 있으면 재사용
+	auto it = m_vertexShadersAndInputLayouts.find(shaderName);
+	if (it != m_vertexShadersAndInputLayouts.end()) return it->second;
+
+	HRESULT hr = S_OK;
+
+	// 버텍스 셰이더 컴파일
+	com_ptr<ID3DBlob> VSCode = CompileShader(filesystem::path(shaderName), "vs_5_0");
+	hr = m_device->CreateVertexShader
+	(
+		VSCode->GetBufferPointer(),
+		VSCode->GetBufferSize(),
+		nullptr,
+		m_vertexShadersAndInputLayouts[shaderName].first.GetAddressOf()
+	);
+	CheckResult(hr, "버텍스 셰이더 생성 실패.");
+
+	// 입력 레이아웃 생성
+	hr = m_device->CreateInputLayout
+	(
+		inputElementDescs.data(),
+		static_cast<UINT>(inputElementDescs.size()),
+		VSCode->GetBufferPointer(),
+		VSCode->GetBufferSize(),
+		m_vertexShadersAndInputLayouts[shaderName].second.GetAddressOf()
+	);
+	CheckResult(hr, "입력 레이아웃 생성 실패.");
+
+	return m_vertexShadersAndInputLayouts[shaderName];
+}
+
+com_ptr<ID3D11PixelShader> Renderer::GetPixelShader(wstring shaderName)
+{
+	// 기존에 생성된 픽셀 셰이더가 있으면 재사용
+	auto it = m_pixelShaders.find(shaderName);
+	if (it != m_pixelShaders.end()) return it->second;
+
+	HRESULT hr = S_OK;
+
+	// 픽셀 셰이더 컴파일
+	com_ptr<ID3DBlob> PSCode = CompileShader(filesystem::path(shaderName), "ps_5_0");
+	hr = m_device->CreatePixelShader
+	(
+		PSCode->GetBufferPointer(),
+		PSCode->GetBufferSize(),
+		nullptr,
+		m_pixelShaders[shaderName].GetAddressOf()
+	);
+	CheckResult(hr, "픽셀 셰이더 생성 실패.");
+
+	return m_pixelShaders[shaderName];
+}
+
+com_ptr<ID3DBlob> Renderer::CompileShader(filesystem::path shaderName, const char* shaderModel)
 {
 	HRESULT hr = S_OK;
 
 	const filesystem::path shaderPath = L"../Asset/Shader/" / shaderName;
+	com_ptr<ID3DBlob> shaderCode = nullptr;
 	com_ptr<ID3DBlob> errorBlob = nullptr;
 
 	hr = D3DCompileFromFile
@@ -118,23 +201,23 @@ HRESULT Renderer::CompileShader(filesystem::path shaderName, _Out_ ID3DBlob** sh
 		D3DCOMPILE_PACK_MATRIX_COLUMN_MAJOR | D3DCOMPILE_OPTIMIZATION_LEVEL3,
 		#endif
 		0,
-		shaderCode,
+		shaderCode.GetAddressOf(),
 		errorBlob.GetAddressOf()
 	);
 	if (errorBlob) cerr << shaderName.string() << " 셰이더 컴파일 오류: " << static_cast<const char*>(errorBlob->GetBufferPointer()) << endl;
 
-	return hr;
+	return shaderCode;
 }
 
 void Renderer::CheckResult(HRESULT hr, const char* msg) const
 {
 	if (FAILED(hr))
 	{
-#ifdef _DEBUG
+		#ifdef _DEBUG
 		cerr << msg << " 렌더러 에러 코드: " << hex << hr << endl;
-#else
+		#else
 		MessageBoxA(nullptr, msg, "렌더러 오류", MB_OK | MB_ICONERROR);
-#endif
+		#endif
 		exit(EXIT_FAILURE);
 	}
 }
@@ -236,23 +319,7 @@ void Renderer::CreateBackBufferVertexBufferAndShaders()
 	hr = m_device->CreateBuffer(&bufferDesc, &initialData, m_backBufferVertexBuffer.GetAddressOf());
 	CheckResult(hr, "백 버퍼 버텍스 버퍼 생성 실패.");
 
-	// 버텍스 셰이더 컴파일
-	com_ptr<ID3DBlob> VSCode = nullptr;
-	hr = CompileShader("VSPostProcessing.hlsl", VSCode.GetAddressOf(), "vs_5_0");
-	CheckResult(hr, "백 버퍼 버텍스 셰이더 컴파일 실패.");
-
-	// 버텍스 셰이더 생성
-	hr = m_device->CreateVertexShader
-	(
-		VSCode->GetBufferPointer(),
-		VSCode->GetBufferSize(),
-		nullptr,
-		m_backBufferVertexShader.GetAddressOf()
-	);
-	CheckResult(hr, "백 버퍼 버텍스 셰이더 생성 실패.");
-
-	// 입력 레이아웃 생성
-	constexpr array<D3D11_INPUT_ELEMENT_DESC, 2> inputElementDescs = // 입력 레이아웃 정의
+	const vector<D3D11_INPUT_ELEMENT_DESC> inputElementDescs =
 	{
 		D3D11_INPUT_ELEMENT_DESC
 		{
@@ -275,29 +342,11 @@ void Renderer::CreateBackBufferVertexBufferAndShaders()
 			.InstanceDataStepRate = 0
 		}
 	};
-	hr = m_device->CreateInputLayout
-	(
-		inputElementDescs.data(),
-		static_cast<UINT>(inputElementDescs.size()),
-		VSCode->GetBufferPointer(),
-		VSCode->GetBufferSize(),
-		m_backBufferInputLayout.GetAddressOf()
-	);
-	CheckResult(hr, "백 버퍼 입력 레이아웃 생성 실패.");
+	// 버텍스 셰이더 및 입력 레이아웃 생성
+	m_backBufferVertexShaderAndInputLayout = GetVertexShaderAndInputLayout(L"VSPostProcessing.hlsl", inputElementDescs);
 
 	// 픽셀 셰이더 컴파일 및 생성
-	com_ptr<ID3DBlob> PSCode = nullptr;
-	hr = CompileShader("PSPostProcessing.hlsl", PSCode.GetAddressOf(), "ps_5_0");
-	CheckResult(hr, "백 버퍼 픽셀 셰이더 컴파일 실패.");
-
-	hr = m_device->CreatePixelShader
-	(
-		PSCode->GetBufferPointer(),
-		PSCode->GetBufferSize(),
-		nullptr,
-		m_backBufferPixelShader.GetAddressOf()
-	);
-	CheckResult(hr, "백 버퍼 픽셀 셰이더 생성 실패.");
+	m_backBufferPixelShader = GetPixelShader(L"PSPostProcessing.hlsl");
 }
 
 void Renderer::CreateSceneRenderTarget()
@@ -539,10 +588,10 @@ void Renderer::RenderSceneToBackBuffer()
 	constexpr UINT offset = 0;
 
 	m_deviceContext->IASetVertexBuffers(0, 1, m_backBufferVertexBuffer.GetAddressOf(), &stride, &offset);
-	m_deviceContext->IASetInputLayout(m_backBufferInputLayout.Get());
+	m_deviceContext->IASetInputLayout(m_backBufferVertexShaderAndInputLayout.second.Get());
 	m_deviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
-	m_deviceContext->VSSetShader(m_backBufferVertexShader.Get(), nullptr, 0);
+	m_deviceContext->VSSetShader(m_backBufferVertexShaderAndInputLayout.first.Get(), nullptr, 0);
 	m_deviceContext->PSSetShader(m_backBufferPixelShader.Get(), nullptr, 0);
 
 	m_deviceContext->PSSetShaderResources(0, 1, m_sceneShaderResourceView.GetAddressOf());

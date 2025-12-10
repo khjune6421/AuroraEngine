@@ -48,8 +48,7 @@ class Renderer : public SingletonBase<Renderer>
 		DirectX::XMFLOAT2 UV = {};
 	};
 	com_ptr<ID3D11Buffer> m_backBufferVertexBuffer = nullptr; // 백 버퍼용 버텍스 버퍼
-	com_ptr<ID3D11VertexShader> m_backBufferVertexShader = nullptr; // 백 버퍼용 버텍스 셰이더
-	com_ptr<ID3D11InputLayout> m_backBufferInputLayout = nullptr; // 백 버퍼용 입력 레이아웃
+	std::pair<com_ptr<ID3D11VertexShader>, com_ptr<ID3D11InputLayout>> m_backBufferVertexShaderAndInputLayout = {}; // 백 버퍼용 버텍스 셰이더 및 입력 레이아웃
 	com_ptr<ID3D11PixelShader> m_backBufferPixelShader = nullptr; // 백 버퍼용 후처리 픽셀 셰이더
 
 	DXGI_SAMPLE_DESC m_sceneBufferSampleDesc = { 4, 0 }; // 백 버퍼 샘플링 설정 // count <=1: FXAA, count>1: MSAA // FXAA는 아직 없음
@@ -76,6 +75,10 @@ class Renderer : public SingletonBase<Renderer>
 		SSCount
 	};
 	std::array<com_ptr<ID3D11SamplerState>, SSCount> m_samplerStates = {}; // 샘플러 상태 배열
+
+	std::unordered_map<UINT, com_ptr<ID3D11Buffer>> m_constantBuffers = {}; // 상수 버퍼 맵 // 키: 버퍼 크기
+	std::unordered_map<std::wstring, std::pair<com_ptr<ID3D11VertexShader>, com_ptr<ID3D11InputLayout>>> m_vertexShadersAndInputLayouts = {}; // 버텍스 셰이더 및 입력 레이아웃 맵 // 키: 셰이더 파일 이름
+	std::unordered_map<std::wstring, com_ptr<ID3D11PixelShader>> m_pixelShaders = {}; // 픽셀 셰이더 맵 // 키: 셰이더 파일 이름
 
 public:
 	Renderer() = default;
@@ -110,8 +113,14 @@ public:
 	RasterState GetRasterState() const { return m_rasterState; }
 
 	// 헬퍼 함수
-	// 셰이더 컴파일
-	HRESULT CompileShader(std::filesystem::path shaderName, _Out_ ID3DBlob** shaderCode, const char* shaderModel);
+	// 상수 버퍼 얻기 // 이미 생성된 버퍼가 있으면 재사용 // 없으면 새로 생성
+	com_ptr<ID3D11Buffer> GetConstantBuffer(UINT bufferSize);
+	// 버텍스 셰이더 및 입력 레이아웃 얻기
+	std::pair<com_ptr<ID3D11VertexShader>, com_ptr<ID3D11InputLayout>> GetVertexShaderAndInputLayout(std::wstring shaderName, const std::vector<D3D11_INPUT_ELEMENT_DESC>& inputElementDescs);
+	// 픽셀 셰이더 얻기
+	com_ptr<ID3D11PixelShader> GetPixelShader(std::wstring shaderName);
+	// 셰이더 컴파일 함수
+	com_ptr<ID3DBlob> CompileShader(std::filesystem::path shaderName, const char* shaderModel);
 	// HRESULT 결과 확인
 	void CheckResult(HRESULT hr, const char* msg) const;
 

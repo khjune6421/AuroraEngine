@@ -1,5 +1,11 @@
-cbuffer PerObject : register(b0)
+cbuffer ViewProjection : register(b0)
 {
+    matrix ViewMatrix;
+    matrix ProjectionMatrix;
+}
+cbuffer WorldWVP : register(b1)
+{
+    matrix WorldMatrix;
     matrix WVP;
 }
 

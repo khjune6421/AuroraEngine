@@ -1,6 +1,8 @@
 #include "stdafx.h"
 #include "TestObject.h"
 
+#include "ModelComponent.h"
+
 using namespace DirectX;
 
 void TestObject::Update(float deltaTime)
@@ -13,5 +15,5 @@ void TestObject::Update(float deltaTime)
 
 void TestObject::Begin()
 {
-	CreateRenderResources();
+	AddComponent<ModelComponent>();
 }

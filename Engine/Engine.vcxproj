@@ -134,7 +134,7 @@
     <ClInclude Include="ComponentBase.h" />
     <ClInclude Include="GameObjectBase.h" />
     <ClInclude Include="MainCamera.h" />
-    <ClInclude Include="Model.h" />
+    <ClInclude Include="ModelComponent.h" />
     <ClInclude Include="Renderer.h" />
     <ClInclude Include="SceneBase.h" />
     <ClInclude Include="SingletonBase.h" />
@@ -145,7 +145,7 @@
     <ClCompile Include="ComponentBase.cpp" />
     <ClCompile Include="GameObjectBase.cpp" />
     <ClCompile Include="MainCamera.cpp" />
-    <ClCompile Include="Model.cpp" />
+    <ClCompile Include="ModelComponent.cpp" />
     <ClCompile Include="Renderer.cpp" />
     <ClCompile Include="SceneBase.cpp" />
     <ClCompile Include="WindowManager.cpp" />

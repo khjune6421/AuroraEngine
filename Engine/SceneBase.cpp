@@ -7,6 +7,13 @@
 using namespace std;
 using namespace DirectX;
 
+void SceneBase::Initialize()
+{
+	m_viewProjectionConstantBuffer = Renderer::GetInstance().GetConstantBuffer(sizeof(ViewProjectionBuffer));
+
+	Begin();
+}
+
 void SceneBase::Update(float deltaTime)
 {
 	for (auto& gameObject : m_gameObjects) gameObject->Update(deltaTime);
@@ -20,12 +27,16 @@ void SceneBase::TransformGameObjects()
 void SceneBase::Render()
 {
 	Renderer& renderer = Renderer::GetInstance();
+	com_ptr<ID3D11DeviceContext> deviceContext = renderer.GetDeviceContext();
+
 	renderer.BeginFrame(m_clearColor);
 
-	XMMATRIX viewMatrix = m_mainCamera.GetViewMatrix();
-	XMMATRIX projectionMatrix = m_mainCamera.GetProjectionMatrix();
+	m_viewProjectionData.viewMatrix = XMMatrixTranspose(m_mainCamera.GetViewMatrix());
+	m_viewProjectionData.projectionMatrix = XMMatrixTranspose(m_mainCamera.GetProjectionMatrix());
+	deviceContext->UpdateSubresource(m_viewProjectionConstantBuffer.Get(), 0, nullptr, &m_viewProjectionData, 0, 0);
+	deviceContext->VSSetConstantBuffers(0, 1, m_viewProjectionConstantBuffer.GetAddressOf());
 
-	for (auto& gameObject : m_gameObjects) gameObject->Render(viewMatrix, projectionMatrix);
+	for (auto& gameObject : m_gameObjects) gameObject->Render(m_viewProjectionData.projectionMatrix, m_viewProjectionData.projectionMatrix);
 
 	renderer.EndFrame();
 }
