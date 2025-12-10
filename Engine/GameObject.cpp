@@ -43,7 +43,7 @@ void GameObject::Render(XMMATRIX viewMatrix, XMMATRIX projectionMatrix)
 {
 	if (!m_isActive) return;
 
-	XMMATRIX wvpMatrix = XMMatrixTranspose(m_worldMatrix * viewMatrix * projectionMatrix);
+	const XMMATRIX wvpMatrix = XMMatrixTranspose(m_worldMatrix * viewMatrix * projectionMatrix);
 	m_deviceContext->UpdateSubresource(m_constantBuffer.Get(), 0, nullptr, &wvpMatrix, 0, 0);
 	m_deviceContext->VSSetConstantBuffers(0, 1, m_constantBuffer.GetAddressOf());
 
