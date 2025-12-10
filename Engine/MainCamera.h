@@ -1,7 +1,7 @@
 #pragma once
-#include "GameObject.h"
+#include "GameObjectBase.h"
 
-class MainCamera : public GameObject // TODO: 컴포넌트로 수정
+class MainCamera : public GameObjectBase // TODO: 컴포넌트로 수정
 {
 	const UINT m_screenWidth = 1280; // 화면 너비
 	const UINT m_screenHeight = 720; // 화면 높이
@@ -21,4 +21,7 @@ public:
 
 	DirectX::XMMATRIX GetViewMatrix() const;
 	DirectX::XMMATRIX GetProjectionMatrix() const;
+
+protected:
+	void Begin() override {}
 };

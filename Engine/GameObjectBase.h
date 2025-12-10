@@ -1,12 +1,13 @@
 #pragma once
+#include "ComponentBase.h"
 
 class Renderer;
 
-class GameObject // TODO: 부모-자식 관계 구현
+class GameObjectBase // TODO: 부모-자식 관계 구현
 {
 	UINT m_id = 0; // 디버깅용 고유 ID
 
-	// TODO: 컴포넌트 기반으로 수정
+	std::unordered_map<std::type_index, std::unique_ptr<class ComponentBase>> m_components = {}; // 컴포넌트 맵
 
 	// 변환 관련 멤버 뱐수
 	DirectX::XMMATRIX m_worldMatrix = DirectX::XMMatrixIdentity(); // 월드 행렬
@@ -19,9 +20,6 @@ class GameObject // TODO: 부모-자식 관계 구현
 	bool m_isDirty = true; // 위치 갱신 필요 여부
 
 	// 렌더링 관련 멤버 변수
-	Renderer* m_renderer = nullptr; // 렌더러 포인터
-	com_ptr<ID3D11Device> m_device = nullptr; // 디바이스
-	com_ptr<ID3D11DeviceContext> m_deviceContext = nullptr; // 디바이스 컨텍스트
 	com_ptr<ID3D11Buffer> m_constantBuffer = nullptr; // 상수 버퍼
 	com_ptr<ID3D11Buffer> m_vertexBuffer = nullptr; // 버텍스 버퍼
 	com_ptr<ID3D11Buffer> m_indexBuffer = nullptr; // 인덱스 버퍼
@@ -88,16 +86,45 @@ protected:
 	RenderData m_renderData = {}; // 렌더 정보
 
 public:
-	GameObject();
-	virtual ~GameObject() = default;
-	GameObject(const GameObject&) = delete;
-	GameObject& operator=(const GameObject&) = delete;
-	GameObject(GameObject&&) = default;
-	GameObject& operator=(GameObject&&) = delete;
+	GameObjectBase();
+	virtual ~GameObjectBase() { End(); }
+	GameObjectBase(const GameObjectBase&) = delete;
+	GameObjectBase& operator=(const GameObjectBase&) = delete;
+	GameObjectBase(GameObjectBase&&) = default;
+	GameObjectBase& operator=(GameObjectBase&&) = delete;
 
 	UINT GetID() const { return m_id; }
 
-	void Initialize(Renderer* renderer); // 렌더러로부터 디바이스 및 컨텍스트 얻기
+	void Initialize() { Begin(); } // 게임 오브젝트 초기화
+	virtual void Update(float deltaTime) {} // 매 프레임 업데이트
+	void UpdateWorldMatrix(); // 월드 행렬 갱신
+	void Render(DirectX::XMMATRIX viewMatrix, DirectX::XMMATRIX projectionMatrix); // 렌더링
+
+	template<typename T, typename... Args>
+	T* AddComponent(Args&&... args)
+	{
+		auto component = std::make_unique<T>(std::forward<Args>(args)...);
+		component->Initialize(this);
+
+		T* componentPtr = component.get();
+		m_components[std::type_index(typeid(T))] = std::move(component);
+
+		return componentPtr;
+	}
+	template<typename T>
+	T* GetComponent()
+	{
+		auto it = m_components.find(std::type_index(typeid(T)));
+		if (it != m_components.end()) return static_cast<T*>(it->second.get());
+
+		return nullptr;
+	}
+	template<typename T>
+	void RemoveComponent()
+	{
+		auto it = m_components.find(std::type_index(typeid(T)));
+		if (it != m_components.end()) m_components.erase(it);
+	}
 
 	void SetPosition(const DirectX::XMVECTOR& position) { m_position = position; m_isDirty = true; }
 	void SetRotation(const DirectX::XMVECTOR& rotation) { m_rotation = rotation; m_isDirty = true; } // 라디안 단위
@@ -113,11 +140,9 @@ public:
 	void GetRenderData(RenderData& outRenderData) const { outRenderData = m_renderData; } // 렌더 정보 조회
 	void CreateRenderResources(); // 렌더 리소스 생성
 
-	virtual void Begin() {} // 게임 오브젝트 시작
-	virtual void Update(float deltaTime) {} // 매 프레임 업데이트
-
-	void UpdateWorldMatrix(); // 월드 행렬 갱신
-	void Render(DirectX::XMMATRIX viewMatrix, DirectX::XMMATRIX projectionMatrix); // 렌더링
+protected:
+	virtual void Begin() = 0; // 게임 오브젝트 시작 시 호출
+	virtual void End() {} // 게임 오브젝트 종료 시 호출
 
 private:
 	// 임시로만 사용 // 나중에 더 좋은 방법으로 변경 필요

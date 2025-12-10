@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "SceneBase.h"
 
-#include "GameObject.h"
+#include "GameObjectBase.h"
 #include "Renderer.h"
 
 using namespace std;
@@ -19,19 +19,19 @@ void SceneBase::TransformGameObjects()
 
 void SceneBase::Render()
 {
-	m_renderer->BeginFrame(m_clearColor);
+	Renderer& renderer = Renderer::GetInstance();
+	renderer.BeginFrame(m_clearColor);
 
 	XMMATRIX viewMatrix = m_mainCamera.GetViewMatrix();
 	XMMATRIX projectionMatrix = m_mainCamera.GetProjectionMatrix();
 
 	for (auto& gameObject : m_gameObjects) gameObject->Render(viewMatrix, projectionMatrix);
 
-	m_renderer->EndFrame();
+	renderer.EndFrame();
 }
 
-void SceneBase::AddGameObject(unique_ptr<GameObject> gameObject)
+void SceneBase::AddGameObject(unique_ptr<GameObjectBase> gameObject)
 {
-	gameObject->Initialize(m_renderer);
-	gameObject->Begin();
+	gameObject->Initialize();
 	m_gameObjects.push_back(move(gameObject));
 }

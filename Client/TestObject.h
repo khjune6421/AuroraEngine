@@ -1,7 +1,7 @@
 #pragma once
-#include "GameObject.h"
+#include "GameObjectBase.h"
 
-class TestObject : public GameObject
+class TestObject : public GameObjectBase
 {
 public:
 	TestObject() = default;
@@ -11,6 +11,8 @@ public:
 	TestObject(TestObject&&) = delete;
 	TestObject& operator=(TestObject&&) = delete;
 
-	void Begin() override;
 	void Update(float deltaTime) override;
+
+protected:
+	void Begin() override;
 };

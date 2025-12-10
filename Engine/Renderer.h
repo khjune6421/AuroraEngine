@@ -1,7 +1,10 @@
 #pragma once
+#include "SingletonBase.h"
 
-class Renderer
+class Renderer : public SingletonBase<Renderer>
 {
+	friend class SingletonBase<Renderer>;
+
 	const std::array<D3D_FEATURE_LEVEL, 3> m_featureLevels = // 지원할 Direct3D 버전
 	{
 		D3D_FEATURE_LEVEL_11_0,

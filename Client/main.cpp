@@ -10,11 +10,10 @@ int main()
 	WindowManager windowManager;
 	windowManager.Initialize(L"Window");
 
-	Renderer renderer;
-	renderer.Initialize(windowManager.GetHWnd());
+	Renderer::GetInstance().Initialize(windowManager.GetHWnd());
 
 	TestScene testScene;
-	testScene.Initialize(&renderer);
+	testScene.Initialize();
 
 	while (windowManager.ProcessMessages())
 	{

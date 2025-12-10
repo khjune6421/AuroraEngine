@@ -11,5 +11,6 @@ public:
 	TestScene(TestScene&&) = delete;
 	TestScene& operator=(TestScene&&) = delete;
 
+protected:
 	void Begin() override;
 };

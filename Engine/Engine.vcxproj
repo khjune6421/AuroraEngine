@@ -131,16 +131,21 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="GameObject.h" />
+    <ClInclude Include="ComponentBase.h" />
+    <ClInclude Include="GameObjectBase.h" />
     <ClInclude Include="MainCamera.h" />
+    <ClInclude Include="Model.h" />
     <ClInclude Include="Renderer.h" />
     <ClInclude Include="SceneBase.h" />
+    <ClInclude Include="SingletonBase.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="WindowManager.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="GameObject.cpp" />
+    <ClCompile Include="ComponentBase.cpp" />
+    <ClCompile Include="GameObjectBase.cpp" />
     <ClCompile Include="MainCamera.cpp" />
+    <ClCompile Include="Model.cpp" />
     <ClCompile Include="Renderer.cpp" />
     <ClCompile Include="SceneBase.cpp" />
     <ClCompile Include="WindowManager.cpp" />

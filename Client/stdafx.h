@@ -4,6 +4,7 @@
 #include <array>
 #include <filesystem>
 #include <iostream>
+#include <typeindex>
 
 // 윈도우 헤더
 #include <wrl/client.h>
