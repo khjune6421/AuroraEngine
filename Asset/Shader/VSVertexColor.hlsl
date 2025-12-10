@@ -9,7 +9,6 @@ cbuffer WorldWVP : register(b1)
     matrix WVP;
 }
 
-
 struct VertexInput
 {
     float4 Position : POSITION;
