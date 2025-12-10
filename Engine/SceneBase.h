@@ -8,7 +8,7 @@ class SceneBase
 
 protected:
 	MainCamera m_mainCamera; // 테스트용 메인 카메라
-	std::array<FLOAT, 4> m_clearColor = { 0.0f, 0.0f, 1.0f, 1.0f }; // 씬 클리어 색상
+	std::array<FLOAT, 4> m_clearColor = { 0.5f, 0.5f, 0.5f, 1.0f }; // 씬 클리어 색상
 
 public:
 	SceneBase() = default;

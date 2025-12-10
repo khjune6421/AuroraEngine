@@ -98,19 +98,6 @@ HRESULT Renderer::SetRasterState(RasterState state)
 	return S_OK;
 }
 
-void Renderer::CheckResult(HRESULT hr, const char* msg) const
-{
-	if (FAILED(hr))
-	{
-		#ifdef _DEBUG
-		cerr << msg << " 렌더러 에러 코드: " << hex << hr << endl;
-		#else
-		MessageBoxA(nullptr, msg, "렌더러 오류", MB_OK | MB_ICONERROR);
-		#endif
-		exit(EXIT_FAILURE);
-	}
-}
-
 HRESULT Renderer::CompileShader(filesystem::path shaderName, _Out_ ID3DBlob** shaderCode, const char* shaderModel)
 {
 	HRESULT hr = S_OK;
@@ -137,6 +124,19 @@ HRESULT Renderer::CompileShader(filesystem::path shaderName, _Out_ ID3DBlob** sh
 	if (errorBlob) cerr << shaderName.string() << " 셰이더 컴파일 오류: " << static_cast<const char*>(errorBlob->GetBufferPointer()) << endl;
 
 	return hr;
+}
+
+void Renderer::CheckResult(HRESULT hr, const char* msg) const
+{
+	if (FAILED(hr))
+	{
+#ifdef _DEBUG
+		cerr << msg << " 렌더러 에러 코드: " << hex << hr << endl;
+#else
+		MessageBoxA(nullptr, msg, "렌더러 오류", MB_OK | MB_ICONERROR);
+#endif
+		exit(EXIT_FAILURE);
+	}
 }
 
 void Renderer::CreateDeviceAndContext()
@@ -241,6 +241,16 @@ void Renderer::CreateBackBufferVertexBufferAndShaders()
 	hr = CompileShader("VSPostProcessing.hlsl", VSCode.GetAddressOf(), "vs_5_0");
 	CheckResult(hr, "백 버퍼 버텍스 셰이더 컴파일 실패.");
 
+	// 버텍스 셰이더 생성
+	hr = m_device->CreateVertexShader
+	(
+		VSCode->GetBufferPointer(),
+		VSCode->GetBufferSize(),
+		nullptr,
+		m_backBufferVertexShader.GetAddressOf()
+	);
+	CheckResult(hr, "백 버퍼 버텍스 셰이더 생성 실패.");
+
 	// 입력 레이아웃 생성
 	constexpr array<D3D11_INPUT_ELEMENT_DESC, 2> inputElementDescs = // 입력 레이아웃 정의
 	{
@@ -274,17 +284,6 @@ void Renderer::CreateBackBufferVertexBufferAndShaders()
 		m_backBufferInputLayout.GetAddressOf()
 	);
 	CheckResult(hr, "백 버퍼 입력 레이아웃 생성 실패.");
-
-	// 버텍스 셰이더 생성
-	hr = m_device->CreateVertexShader
-	(
-		VSCode->GetBufferPointer(),
-		VSCode->GetBufferSize(),
-		nullptr,
-		m_backBufferVertexShader.GetAddressOf()
-	);
-	CheckResult(hr, "백 버퍼 버텍스 셰이더 생성 실패.");
-
 
 	// 픽셀 셰이더 컴파일 및 생성
 	com_ptr<ID3DBlob> PSCode = nullptr;

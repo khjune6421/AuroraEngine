@@ -45,8 +45,8 @@ class Renderer
 		DirectX::XMFLOAT2 UV = {};
 	};
 	com_ptr<ID3D11Buffer> m_backBufferVertexBuffer = nullptr; // 백 버퍼용 버텍스 버퍼
-	com_ptr<ID3D11InputLayout> m_backBufferInputLayout = nullptr; // 백 버퍼용 입력 레이아웃
 	com_ptr<ID3D11VertexShader> m_backBufferVertexShader = nullptr; // 백 버퍼용 버텍스 셰이더
+	com_ptr<ID3D11InputLayout> m_backBufferInputLayout = nullptr; // 백 버퍼용 입력 레이아웃
 	com_ptr<ID3D11PixelShader> m_backBufferPixelShader = nullptr; // 백 버퍼용 후처리 픽셀 셰이더
 
 	DXGI_SAMPLE_DESC m_sceneBufferSampleDesc = { 4, 0 }; // 백 버퍼 샘플링 설정 // count <=1: FXAA, count>1: MSAA // FXAA는 아직 없음
@@ -107,10 +107,10 @@ public:
 	RasterState GetRasterState() const { return m_rasterState; }
 
 	// 헬퍼 함수
-	// HRESULT 결과 확인
-	void CheckResult(HRESULT hr, const char* msg) const;
 	// 셰이더 컴파일
 	HRESULT CompileShader(std::filesystem::path shaderName, _Out_ ID3DBlob** shaderCode, const char* shaderModel);
+	// HRESULT 결과 확인
+	void CheckResult(HRESULT hr, const char* msg) const;
 
 private:
 	// 초기화 함수

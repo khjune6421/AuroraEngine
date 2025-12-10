@@ -32,5 +32,6 @@ void SceneBase::Render()
 void SceneBase::AddGameObject(unique_ptr<GameObject> gameObject)
 {
 	gameObject->Initialize(m_renderer);
+	gameObject->Begin();
 	m_gameObjects.push_back(move(gameObject));
 }
