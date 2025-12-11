@@ -3,16 +3,12 @@
 
 using namespace DirectX;
 
-XMMATRIX Camera::GetViewMatrix() const
+void Camera::UpdateViewMatrix()
 {
+	if (!m_isDirty) return; // 위치 갱신 필요 없으면 종료
+
 	const XMVECTOR eyePosition = GetPosition();
-	const XMVECTOR forwardVector = GetDirectionVector(Direction::Forward);
 	constexpr XMVECTOR upVector = { 0.0f, 1.0f, 0.0f, 0.0f };
 
-	return XMMatrixLookAtLH(eyePosition, XMVectorAdd(eyePosition, forwardVector), upVector);
-}
-
-XMMATRIX Camera::GetProjectionMatrix() const
-{
-	return XMMatrixPerspectiveFovLH(m_fovY, m_aspectRatio, m_nearZ, m_farZ);
+	m_viewMatrix = XMMatrixLookAtLH(eyePosition, XMVectorAdd(eyePosition, GetDirectionVector(Direction::Forward)), upVector);
 }

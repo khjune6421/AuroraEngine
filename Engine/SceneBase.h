@@ -14,7 +14,7 @@ class SceneBase
 	com_ptr<ID3D11Buffer> m_viewProjectionConstantBuffer = nullptr; // 뷰-투영 상수 버퍼
 
 protected:
-	Camera m_mainCamera; // 테스트용 메인 카메라
+	Camera* m_mainCamera = nullptr; // 메인 카메라
 	std::array<FLOAT, 4> m_clearColor = { 0.5f, 0.5f, 0.5f, 1.0f }; // 씬 클리어 색상
 
 public:

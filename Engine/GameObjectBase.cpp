@@ -73,7 +73,7 @@ XMVECTOR GameObjectBase::GetRotation() const
 
 	float sinYaw = 2.0f * (w * y - z * x);
 	float yaw = 0.0f;
-	if (fabsf(sinYaw) >= 1.0f) yaw = copysignf(XM_PIDIV2, sinYaw);
+	if (fabsf(sinYaw) >= 1.0f) yaw = copysignf(XM_PIDIV2, sinYaw); // มüน๚ถ๔ ลอมü
 	else yaw = asinf(sinYaw);
 
 	float sinRoll = 2.0f * (w * z + x * y);
