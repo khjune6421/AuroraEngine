@@ -8,9 +8,7 @@ using namespace std;
 
 GameObjectBase* TestScene::CreateCameraObject()
 {
-	unique_ptr<TestCameraObject> cameraGameObject = make_unique<TestCameraObject>();
-
-	return AddGameObject(move(cameraGameObject));
+	return AddGameObject(make_unique<TestCameraObject>());
 }
 
 void TestScene::Begin()
