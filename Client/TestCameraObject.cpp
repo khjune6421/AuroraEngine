@@ -14,5 +14,8 @@ void TestCameraObject::Update(float deltaTime)
 	if (GetAsyncKeyState('A') & 0x8000) MoveDirection(10.0f * deltaTime, Direction::Left);
 	if (GetAsyncKeyState('D') & 0x8000) MoveDirection(10.0f * deltaTime, Direction::Right);
 
-	LookAt({ 0.0f, 0.0f, 0.0f, 1.0f });
+	if (GetAsyncKeyState('Q') & 0x8000) Rotate({ 0.0f, 0.0f, -deltaTime, 0.0f });
+	if (GetAsyncKeyState('E') & 0x8000) Rotate({ 0.0f, 0.0f, deltaTime, 0.0f });
+
+	LookAt({ 0.0f, 0.0f, 0.0f, 1.0f }, GetDirectionVector(Direction::Up));
 }
