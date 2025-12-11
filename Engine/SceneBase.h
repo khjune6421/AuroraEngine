@@ -1,9 +1,10 @@
 #pragma once
-#include "Camera.h"
+#include "GameObjectBase.h"
+#include "CameraComponent.h"
 
 class SceneBase
 {
-	std::vector<std::unique_ptr<class GameObjectBase>> m_gameObjects = {}; // 게임 오브젝트 배열
+	std::vector<std::unique_ptr<GameObjectBase>> m_gameObjects = {}; // 게임 오브젝트 배열
 
 	struct ViewProjectionBuffer // 뷰-투영 상수 버퍼 구조체
 	{
@@ -14,7 +15,7 @@ class SceneBase
 	com_ptr<ID3D11Buffer> m_viewProjectionConstantBuffer = nullptr; // 뷰-투영 상수 버퍼
 
 protected:
-	Camera* m_mainCamera = nullptr; // 메인 카메라
+	CameraComponent* m_mainCamera = nullptr; // 메인 카메라 컴포넌트 포인터
 	std::array<FLOAT, 4> m_clearColor = { 0.5f, 0.5f, 0.5f, 1.0f }; // 씬 클리어 색상
 
 public:
@@ -31,8 +32,10 @@ public:
 	void TransformGameObjects();
 	void Render();
 
+	// 메인 카메라 게임 오브젝트 설정
+	virtual GameObjectBase* CreateCameraObject();
 	virtual void Begin() {}
 	virtual void End() {}
 
-	void AddGameObject(std::unique_ptr<class GameObjectBase> gameObject);
+	GameObjectBase* AddGameObject(std::unique_ptr<GameObjectBase> gameObject);
 };

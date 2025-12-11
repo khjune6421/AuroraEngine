@@ -18,6 +18,7 @@ public:
 	void Initialize(GameObjectBase* owner) { m_owner = owner; Begin(); }
 
 protected:
-	virtual void Begin() = 0;
+	// 컴포넌트 초기화 // ComponentBase의 Initialize에서 호출
+	virtual void Begin() {};
 	virtual void End() {};
 };

@@ -17,6 +17,7 @@ class GameObjectBase // TODO: 부모-자식 관계 구현
 	DirectX::XMVECTOR m_quaternion = DirectX::XMQuaternionIdentity(); // 쿼터니언 각 // 실제 회전 계산용
 	DirectX::XMVECTOR m_rotation = DirectX::XMVectorZero(); // 회전 (라디안 단위) // 오일러 각도 (Pitch, Yaw, Roll) // 출력용
 	DirectX::XMFLOAT3 m_scale = { 1.0f, 1.0f, 1.0f }; // 크기
+	bool m_isDirty = true; // 위치 갱신 필요 여부
 
 	struct WorldWVPBuffer // 월드 및 WVP 행렬 상수 버퍼 구조체
 	{
@@ -27,9 +28,6 @@ class GameObjectBase // TODO: 부모-자식 관계 구현
 	com_ptr<ID3D11Buffer> m_worldWVPConstantBuffer = nullptr; // 월드, WVP 행렬 상수 버퍼
 
 	std::unordered_map<std::type_index, std::unique_ptr<ComponentBase>> m_components = {}; // 컴포넌트 맵
-
-protected:
-	bool m_isDirty = true; // 위치 갱신 필요 여부
 
 public:
 	GameObjectBase();

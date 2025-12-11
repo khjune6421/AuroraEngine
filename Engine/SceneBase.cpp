@@ -1,7 +1,6 @@
 #include "stdafx.h"
 #include "SceneBase.h"
 
-#include "GameObjectBase.h"
 #include "Renderer.h"
 
 using namespace std;
@@ -9,10 +8,8 @@ using namespace DirectX;
 
 void SceneBase::Initialize()
 {
-	unique_ptr<Camera> camera = make_unique<Camera>();
-	m_mainCamera = camera.get();
-	AddGameObject(move(camera));
 	m_viewProjectionConstantBuffer = Renderer::GetInstance().GetConstantBuffer(sizeof(ViewProjectionBuffer));
+	m_mainCamera = CreateCameraObject()->AddComponent<CameraComponent>();
 
 	Begin();
 }
@@ -20,18 +17,10 @@ void SceneBase::Initialize()
 void SceneBase::Update(float deltaTime)
 {
 	for (unique_ptr<GameObjectBase>& gameObject : m_gameObjects) gameObject->Update(deltaTime);
-
-	if (GetAsyncKeyState('W') & 0x8000) m_mainCamera->MoveDirection(0.1f, GameObjectBase::Direction::Forward);
-	if (GetAsyncKeyState('S') & 0x8000) m_mainCamera->MoveDirection(0.1f, GameObjectBase::Direction::Backward);
-	if (GetAsyncKeyState('A') & 0x8000) m_mainCamera->MoveDirection(0.1f, GameObjectBase::Direction::Left);
-	if (GetAsyncKeyState('D') & 0x8000) m_mainCamera->MoveDirection(0.1f, GameObjectBase::Direction::Right);
 }
 
 void SceneBase::TransformGameObjects()
 {
-	// TransformGameObjects가 setDirty를 해소하므로 여기서 카메라 뷰 행렬 갱신
-	m_mainCamera->UpdateViewMatrix();
-
 	for (unique_ptr<GameObjectBase>& gameObject : m_gameObjects) gameObject->UpdateWorldMatrix();
 }
 
@@ -52,8 +41,20 @@ void SceneBase::Render()
 	renderer.EndFrame();
 }
 
-void SceneBase::AddGameObject(unique_ptr<GameObjectBase> gameObject)
+GameObjectBase* SceneBase::CreateCameraObject()
+{
+	unique_ptr<GameObjectBase> cameraGameObject = make_unique<GameObjectBase>();
+	cameraGameObject->SetPosition({ 0.0f, 5.0f, -10.0f, 1.0f });
+	cameraGameObject->LookAt({ 0.0f, 0.0f, 0.0f, 1.0f });
+
+	return AddGameObject(move(cameraGameObject));
+}
+
+GameObjectBase* SceneBase::AddGameObject(unique_ptr<GameObjectBase> gameObject)
 {
 	gameObject->Initialize();
+	GameObjectBase* gameObjectPtr = gameObject.get();
 	m_gameObjects.push_back(move(gameObject));
+
+	return gameObjectPtr;
 }

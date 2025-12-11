@@ -131,9 +131,9 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="CameraComponent.h" />
     <ClInclude Include="ComponentBase.h" />
     <ClInclude Include="GameObjectBase.h" />
-    <ClInclude Include="Camera.h" />
     <ClInclude Include="ModelComponent.h" />
     <ClInclude Include="Renderer.h" />
     <ClInclude Include="SceneBase.h" />
@@ -142,9 +142,9 @@
     <ClInclude Include="WindowManager.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="CameraComponent.cpp" />
     <ClCompile Include="ComponentBase.cpp" />
     <ClCompile Include="GameObjectBase.cpp" />
-    <ClCompile Include="Camera.cpp" />
     <ClCompile Include="ModelComponent.cpp" />
     <ClCompile Include="Renderer.cpp" />
     <ClCompile Include="SceneBase.cpp" />

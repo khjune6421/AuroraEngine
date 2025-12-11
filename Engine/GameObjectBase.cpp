@@ -2,7 +2,9 @@
 #include "GameObjectBase.h"
 
 #include "Renderer.h"
+
 #include "ModelComponent.h"
+#include "CameraComponent.h"
 
 using namespace std;
 using namespace DirectX;
@@ -28,12 +30,16 @@ void GameObjectBase::UpdateWorldMatrix()
 
 	m_worldMatrix = m_scaleMatrix * m_rotationMatrix * m_positionMatrix;
 
+	// 카메라 컴포넌트가 있으면 뷰 행렬 갱신
+	CameraComponent* cameraComponent = GetComponent<CameraComponent>();
+	if (cameraComponent) cameraComponent->UpdateViewMatrix(m_position, XMVectorAdd(m_position, GetDirectionVector(Direction::Forward)), GetDirectionVector(Direction::Up));
+
 	m_isDirty = false;
 }
 
 void GameObjectBase::Render(XMMATRIX viewMatrix, XMMATRIX projectionMatrix)
 {
-	auto model = GetComponent<ModelComponent>();
+	ModelComponent* model = GetComponent<ModelComponent>();
 	if (!model) return;
 
 	const com_ptr<ID3D11DeviceContext> deviceContext = Renderer::GetInstance().GetDeviceContext();
