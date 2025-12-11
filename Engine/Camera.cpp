@@ -1,9 +1,9 @@
 #include "stdafx.h"
-#include "MainCamera.h"
+#include "Camera.h"
 
 using namespace DirectX;
 
-XMMATRIX MainCamera::GetViewMatrix() const
+XMMATRIX Camera::GetViewMatrix() const
 {
 	const XMVECTOR eyePosition = GetPosition();
 	const XMVECTOR forwardVector = XMVector4Normalize({ 0.0f, -0.5f, 1.0f, 0.0f });
@@ -12,7 +12,7 @@ XMMATRIX MainCamera::GetViewMatrix() const
 	return XMMatrixLookAtLH(eyePosition, XMVectorAdd(eyePosition, forwardVector), upVector);
 }
 
-XMMATRIX MainCamera::GetProjectionMatrix() const
+XMMATRIX Camera::GetProjectionMatrix() const
 {
 	return XMMatrixPerspectiveFovLH(m_fovY, m_aspectRatio, m_nearZ, m_farZ);
 }

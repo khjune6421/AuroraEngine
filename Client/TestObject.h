@@ -11,8 +11,7 @@ public:
 	TestObject(TestObject&&) = delete;
 	TestObject& operator=(TestObject&&) = delete;
 
-	void Update(float deltaTime) override;
-
-protected:
+private:
 	void Begin() override;
+	void Update(float deltaTime) override;
 };

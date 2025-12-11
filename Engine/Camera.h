@@ -1,7 +1,7 @@
 #pragma once
 #include "GameObjectBase.h"
 
-class MainCamera : public GameObjectBase // TODO: 컴포넌트로 수정
+class Camera : public GameObjectBase // TODO: 컴포넌트로 수정
 {
 	const UINT m_screenWidth = 1280; // 화면 너비
 	const UINT m_screenHeight = 720; // 화면 높이
@@ -12,16 +12,13 @@ class MainCamera : public GameObjectBase // TODO: 컴포넌트로 수정
 	const float m_farZ = 1000.0f; // 원평면
 
 public:
-	MainCamera() = default;
-	~MainCamera() = default;
-	MainCamera(const MainCamera&) = delete;
-	MainCamera& operator=(const MainCamera&) = delete;
-	MainCamera(MainCamera&&) = delete;
-	MainCamera& operator=(MainCamera&&) = delete;
+	Camera() = default;
+	~Camera() = default;
+	Camera(const Camera&) = delete;
+	Camera& operator=(const Camera&) = delete;
+	Camera(Camera&&) = delete;
+	Camera& operator=(Camera&&) = delete;
 
 	DirectX::XMMATRIX GetViewMatrix() const;
 	DirectX::XMMATRIX GetProjectionMatrix() const;
-
-protected:
-	void Begin() override {}
 };

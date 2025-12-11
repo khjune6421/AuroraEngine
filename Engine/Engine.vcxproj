@@ -133,7 +133,7 @@
   <ItemGroup>
     <ClInclude Include="ComponentBase.h" />
     <ClInclude Include="GameObjectBase.h" />
-    <ClInclude Include="MainCamera.h" />
+    <ClInclude Include="Camera.h" />
     <ClInclude Include="ModelComponent.h" />
     <ClInclude Include="Renderer.h" />
     <ClInclude Include="SceneBase.h" />
@@ -144,7 +144,7 @@
   <ItemGroup>
     <ClCompile Include="ComponentBase.cpp" />
     <ClCompile Include="GameObjectBase.cpp" />
-    <ClCompile Include="MainCamera.cpp" />
+    <ClCompile Include="Camera.cpp" />
     <ClCompile Include="ModelComponent.cpp" />
     <ClCompile Include="Renderer.cpp" />
     <ClCompile Include="SceneBase.cpp" />
