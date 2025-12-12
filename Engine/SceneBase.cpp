@@ -10,7 +10,7 @@ using namespace DirectX;
 void SceneBase::Initialize()
 {
 	m_viewProjectionConstantBuffer = Renderer::GetInstance().GetConstantBuffer(sizeof(ViewProjectionBuffer));
-	m_mainCamera = CreateCameraObject()->AddComponent<CameraComponent>();
+	m_mainCamera = AddGameObject(CreateCameraObject())->AddComponent<CameraComponent>();
 
 	Begin();
 }
@@ -42,13 +42,18 @@ void SceneBase::Render()
 	renderer.EndFrame();
 }
 
-GameObjectBase* SceneBase::CreateCameraObject()
+void SceneBase::Finalize()
+{
+	End();
+}
+
+unique_ptr<GameObjectBase> SceneBase::CreateCameraObject()
 {
 	unique_ptr<GameObjectBase> cameraGameObject = make_unique<GameObjectBase>();
 	cameraGameObject->SetPosition({ 0.0f, 5.0f, -10.0f, 1.0f });
 	cameraGameObject->LookAt({ 0.0f, 0.0f, 0.0f, 1.0f });
 
-	return AddGameObject(move(cameraGameObject));
+	return cameraGameObject;
 }
 
 GameObjectBase* SceneBase::AddGameObject(unique_ptr<GameObjectBase> gameObject)

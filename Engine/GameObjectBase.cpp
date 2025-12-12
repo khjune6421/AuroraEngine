@@ -54,6 +54,13 @@ void GameObjectBase::Render(XMMATRIX viewMatrix, XMMATRIX projectionMatrix)
 	model->Render();
 }
 
+void GameObjectBase::Finalize()
+{
+	End();
+
+	for (auto& [typeIndex, component] : m_components) component->Finalize();
+}
+
 void GameObjectBase::MoveDirection(float distance, Direction direction)
 {
 	XMVECTOR directionVector = GetDirectionVector(direction);

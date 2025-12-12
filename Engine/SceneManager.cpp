@@ -9,6 +9,7 @@ void SceneManager::Run()
 {
 	if (m_nextScene)
 	{
+		if (m_currentScene) m_currentScene->Finalize();
 		m_currentScene = move(m_nextScene);
 		m_currentScene->Initialize();
 	}

@@ -9,13 +9,14 @@ protected:
 
 public:
 	ComponentBase() = default;
-	virtual ~ComponentBase() { End(); }
+	virtual ~ComponentBase() = default;
 	ComponentBase(const ComponentBase&) = delete;
 	ComponentBase& operator=(const ComponentBase&) = delete;
 	ComponentBase(ComponentBase&&) = delete;
 	ComponentBase& operator=(ComponentBase&&) = delete;
 
 	void Initialize(GameObjectBase* owner) { m_owner = owner; Begin(); }
+	void Finalize() { End(); }
 
 protected:
 	// 컴포넌트 초기화 // ComponentBase의 Initialize에서 호출

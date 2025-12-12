@@ -31,7 +31,7 @@ class GameObjectBase // TODO: 부모-자식 관계 구현
 
 public:
 	GameObjectBase();
-	virtual ~GameObjectBase() { End(); }
+	virtual ~GameObjectBase() = default;
 	GameObjectBase(const GameObjectBase&) = delete;
 	GameObjectBase& operator=(const GameObjectBase&) = delete;
 	GameObjectBase(GameObjectBase&&) = default;
@@ -43,6 +43,8 @@ public:
 	void UpdateWorldMatrix();
 	// 렌더링 // 씬이 Render에서 호출 // 가능하면 다른 곳에서 호출하지 말 것
 	void Render(DirectX::XMMATRIX viewMatrix, DirectX::XMMATRIX projectionMatrix);
+	// 게임 오브젝트 종료 // 씬이 Finalize에서 호출 // 가능하면 다른 곳에서 호출하지 말 것
+	void Finalize();
 
 	// 게임 오브젝트 Initialize에서 호출 // 가능하면 다른 곳에서 호출하지 말 것
 	virtual void Begin() {}
