@@ -37,22 +37,6 @@ public:
 	GameObjectBase(GameObjectBase&&) = default;
 	GameObjectBase& operator=(GameObjectBase&&) = delete;
 
-	// 게임 오브젝트 초기화 // 씬이 AddGameObject에서 호출 // 가능하면 다른 곳에서 호출하지 말 것
-	void Initialize();
-	// 월드 행렬 갱신 // 씬이 TransformGameObjects에서 호출 // 가능하면 다른 곳에서 호출하지 말 것
-	void UpdateWorldMatrix();
-	// 렌더링 // 씬이 Render에서 호출 // 가능하면 다른 곳에서 호출하지 말 것
-	void Render(DirectX::XMMATRIX viewMatrix, DirectX::XMMATRIX projectionMatrix);
-	// 게임 오브젝트 종료 // 씬이 Finalize에서 호출 // 가능하면 다른 곳에서 호출하지 말 것
-	void Finalize();
-
-	// 게임 오브젝트 Initialize에서 호출 // 가능하면 다른 곳에서 호출하지 말 것
-	virtual void Begin() {}
-	// 매 프레임 씬 Render에서 호출 // 가능하면 다른 곳에서 호출하지 말 것
-	virtual void Update(float deltaTime) {}
-	// 게임 오브젝트 소멸자가 호출 // 가능하면 다른 곳에서 호출하지 말 것
-	virtual void End() {}
-
 	UINT GetID() const { return m_id; }
 	// 변환 관련 함수
 	// 위치 지정
@@ -97,8 +81,26 @@ public:
 	template<typename T>
 	void RemoveComponent(); // 컴포넌트 제거
 
+protected:
+	// 게임 오브젝트 Initialize에서 호출
+	virtual void Begin() {}
+	// 매 프레임 씬 Render에서 호출
+	virtual void Update(float deltaTime) {}
+	// 게임 오브젝트 소멸자가 호출
+	virtual void End() {}
+
 private:
 	void SetDirty() { m_isDirty = true; } // 위치 갱신 필요로 설정
+
+	friend class SceneBase;
+	// 게임 오브젝트 초기화 // 씬이 AddGameObject에서 호출
+	void Initialize();
+	// 월드 행렬 갱신 // 씬이 TransformGameObjects에서 호출
+	void UpdateWorldMatrix();
+	// 렌더링 // 씬이 Render에서 호출
+	void Render(DirectX::XMMATRIX viewMatrix, DirectX::XMMATRIX projectionMatrix);
+	// 게임 오브젝트 종료 // 씬이 Finalize에서 호출
+	void Finalize();
 };
 
 template<typename T, typename... Args>

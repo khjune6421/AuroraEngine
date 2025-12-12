@@ -13,11 +13,8 @@ int main()
 
 	Renderer::GetInstance().Initialize(windowManager.GetHWnd());
 
-	SceneManager sceneManager;
+	SceneManager& sceneManager = SceneManager::GetInstance();
 	sceneManager.ChangeScene<TestScene>();
 
-	while (windowManager.ProcessMessages())
-	{
-		sceneManager.Run();
-	};
+	while (windowManager.ProcessMessages()) sceneManager.Run();
 }

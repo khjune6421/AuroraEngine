@@ -25,6 +25,15 @@ public:
 	SceneBase(SceneBase&&) = delete;
 	SceneBase& operator=(SceneBase&&) = delete;
 
+	// 메인 카메라 게임 오브젝트 설정
+	virtual std::unique_ptr<GameObjectBase> CreateCameraObject();
+	virtual void Begin() {}
+	virtual void End() {}
+
+	GameObjectBase* AddGameObject(std::unique_ptr<GameObjectBase> gameObject);
+
+private:
+	friend class SceneManager;
 	// 씬 초기화 // 씬 사용 전 반드시 호출해야 함
 	void Initialize();
 	// 씬 업데이트 // 매 프레임 씬 매니저가 호출
@@ -35,11 +44,4 @@ public:
 	void Render();
 	// 씬 종료 // 씬 매니저가 씬을 교체할 때 호출
 	void Finalize();
-
-	// 메인 카메라 게임 오브젝트 설정
-	virtual std::unique_ptr<GameObjectBase> CreateCameraObject();
-	virtual void Begin() {}
-	virtual void End() {}
-
-	GameObjectBase* AddGameObject(std::unique_ptr<GameObjectBase> gameObject);
 };

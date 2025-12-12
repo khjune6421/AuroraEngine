@@ -15,52 +15,6 @@ GameObjectBase::GameObjectBase()
 	m_id = idIndex++;
 }
 
-void GameObjectBase::Initialize()
-{
-	m_worldWVPConstantBuffer = Renderer::GetInstance().GetConstantBuffer(sizeof(WorldWVPBuffer));
-
-	Begin();
-}
-
-void GameObjectBase::UpdateWorldMatrix()
-{
-	if (!m_isDirty) return;
-
-	m_positionMatrix = XMMatrixTranslationFromVector(m_position);
-	m_rotationMatrix = XMMatrixRotationQuaternion(m_quaternion);
-	m_scaleMatrix = XMMatrixScaling(m_scale.x, m_scale.y, m_scale.z);
-
-	m_worldMatrix = m_scaleMatrix * m_rotationMatrix * m_positionMatrix;
-
-	// 카메라 컴포넌트가 있으면 뷰 행렬 갱신
-	CameraComponent* cameraComponent = GetComponent<CameraComponent>();
-	if (cameraComponent) cameraComponent->UpdateViewMatrix(m_position, XMVectorAdd(m_position, GetDirectionVector(Direction::Forward)), GetDirectionVector(Direction::Up));
-
-	m_isDirty = false;
-}
-
-void GameObjectBase::Render(XMMATRIX viewMatrix, XMMATRIX projectionMatrix)
-{
-	ModelComponent* model = GetComponent<ModelComponent>();
-	if (!model) return;
-
-	const com_ptr<ID3D11DeviceContext> deviceContext = Renderer::GetInstance().GetDeviceContext();
-
-	m_worldWVPData.worldMatrix = XMMatrixTranspose(m_worldMatrix);
-	m_worldWVPData.WVPMatrix = projectionMatrix * viewMatrix * m_worldWVPData.worldMatrix;
-	deviceContext->UpdateSubresource(m_worldWVPConstantBuffer.Get(), 0, nullptr, &m_worldWVPData, 0, 0);
-	deviceContext->VSSetConstantBuffers(1, 1, m_worldWVPConstantBuffer.GetAddressOf());
-
-	model->Render();
-}
-
-void GameObjectBase::Finalize()
-{
-	End();
-
-	for (auto& [typeIndex, component] : m_components) component->Finalize();
-}
-
 void GameObjectBase::MoveDirection(float distance, Direction direction)
 {
 	XMVECTOR directionVector = GetDirectionVector(direction);
@@ -160,4 +114,50 @@ void GameObjectBase::Scale(const XMFLOAT3& deltaScale)
 	m_scale.z *= deltaScale.z;
 
 	SetDirty();
+}
+
+void GameObjectBase::Initialize()
+{
+	m_worldWVPConstantBuffer = Renderer::GetInstance().GetConstantBuffer(sizeof(WorldWVPBuffer));
+
+	Begin();
+}
+
+void GameObjectBase::UpdateWorldMatrix()
+{
+	if (!m_isDirty) return;
+
+	m_positionMatrix = XMMatrixTranslationFromVector(m_position);
+	m_rotationMatrix = XMMatrixRotationQuaternion(m_quaternion);
+	m_scaleMatrix = XMMatrixScaling(m_scale.x, m_scale.y, m_scale.z);
+
+	m_worldMatrix = m_scaleMatrix * m_rotationMatrix * m_positionMatrix;
+
+	// 카메라 컴포넌트가 있으면 뷰 행렬 갱신
+	CameraComponent* cameraComponent = GetComponent<CameraComponent>();
+	if (cameraComponent) cameraComponent->UpdateViewMatrix(m_position, XMVectorAdd(m_position, GetDirectionVector(Direction::Forward)), GetDirectionVector(Direction::Up));
+
+	m_isDirty = false;
+}
+
+void GameObjectBase::Render(XMMATRIX viewMatrix, XMMATRIX projectionMatrix)
+{
+	ModelComponent* model = GetComponent<ModelComponent>();
+	if (!model) return;
+
+	const com_ptr<ID3D11DeviceContext> deviceContext = Renderer::GetInstance().GetDeviceContext();
+
+	m_worldWVPData.worldMatrix = XMMatrixTranspose(m_worldMatrix);
+	m_worldWVPData.WVPMatrix = projectionMatrix * viewMatrix * m_worldWVPData.worldMatrix;
+	deviceContext->UpdateSubresource(m_worldWVPConstantBuffer.Get(), 0, nullptr, &m_worldWVPData, 0, 0);
+	deviceContext->VSSetConstantBuffers(1, 1, m_worldWVPConstantBuffer.GetAddressOf());
+
+	model->Render();
+}
+
+void GameObjectBase::Finalize()
+{
+	End();
+
+	for (auto& [typeIndex, component] : m_components) component->Finalize();
 }
