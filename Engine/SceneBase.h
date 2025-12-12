@@ -25,15 +25,15 @@ public:
 	SceneBase(SceneBase&&) = delete;
 	SceneBase& operator=(SceneBase&&) = delete;
 
+	template<typename T, typename... Args>
+	T* AddGameObject(Args&&... args);
+	void RemoveGameObject(GameObjectBase* gameObject); // TODO: 뭔가 좀 부족함
+
+protected:
 	// 메인 카메라 게임 오브젝트 설정
 	virtual GameObjectBase* CreateCameraObject();
 	virtual void Begin() {}
 	virtual void End() {}
-
-	template<typename T, typename... Args>
-	T* AddGameObject(Args&&... args);
-
-	void RemoveGameObject(GameObjectBase* gameObject); // TODO: 뭔가 좀 부족함
 
 private:
 	friend class SceneManager;
