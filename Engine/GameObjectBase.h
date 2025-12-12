@@ -32,7 +32,7 @@ class GameObjectBase // TODO: 부모-자식 관계 구현
 	std::unordered_map<std::type_index, std::unique_ptr<ComponentBase>> m_components = {}; // 컴포넌트 맵
 
 public:
-	GameObjectBase(); // 생성자 // SceneBase에서만 생성 가능
+	GameObjectBase(); // 무조건 CreateGameObject로 생성
 	virtual ~GameObjectBase() = default;
 	GameObjectBase(const GameObjectBase&) = delete; // 복사 금지
 	GameObjectBase& operator=(const GameObjectBase&) = delete; // 복사 대입 금지
@@ -94,7 +94,7 @@ protected:
 private:
 	void SetDirty() { m_isDirty = true; } // 위치 갱신 필요로 설정
 
-	// 게임 오브젝트 초기화 // 씬이 AddGameObject에서 호출
+	// 게임 오브젝트 초기화 // 씬이 CreateGameObject에서 호출
 	void Initialize();
 	// 월드 행렬 갱신 // 씬이 TransformGameObjects에서 호출
 	void UpdateWorldMatrix();

@@ -20,7 +20,7 @@ protected:
 	std::array<FLOAT, 4> m_clearColor = { 0.5f, 0.5f, 0.5f, 1.0f }; // 씬 클리어 색상
 
 public:
-	SceneBase() = default; // SceneManager만이 생성 가능함
+	SceneBase() = default; // 무조건 SceneManager로 생성
 	virtual ~SceneBase() = default;
 	SceneBase(const SceneBase&) = delete; // 복사 금지
 	SceneBase& operator=(const SceneBase&) = delete; // 복사 대입 금지
@@ -28,7 +28,7 @@ public:
 	SceneBase& operator=(SceneBase&&) = delete; // 이동 대입 금지
 
 	template<typename T, typename... Args>
-	T* AddGameObject(Args&&... args);
+	T* CreateGameObject(Args&&... args);
 	void RemoveGameObject(GameObjectBase* gameObject); // TODO: 뭔가 좀 부족함
 
 protected:
@@ -51,7 +51,7 @@ private:
 };
 
 template<typename T, typename ...Args>
-inline T* SceneBase::AddGameObject(Args && ...args)
+inline T* SceneBase::CreateGameObject(Args && ...args)
 {
 	auto gameObject = std::make_unique<T>(std::forward<Args>(args)...);
 

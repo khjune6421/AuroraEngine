@@ -9,7 +9,7 @@ using namespace DirectX;
 
 GameObjectBase* SceneBase::CreateCameraObject()
 {
-	GameObjectBase* cameraGameObject = AddGameObject<GameObjectBase>();
+	GameObjectBase* cameraGameObject = CreateGameObject<GameObjectBase>();
 	cameraGameObject->SetPosition({ 0.0f, 5.0f, -10.0f, 1.0f });
 	cameraGameObject->LookAt({ 0.0f, 0.0f, 0.0f, 1.0f });
 

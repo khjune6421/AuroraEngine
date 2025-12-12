@@ -8,16 +8,16 @@ using namespace std;
 
 GameObjectBase* TestScene::CreateCameraObject()
 {
-	return AddGameObject<TestCameraObject>();
+	return CreateGameObject<TestCameraObject>();
 }
 
 void TestScene::Begin()
 {
-	AddGameObject<TestObject>();
-	AddGameObject<TestObject>()->SetPosition({ 3.0f, 0.0f, 0.0f, 1.0f });
-	AddGameObject<TestObject>()->SetPosition({ -3.0f, 0.0f, 0.0f, 1.0f });
-	AddGameObject<TestObject>()->SetPosition({ 0.0f, 3.0f, 0.0f, 1.0f });
-	AddGameObject<TestObject>()->SetPosition({ 0.0f, -3.0f, 0.0f, 1.0f });
-	AddGameObject<TestObject>()->SetPosition({ 0.0f, 0.0f, 3.0f, 1.0f });
-	AddGameObject<TestObject>()->SetPosition({ 0.0f, 0.0f, -3.0f, 1.0f });
+	CreateGameObject<TestObject>();
+	CreateGameObject<TestObject>()->SetPosition({ 3.0f, 0.0f, 0.0f, 1.0f });
+	CreateGameObject<TestObject>()->SetPosition({ -3.0f, 0.0f, 0.0f, 1.0f });
+	CreateGameObject<TestObject>()->SetPosition({ 0.0f, 3.0f, 0.0f, 1.0f });
+	CreateGameObject<TestObject>()->SetPosition({ 0.0f, -3.0f, 0.0f, 1.0f });
+	CreateGameObject<TestObject>()->SetPosition({ 0.0f, 0.0f, 3.0f, 1.0f });
+	CreateGameObject<TestObject>()->SetPosition({ 0.0f, 0.0f, -3.0f, 1.0f });
 }
