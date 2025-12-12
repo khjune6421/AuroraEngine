@@ -26,11 +26,13 @@ public:
 	SceneBase& operator=(SceneBase&&) = delete;
 
 	// 메인 카메라 게임 오브젝트 설정
-	virtual std::unique_ptr<GameObjectBase> CreateCameraObject();
+	virtual GameObjectBase* CreateCameraObject();
 	virtual void Begin() {}
 	virtual void End() {}
 
-	GameObjectBase* AddGameObject(std::unique_ptr<GameObjectBase> gameObject); // TODO: 일관성 있는 생성 및 관리 시스템이 필요함
+	template<typename T, typename... Args>
+	T* AddGameObject(Args&&... args);
+
 	void RemoveGameObject(GameObjectBase* gameObject); // TODO: 뭔가 좀 부족함
 
 private:
@@ -46,3 +48,15 @@ private:
 	// 씬 종료 // 씬 매니저가 씬을 교체할 때 호출
 	void Finalize();
 };
+
+template<typename T, typename ...Args>
+inline T* SceneBase::AddGameObject(Args && ...args)
+{
+	auto gameObject = std::make_unique<T>(std::forward<Args>(args)...);
+
+	gameObject->Initialize();
+	T* gameObjectPtr = gameObject.get();
+	m_gameObjects.push_back(move(gameObject));
+
+	return gameObjectPtr;
+}

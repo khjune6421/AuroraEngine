@@ -12,6 +12,6 @@ public:
 	TestScene& operator=(TestScene&&) = delete;
 
 private:
-	std::unique_ptr<GameObjectBase> CreateCameraObject() override;
+	GameObjectBase* CreateCameraObject() override;
 	void Begin() override;
 };

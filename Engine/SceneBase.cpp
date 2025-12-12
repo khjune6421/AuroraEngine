@@ -7,22 +7,13 @@
 using namespace std;
 using namespace DirectX;
 
-unique_ptr<GameObjectBase> SceneBase::CreateCameraObject()
+GameObjectBase* SceneBase::CreateCameraObject()
 {
-	unique_ptr<GameObjectBase> cameraGameObject = make_unique<GameObjectBase>();
+	GameObjectBase* cameraGameObject = AddGameObject<GameObjectBase>();
 	cameraGameObject->SetPosition({ 0.0f, 5.0f, -10.0f, 1.0f });
 	cameraGameObject->LookAt({ 0.0f, 0.0f, 0.0f, 1.0f });
 
 	return cameraGameObject;
-}
-
-GameObjectBase* SceneBase::AddGameObject(unique_ptr<GameObjectBase> gameObject)
-{
-	gameObject->Initialize();
-	GameObjectBase* gameObjectPtr = gameObject.get();
-	m_gameObjects.push_back(move(gameObject));
-
-	return gameObjectPtr;
 }
 
 void SceneBase::RemoveGameObject(GameObjectBase* gameObject)
@@ -37,7 +28,7 @@ void SceneBase::RemoveGameObject(GameObjectBase* gameObject)
 void SceneBase::Initialize()
 {
 	m_viewProjectionConstantBuffer = Renderer::GetInstance().GetConstantBuffer(sizeof(ViewProjectionBuffer));
-	m_mainCamera = AddGameObject(CreateCameraObject())->AddComponent<CameraComponent>();
+	m_mainCamera = CreateCameraObject()->AddComponent<CameraComponent>();
 
 	Begin();
 }

@@ -6,18 +6,18 @@
 
 using namespace std;
 
-std::unique_ptr<GameObjectBase> TestScene::CreateCameraObject()
+GameObjectBase* TestScene::CreateCameraObject()
 {
-	return make_unique<TestCameraObject>();
+	return AddGameObject<TestCameraObject>();
 }
 
 void TestScene::Begin()
 {
-	AddGameObject(make_unique<TestObject>());
-	AddGameObject(make_unique<TestObject>())->SetPosition({ 3.0f, 0.0f, 0.0f, 1.0f });
-	AddGameObject(make_unique<TestObject>())->SetPosition({ -3.0f, 0.0f, 0.0f, 1.0f });
-	AddGameObject(make_unique<TestObject>())->SetPosition({ 0.0f, 3.0f, 0.0f, 1.0f });
-	AddGameObject(make_unique<TestObject>())->SetPosition({ 0.0f, -3.0f, 0.0f, 1.0f });
-	AddGameObject(make_unique<TestObject>())->SetPosition({ 0.0f, 0.0f, 3.0f, 1.0f });
-	AddGameObject(make_unique<TestObject>())->SetPosition({ 0.0f, 0.0f, -3.0f, 1.0f });
+	AddGameObject<TestObject>();
+	AddGameObject<TestObject>()->SetPosition({ 3.0f, 0.0f, 0.0f, 1.0f });
+	AddGameObject<TestObject>()->SetPosition({ -3.0f, 0.0f, 0.0f, 1.0f });
+	AddGameObject<TestObject>()->SetPosition({ 0.0f, 3.0f, 0.0f, 1.0f });
+	AddGameObject<TestObject>()->SetPosition({ 0.0f, -3.0f, 0.0f, 1.0f });
+	AddGameObject<TestObject>()->SetPosition({ 0.0f, 0.0f, 3.0f, 1.0f });
+	AddGameObject<TestObject>()->SetPosition({ 0.0f, 0.0f, -3.0f, 1.0f });
 }

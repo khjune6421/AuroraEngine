@@ -103,26 +103,29 @@ private:
 	void Finalize();
 };
 
-template<typename T, typename... Args>
-T* GameObjectBase::AddComponent(Args&&... args)
+template<typename T, typename ...Args>
+inline T* GameObjectBase::AddComponent(Args && ...args)
 {
 	auto component = std::make_unique<T>(std::forward<Args>(args)...);
+
 	component->Initialize(this);
 	T* componentPtr = component.get();
 	m_components[std::type_index(typeid(T))] = std::move(component);
+
 	return componentPtr;
 }
 
 template<typename T>
-T* GameObjectBase::GetComponent()
+inline T* GameObjectBase::GetComponent()
 {
 	auto it = m_components.find(std::type_index(typeid(T)));
 	if (it != m_components.end()) return static_cast<T*>(it->second.get());
+
 	return nullptr;
 }
 
 template<typename T>
-void GameObjectBase::RemoveComponent()
+inline void GameObjectBase::RemoveComponent()
 {
 	auto it = m_components.find(std::type_index(typeid(T)));
 	if (it != m_components.end()) m_components.erase(it);
