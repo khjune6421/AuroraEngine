@@ -1,100 +1,5 @@
 #pragma once
-
-enum RasterState
-{
-	RSBackBuffer, // 백 버퍼 전용 래스터 상태 // AA 없음
-	RSSolid,
-	RSWireframe,
-
-	RSCount
-};
-constexpr std::array<D3D11_RASTERIZER_DESC, RSCount> RASTERIZER_DESC_TEMPLATES =
-{
-	// RSBackBuffer
-	D3D11_RASTERIZER_DESC
-	{
-		.FillMode = D3D11_FILL_SOLID, // 실선 채우기
-		.CullMode = D3D11_CULL_NONE, // 면 컬링 없음
-		.FrontCounterClockwise = FALSE, // 시계방향이 앞면
-		.DepthBias = 0, // 깊이 바이어스 없음
-		.DepthBiasClamp = 0.0f, // 깊이 바이어스 클램프 없음
-		.SlopeScaledDepthBias = 0.0f, // 기울기 기반 깊이 바이어스 없음
-		.DepthClipEnable = TRUE, // 깊이 클리핑 활성화
-		.ScissorEnable = FALSE, // 가위 영역 비활성화
-		.MultisampleEnable = FALSE, // 멀티샘플링 비활성화
-		.AntialiasedLineEnable = FALSE // 앤티앨리어싱 선 비활성화
-	},
-
-	// RSSolid
-	D3D11_RASTERIZER_DESC
-	{
-		.FillMode = D3D11_FILL_SOLID,
-		.CullMode = D3D11_CULL_BACK,
-		.FrontCounterClockwise = FALSE,
-		.DepthBias = 0,
-		.DepthBiasClamp = 0.0f,
-		.SlopeScaledDepthBias = 0.0f,
-		.DepthClipEnable = TRUE,
-		.ScissorEnable = FALSE,
-		.MultisampleEnable = TRUE,
-		.AntialiasedLineEnable = TRUE
-	},
-
-	// RSWireframe
-	D3D11_RASTERIZER_DESC
-	{
-		.FillMode = D3D11_FILL_WIREFRAME,
-		.CullMode = D3D11_CULL_BACK,
-		.FrontCounterClockwise = FALSE,
-		.DepthBias = 0,
-		.DepthBiasClamp = 0.0f,
-		.SlopeScaledDepthBias = 0.0f,
-		.DepthClipEnable = TRUE,
-		.ScissorEnable = FALSE,
-		.MultisampleEnable = TRUE,
-		.AntialiasedLineEnable = TRUE
-	}
-};
-
-enum SamplerState
-{
-	SSBackBuffer, // 백 버퍼 전용 샘플러 상태
-	SSScene,
-
-	SSCount
-};
-constexpr std::array<D3D11_SAMPLER_DESC, SSCount> SAMPLER_DESC_TEMPLATES =
-{
-	// SSBackBuffer
-	D3D11_SAMPLER_DESC
-	{
-		.Filter = D3D11_FILTER_MIN_MAG_MIP_LINEAR, // 선형 필터링
-		.AddressU = D3D11_TEXTURE_ADDRESS_CLAMP, // U 좌표 클램핑
-		.AddressV = D3D11_TEXTURE_ADDRESS_CLAMP, // V 좌표 클램핑
-		.AddressW = D3D11_TEXTURE_ADDRESS_CLAMP, // W 좌표 클램핑
-		.MipLODBias = 0.0f, // 밉 LOD 바이어스 없음
-		.MaxAnisotropy = 1, // 이방성 필터링 없음
-		.ComparisonFunc = D3D11_COMPARISON_NEVER, // 비교 함수 없음
-		.BorderColor = { 0.0f, 0.0f, 0.0f, 0.0f }, // 테두리 색상 (사용 안 함)
-		.MinLOD = 0, // 최소 LOD
-		.MaxLOD = D3D11_FLOAT32_MAX // 최대 LOD
-	},
-
-	// SSScene
-	D3D11_SAMPLER_DESC
-	{
-		.Filter = D3D11_FILTER_ANISOTROPIC, // 이방성 필터링
-		.AddressU = D3D11_TEXTURE_ADDRESS_WRAP, // U 좌표 래핑
-		.AddressV = D3D11_TEXTURE_ADDRESS_WRAP, // V 좌표 래핑
-		.AddressW = D3D11_TEXTURE_ADDRESS_WRAP, // W 좌표 래핑
-		.MipLODBias = 0.0f,
-		.MaxAnisotropy = 8, // 최대 이방성 필터링
-		.ComparisonFunc = D3D11_COMPARISON_NEVER,
-		.BorderColor = { 0.0f, 0.0f, 0.0f, 0.0f },
-		.MinLOD = 0,
-		.MaxLOD = D3D11_FLOAT32_MAX
-	}
-};
+#include "Resource.h"
 
 class RenderResourceManager : public SingletonBase<RenderResourceManager>
 {
@@ -132,11 +37,16 @@ public:
 	std::pair<com_ptr<ID3D11VertexShader>, com_ptr<ID3D11InputLayout>> GetVertexShaderAndInputLayout(std::wstring shaderName, const std::vector<D3D11_INPUT_ELEMENT_DESC>& inputElementDescs);
 	// 픽셀 셰이더 얻기
 	com_ptr<ID3D11PixelShader> GetPixelShader(std::wstring shaderName);
+	// 모델 파일로부터 모델 로드
+	std::unique_ptr<Model> LoadModelFromFile(const std::wstring& modelFileName);
 
 private:
-	// 래스터 상태 및 샘플러 상태 생성 함수
+	// 래스터 상태 생성 함수
 	void CreateRasterStates();
+	// 샘플러 상태 생성 함수
 	void CreateSamplerStates();
+
+	// FBX 파일 로드 함수
 
 	// 셰이더 컴파일 함수
 	com_ptr<ID3DBlob> CompileShader(std::filesystem::path shaderName, const char* shaderModel);

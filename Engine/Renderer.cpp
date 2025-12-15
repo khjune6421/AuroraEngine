@@ -11,7 +11,7 @@ void Renderer::Initialize(HWND hWnd)
 	CreateDeviceAndContext();
 	CreateSwapChain(hWnd);
 	CreateBackBufferRenderTarget();
-	CreateBackBufferVertexBufferAndShaders();
+	CreateBackBufferResources();
 	CreateSceneRenderTarget();
 	SetViewport();
 }
@@ -157,15 +157,9 @@ void Renderer::CreateBackBufferRenderTarget()
 	};
 	hr = m_device->CreateRenderTargetView(m_backBuffer.renderTarget.Get(), &rtvDesc, m_backBuffer.renderTargetView.GetAddressOf());
 	CheckResult(hr, "렌더 타겟 뷰 생성 실패.");
-
-	RenderResourceManager& resourceManager = RenderResourceManager::GetInstance();
-	// 래스터 상태 생성
-	m_backBufferRasterState = resourceManager.GetRasterState(RSBackBuffer);
-	// 샘플러 상태 생성
-	m_backBufferSamplerState = resourceManager.GetSamplerState(SSBackBuffer);
 }
 
-void Renderer::CreateBackBufferVertexBufferAndShaders()
+void Renderer::CreateBackBufferResources()
 {
 	HRESULT hr = S_OK;
 
@@ -214,6 +208,10 @@ void Renderer::CreateBackBufferVertexBufferAndShaders()
 	};
 
 	RenderResourceManager& resourceManager = RenderResourceManager::GetInstance();
+	// 래스터 상태 생성
+	m_backBufferRasterState = resourceManager.GetRasterState(RSBackBuffer);
+	// 샘플러 상태 생성
+	m_backBufferSamplerState = resourceManager.GetSamplerState(SSBackBuffer);
 	// 버텍스 셰이더 및 입력 레이아웃 생성
 	m_backBufferVertexShaderAndInputLayout = resourceManager.GetVertexShaderAndInputLayout(L"VSPostProcessing.hlsl", inputElementDescs);
 	// 픽셀 셰이더 컴파일 및 생성
@@ -311,8 +309,6 @@ void Renderer::CreateSceneRenderTarget()
 	RenderResourceManager& resourceManager = RenderResourceManager::GetInstance();
 	// 래스터 상태 생성
 	m_sceneRasterState = resourceManager.GetRasterState(RSSolid);
-	// 샘플러 상태 생성
-	m_sceneSamplerState = resourceManager.GetSamplerState(SSScene);
 }
 
 void Renderer::SetViewport()

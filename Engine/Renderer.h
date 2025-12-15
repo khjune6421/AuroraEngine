@@ -55,7 +55,6 @@ class Renderer : public SingletonBase<Renderer>
 	DXGI_SAMPLE_DESC m_sceneBufferSampleDesc = { 4, 0 }; // 씬 렌더 타겟용 샘플 설명 // 멀티샘플링 설정
 	RenderTarget m_sceneBuffer; // 씬 렌더 타겟 // 실제 게임 씬을 랜더링하는 버퍼
 	com_ptr<ID3D11RasterizerState> m_sceneRasterState = nullptr; // 씬 렌더 타겟용 래스터 상태
-	com_ptr<ID3D11SamplerState> m_sceneSamplerState = nullptr; // 씬 렌더 타겟용 샘플러 상태
 	com_ptr<ID3D11Texture2D> m_sceneResultTexture = nullptr; // 씬 렌더 타겟의 결과 텍스처 // MSAA 다운샘플링 후 결과 저장
 	com_ptr<ID3D11ShaderResourceView> m_sceneShaderResourceView = nullptr; // 씬 렌더 타겟의 셰이더 리소스 뷰 // 백 버퍼에 적용하면서 후처리됨
 
@@ -97,7 +96,7 @@ private:
 	// 백 버퍼 렌더 타겟 생성
 	void CreateBackBufferRenderTarget();
 	// 백 버퍼 셰이더 및 상수 버퍼 생성
-	void CreateBackBufferVertexBufferAndShaders();
+	void CreateBackBufferResources();
 	// 씬 렌더 타겟 생성
 	void CreateSceneRenderTarget();
 	// 뷰포트 설정

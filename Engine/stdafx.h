@@ -22,6 +22,8 @@
 #include <SimpleMath.h>
 #pragma comment(lib, "DirectXTK.lib")
 
+// Assimp 헤더
+
 // 기타 사용자 정의 헤더
 #include "SingletonBase.h"
 

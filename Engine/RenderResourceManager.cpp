@@ -92,6 +92,11 @@ com_ptr<ID3D11PixelShader> RenderResourceManager::GetPixelShader(wstring shaderN
 	return m_pixelShaders[shaderName];
 }
 
+unique_ptr<Model> RenderResourceManager::LoadModelFromFile(const wstring& modelFileName)
+{
+	return std::unique_ptr<Model>();
+}
+
 com_ptr<ID3DBlob> RenderResourceManager::CompileShader(filesystem::path shaderName, const char* shaderModel)
 {
 	HRESULT hr = S_OK;
