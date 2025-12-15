@@ -3,6 +3,7 @@
 
 #include "GameObjectBase.h"
 #include "Renderer.h"
+#include "RenderResourceManager.h"
 
 void ModelComponent::Render()
 {
@@ -51,7 +52,7 @@ void ModelComponent::CreateVertexBuffer()
 		.SysMemSlicePitch = 0
 	};
 	hr = device->CreateBuffer(&bufferDesc, &initialData, m_vertexBuffer.GetAddressOf());
-	Renderer::GetInstance().CheckResult(hr, "버텍스 버퍼 생성 실패" + static_cast<char>(m_owner->GetID()));
+	CheckResult(hr, "버텍스 버퍼 생성 실패" + static_cast<char>(m_owner->GetID()));
 }
 
 void ModelComponent::CreateIndexBuffer()
@@ -77,13 +78,12 @@ void ModelComponent::CreateIndexBuffer()
 		.SysMemSlicePitch = 0
 	};
 	hr = device->CreateBuffer(&bufferDesc, &initialData, m_indexBuffer.GetAddressOf());
-	Renderer::GetInstance().CheckResult(hr, "인덱스 버퍼 생성 실패" + static_cast<char>(m_owner->GetID()));
+	CheckResult(hr, "인덱스 버퍼 생성 실패" + static_cast<char>(m_owner->GetID()));
 }
 
 void ModelComponent::CreateShaders()
 {
-	Renderer& renderer = Renderer::GetInstance();
-
-	m_vertexShaderAndInputLayout = renderer.GetVertexShaderAndInputLayout(m_renderData.vsShaderName, m_renderData.m_inputElementDescs);
-	m_pixelShader = renderer.GetPixelShader(m_renderData.psShaderName);
+	RenderResourceManager& resourceManager = RenderResourceManager::GetInstance();
+	m_vertexShaderAndInputLayout = resourceManager.GetVertexShaderAndInputLayout(m_renderData.vsShaderName, m_renderData.m_inputElementDescs);
+	m_pixelShader = resourceManager.GetPixelShader(m_renderData.psShaderName);
 }

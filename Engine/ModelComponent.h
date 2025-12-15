@@ -30,7 +30,7 @@ class ModelComponent : public ComponentBase
 			1, 5, 6, 1, 6, 2,       // 오른쪽 면
 			4, 0, 3, 4, 3, 7        // 왼쪽 면
 		};
-		std::wstring vsShaderName = L"VSVertexColor.hlsl"; // 기본 버텍스 셰이더
+		std::string vsShaderName = "VSVertexColor.hlsl"; // 기본 버텍스 셰이더
 		std::vector<D3D11_INPUT_ELEMENT_DESC> m_inputElementDescs = // 입력 레이아웃 배열 // 기본값: Vertex 구조체에 맞춤
 		{
 			D3D11_INPUT_ELEMENT_DESC
@@ -54,7 +54,7 @@ class ModelComponent : public ComponentBase
 				.InstanceDataStepRate = 0
 			}
 		};
-		std::wstring psShaderName = L"PSVertexColor.hlsl"; // 기본 픽셀 셰이더
+		std::string psShaderName = "PSVertexColor.hlsl"; // 기본 픽셀 셰이더
 	};
 
 	// 렌더링 관련 멤버 변수
@@ -68,15 +68,15 @@ class ModelComponent : public ComponentBase
 public:
 	ModelComponent() = default;
 	~ModelComponent() override = default;
-	ModelComponent(const ModelComponent&) = delete;
-	ModelComponent& operator=(const ModelComponent&) = delete;
-	ModelComponent(ModelComponent&&) = delete;
-	ModelComponent& operator=(ModelComponent&&) = delete;
+	ModelComponent(const ModelComponent&) = default;
+	ModelComponent& operator=(const ModelComponent&) = default;
+	ModelComponent(ModelComponent&&) = default;
+	ModelComponent& operator=(ModelComponent&&) = default;
 
 	void Render();
 
 	void SetRenderData(const RenderData& renderData) { m_renderData = renderData; }
-	RenderData& GetRenderData() { return m_renderData; }
+	const RenderData& GetRenderData() const { return m_renderData; }
 
 protected:
 	void Begin() override;

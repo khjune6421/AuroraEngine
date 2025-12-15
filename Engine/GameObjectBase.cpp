@@ -1,10 +1,10 @@
 #include "stdafx.h"
 #include "GameObjectBase.h"
 
-#include "Renderer.h"
-
-#include "ModelComponent.h"
 #include "CameraComponent.h"
+#include "ModelComponent.h"
+#include "Renderer.h"
+#include "RenderResourceManager.h"
 
 using namespace std;
 using namespace DirectX;
@@ -118,7 +118,7 @@ void GameObjectBase::Scale(const XMFLOAT3& deltaScale)
 
 void GameObjectBase::Initialize()
 {
-	m_worldWVPConstantBuffer = Renderer::GetInstance().GetConstantBuffer(sizeof(WorldWVPBuffer));
+	m_worldWVPConstantBuffer = RenderResourceManager::GetInstance().GetConstantBuffer(sizeof(WorldWVPBuffer));
 
 	Begin();
 }

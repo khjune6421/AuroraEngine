@@ -1,5 +1,6 @@
 # Visual Studio files
 .vs/
+vcpkg_installed/
 *.user
 *.suo
 *.sdf

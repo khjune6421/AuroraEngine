@@ -1,6 +1,8 @@
 #include "stdafx.h"
 #include "Renderer.h"
 
+#include "RenderResourceManager.h"
+
 using namespace std;
 using namespace DirectX;
 
@@ -9,11 +11,9 @@ void Renderer::Initialize(HWND hWnd)
 	CreateDeviceAndContext();
 	CreateSwapChain(hWnd);
 	CreateBackBufferRenderTarget();
-	CreateBackBufferVertexBufferAndShaders();
+	CreateBackBufferResources();
 	CreateSceneRenderTarget();
 	SetViewport();
-	CreateRasterStates();
-	CreateSamplerStates();
 }
 
 void Renderer::BeginFrame(const array<FLOAT, 4>& clearColor)
@@ -21,8 +21,7 @@ void Renderer::BeginFrame(const array<FLOAT, 4>& clearColor)
 	HRESULT hr = S_OK;
 
 	// 래스터 상태 변경
-	hr = SetRasterState(RSSolid);
-	CheckResult(hr, "래스터 상태 설정 실패.");
+	m_deviceContext->RSSetState(m_sceneRasterState.Get());
 
 	// 씬 렌더 타겟으로 설정
 	m_deviceContext->OMSetRenderTargets(1, m_sceneBuffer.renderTargetView.GetAddressOf(), m_sceneBuffer.depthStencilView.Get());
@@ -39,7 +38,7 @@ void Renderer::EndFrame()
 	ResolveSceneMSAA();
 
 	// 래스터 상태 변경
-	hr = SetRasterState(RSBackBuffer);
+	m_deviceContext->RSSetState(m_backBufferRasterState.Get());
 
 	// 백 버퍼로 씬 렌더링
 	RenderSceneToBackBuffer();
@@ -84,111 +83,6 @@ HRESULT Renderer::Resize(UINT width, UINT height)
 	return hr;
 }
 
-HRESULT Renderer::SetRasterState(RasterState state)
-{
-	if (state >= RSCount) return E_INVALIDARG;
-	if (m_rasterState == state) return S_OK;
-
-	m_rasterState = state;
-	m_deviceContext->RSSetState(m_rasterStates[state].Get());
-
-	return S_OK;
-}
-
-com_ptr<ID3D11Buffer> Renderer::GetConstantBuffer(UINT bufferSize)
-{
-	// 기존에 생성된 상수 버퍼가 있으면 재사용
-	auto it = m_constantBuffers.find(bufferSize);
-	if (it != m_constantBuffers.end()) return it->second;
-
-	HRESULT hr = S_OK;
-
-	com_ptr<ID3D11Buffer> constantBuffer = nullptr;
-	const D3D11_BUFFER_DESC bufferDesc =
-	{
-		.ByteWidth = bufferSize,
-		.Usage = D3D11_USAGE_DEFAULT,
-		.BindFlags = D3D11_BIND_CONSTANT_BUFFER,
-		.CPUAccessFlags = 0,
-		.MiscFlags = 0,
-		.StructureByteStride = 0
-	};
-	hr = m_device->CreateBuffer(&bufferDesc, nullptr, constantBuffer.GetAddressOf());
-	CheckResult(hr, "상수 버퍼 생성 실패.");
-
-	m_constantBuffers[bufferSize] = constantBuffer;
-
-	return constantBuffer;
-}
-
-pair<com_ptr<ID3D11VertexShader>, com_ptr<ID3D11InputLayout>> Renderer::GetVertexShaderAndInputLayout(wstring shaderName, const vector<D3D11_INPUT_ELEMENT_DESC>& inputElementDescs)
-{
-	// 기존에 생성된 셰이더 및 입력 레이아웃이 있으면 재사용
-	auto it = m_vertexShadersAndInputLayouts.find(shaderName);
-	if (it != m_vertexShadersAndInputLayouts.end()) return it->second;
-
-	HRESULT hr = S_OK;
-
-	// 버텍스 셰이더 컴파일
-	com_ptr<ID3DBlob> VSCode = CompileShader(filesystem::path(shaderName), "vs_5_0");
-	hr = m_device->CreateVertexShader
-	(
-		VSCode->GetBufferPointer(),
-		VSCode->GetBufferSize(),
-		nullptr,
-		m_vertexShadersAndInputLayouts[shaderName].first.GetAddressOf()
-	);
-	CheckResult(hr, "버텍스 셰이더 생성 실패.");
-
-	// 입력 레이아웃 생성
-	hr = m_device->CreateInputLayout
-	(
-		inputElementDescs.data(),
-		static_cast<UINT>(inputElementDescs.size()),
-		VSCode->GetBufferPointer(),
-		VSCode->GetBufferSize(),
-		m_vertexShadersAndInputLayouts[shaderName].second.GetAddressOf()
-	);
-	CheckResult(hr, "입력 레이아웃 생성 실패.");
-
-	return m_vertexShadersAndInputLayouts[shaderName];
-}
-
-com_ptr<ID3D11PixelShader> Renderer::GetPixelShader(wstring shaderName)
-{
-	// 기존에 생성된 픽셀 셰이더가 있으면 재사용
-	auto it = m_pixelShaders.find(shaderName);
-	if (it != m_pixelShaders.end()) return it->second;
-
-	HRESULT hr = S_OK;
-
-	// 픽셀 셰이더 컴파일
-	com_ptr<ID3DBlob> PSCode = CompileShader(filesystem::path(shaderName), "ps_5_0");
-	hr = m_device->CreatePixelShader
-	(
-		PSCode->GetBufferPointer(),
-		PSCode->GetBufferSize(),
-		nullptr,
-		m_pixelShaders[shaderName].GetAddressOf()
-	);
-	CheckResult(hr, "픽셀 셰이더 생성 실패.");
-
-	return m_pixelShaders[shaderName];
-}
-
-void Renderer::CheckResult(HRESULT hr, const char* msg) const
-{
-	if (FAILED(hr))
-	{
-		#ifdef _DEBUG
-		cerr << msg << " 렌더러 에러 코드: " << hex << hr << endl;
-		#else
-		MessageBoxA(nullptr, msg, "렌더러 오류", MB_OK | MB_ICONERROR);
-		#endif
-		exit(EXIT_FAILURE);
-	}
-}
-
 void Renderer::CreateDeviceAndContext()
 {
 	HRESULT hr = S_OK;
@@ -211,6 +105,9 @@ void Renderer::CreateDeviceAndContext()
 		m_deviceContext.GetAddressOf()
 	);
 	CheckResult(hr, "디바이스 및 디바이스 컨텍스트 생성 실패.");
+
+	// RenderResourceManager 초기화
+	RenderResourceManager::GetInstance().Initialize(m_device);
 }
 
 void Renderer::CreateSwapChain(HWND hWnd)
@@ -262,7 +159,7 @@ void Renderer::CreateBackBufferRenderTarget()
 	CheckResult(hr, "렌더 타겟 뷰 생성 실패.");
 }
 
-void Renderer::CreateBackBufferVertexBufferAndShaders()
+void Renderer::CreateBackBufferResources()
 {
 	HRESULT hr = S_OK;
 
@@ -309,11 +206,16 @@ void Renderer::CreateBackBufferVertexBufferAndShaders()
 			.InstanceDataStepRate = 0
 		}
 	};
-	// 버텍스 셰이더 및 입력 레이아웃 생성
-	m_backBufferVertexShaderAndInputLayout = GetVertexShaderAndInputLayout(L"VSPostProcessing.hlsl", inputElementDescs);
 
+	RenderResourceManager& resourceManager = RenderResourceManager::GetInstance();
+	// 래스터 상태 생성
+	m_backBufferRasterState = resourceManager.GetRasterState(RSBackBuffer);
+	// 샘플러 상태 생성
+	m_backBufferSamplerState = resourceManager.GetSamplerState(SSBackBuffer);
+	// 버텍스 셰이더 및 입력 레이아웃 생성
+	m_backBufferVertexShaderAndInputLayout = resourceManager.GetVertexShaderAndInputLayout("VSPostProcessing.hlsl", inputElementDescs);
 	// 픽셀 셰이더 컴파일 및 생성
-	m_backBufferPixelShader = GetPixelShader(L"PSPostProcessing.hlsl");
+	m_backBufferPixelShader = resourceManager.GetPixelShader("PSPostProcessing.hlsl");
 }
 
 void Renderer::CreateSceneRenderTarget()
@@ -403,6 +305,10 @@ void Renderer::CreateSceneRenderTarget()
 	};
 	hr = m_device->CreateShaderResourceView(m_sceneResultTexture.Get(), &srvDesc, m_sceneShaderResourceView.GetAddressOf());
 	CheckResult(hr, "씬 셰이더 리소스 뷰 생성 실패.");
+
+	RenderResourceManager& resourceManager = RenderResourceManager::GetInstance();
+	// 래스터 상태 생성
+	m_sceneRasterState = resourceManager.GetRasterState(RSSolid);
 }
 
 void Renderer::SetViewport()
@@ -417,112 +323,6 @@ void Renderer::SetViewport()
 		.MaxDepth = 1.0f
 	};
 	m_deviceContext->RSSetViewports(1, &viewport);
-}
-
-void Renderer::CreateRasterStates()
-{
-	HRESULT hr = S_OK;
-
-	constexpr array<D3D11_RASTERIZER_DESC, RSCount> rasterDescTemplates =
-	{
-		// RSBackBuffer
-		D3D11_RASTERIZER_DESC
-		{
-			.FillMode = D3D11_FILL_SOLID, // 실선 채우기
-			.CullMode = D3D11_CULL_NONE, // 면 컬링 없음
-			.FrontCounterClockwise = FALSE, // 시계방향이 앞면
-			.DepthBias = 0, // 깊이 바이어스 없음
-			.DepthBiasClamp = 0.0f, // 깊이 바이어스 클램프 없음
-			.SlopeScaledDepthBias = 0.0f, // 기울기 기반 깊이 바이어스 없음
-			.DepthClipEnable = TRUE, // 깊이 클리핑 활성화
-			.ScissorEnable = FALSE, // 가위 영역 비활성화
-			.MultisampleEnable = FALSE, // 멀티샘플링 비활성화
-			.AntialiasedLineEnable = FALSE // 앤티앨리어싱 선 비활성화
-		},
-
-		// RSSolid
-		D3D11_RASTERIZER_DESC
-		{
-			.FillMode = D3D11_FILL_SOLID,
-			.CullMode = D3D11_CULL_BACK,
-			.FrontCounterClockwise = FALSE,
-			.DepthBias = 0,
-			.DepthBiasClamp = 0.0f,
-			.SlopeScaledDepthBias = 0.0f,
-			.DepthClipEnable = TRUE,
-			.ScissorEnable = FALSE,
-			.MultisampleEnable = TRUE,
-			.AntialiasedLineEnable = TRUE
-		},
-
-		// RSWireframe
-		D3D11_RASTERIZER_DESC
-		{
-			.FillMode = D3D11_FILL_WIREFRAME,
-			.CullMode = D3D11_CULL_BACK,
-			.FrontCounterClockwise = FALSE,
-			.DepthBias = 0,
-			.DepthBiasClamp = 0.0f,
-			.SlopeScaledDepthBias = 0.0f,
-			.DepthClipEnable = TRUE,
-			.ScissorEnable = FALSE,
-			.MultisampleEnable = TRUE,
-			.AntialiasedLineEnable = TRUE
-		}
-	};
-
-	for (size_t i = 0; i < rasterDescTemplates.size(); ++i)
-	{
-		hr = m_device->CreateRasterizerState(&rasterDescTemplates[i], m_rasterStates[i].GetAddressOf());
-		CheckResult(hr, "래스터 상태 생성 실패.");
-	}
-
-	hr = SetRasterState(m_rasterState);
-	CheckResult(hr, "초기 래스터 상태 설정 실패.");
-}
-
-void Renderer::CreateSamplerStates()
-{
-	HRESULT hr = S_OK;
-
-	constexpr array<D3D11_SAMPLER_DESC, SSCount> samplerDescTemplates =
-	{
-		// SSBackBuffer
-		D3D11_SAMPLER_DESC
-		{
-			.Filter = D3D11_FILTER_MIN_MAG_MIP_LINEAR, // 선형 필터링
-			.AddressU = D3D11_TEXTURE_ADDRESS_CLAMP, // U 좌표 클램핑
-			.AddressV = D3D11_TEXTURE_ADDRESS_CLAMP, // V 좌표 클램핑
-			.AddressW = D3D11_TEXTURE_ADDRESS_CLAMP, // W 좌표 클램핑
-			.MipLODBias = 0.0f, // 밉 LOD 바이어스 없음
-			.MaxAnisotropy = 1, // 이방성 필터링 없음
-			.ComparisonFunc = D3D11_COMPARISON_NEVER, // 비교 함수 없음
-			.BorderColor = { 0.0f, 0.0f, 0.0f, 0.0f }, // 테두리 색상 (사용 안 함)
-			.MinLOD = 0, // 최소 LOD
-			.MaxLOD = D3D11_FLOAT32_MAX // 최대 LOD
-		},
-
-		// SSScene
-		D3D11_SAMPLER_DESC
-		{
-			.Filter = D3D11_FILTER_ANISOTROPIC, // 이방성 필터링
-			.AddressU = D3D11_TEXTURE_ADDRESS_WRAP, // U 좌표 래핑
-			.AddressV = D3D11_TEXTURE_ADDRESS_WRAP, // V 좌표 래핑
-			.AddressW = D3D11_TEXTURE_ADDRESS_WRAP, // W 좌표 래핑
-			.MipLODBias = 0.0f,
-			.MaxAnisotropy = 8, // 최대 이방성 필터링
-			.ComparisonFunc = D3D11_COMPARISON_NEVER,
-			.BorderColor = { 0.0f, 0.0f, 0.0f, 0.0f },
-			.MinLOD = 0,
-			.MaxLOD = D3D11_FLOAT32_MAX
-		}
-	};
-
-	for (size_t i = 0; i < samplerDescTemplates.size(); ++i)
-	{
-		hr = m_device->CreateSamplerState(&samplerDescTemplates[i], m_samplerStates[i].GetAddressOf());
-		CheckResult(hr, "샘플러 상태 생성 실패.");
-	}
 }
 
 void Renderer::ClearRenderTarget(RenderTarget& target, const array<FLOAT, 4>& clearColor)
@@ -562,36 +362,7 @@ void Renderer::RenderSceneToBackBuffer()
 	m_deviceContext->PSSetShader(m_backBufferPixelShader.Get(), nullptr, 0);
 
 	m_deviceContext->PSSetShaderResources(0, 1, m_sceneShaderResourceView.GetAddressOf());
-	m_deviceContext->PSSetSamplers(0, 1, m_samplerStates[SSBackBuffer].GetAddressOf());
+	m_deviceContext->PSSetSamplers(0, 1, m_backBufferSamplerState.GetAddressOf());
 
 	m_deviceContext->Draw(3, 0);
-}
-
-com_ptr<ID3DBlob> Renderer::CompileShader(filesystem::path shaderName, const char* shaderModel)
-{
-	HRESULT hr = S_OK;
-
-	const filesystem::path shaderPath = L"../Asset/Shader/" / shaderName;
-	com_ptr<ID3DBlob> shaderCode = nullptr;
-	com_ptr<ID3DBlob> errorBlob = nullptr;
-
-	hr = D3DCompileFromFile
-	(
-		shaderPath.wstring().c_str(),
-		nullptr,
-		D3D_COMPILE_STANDARD_FILE_INCLUDE,
-		"main",
-		shaderModel,
-		#ifdef _DEBUG
-		D3DCOMPILE_PACK_MATRIX_COLUMN_MAJOR | D3DCOMPILE_DEBUG | D3DCOMPILE_SKIP_OPTIMIZATION,
-		#else
-		D3DCOMPILE_PACK_MATRIX_COLUMN_MAJOR | D3DCOMPILE_OPTIMIZATION_LEVEL3,
-		#endif
-		0,
-		shaderCode.GetAddressOf(),
-		errorBlob.GetAddressOf()
-	);
-	if (errorBlob) cerr << shaderName.string() << " 셰이더 컴파일 오류: " << static_cast<const char*>(errorBlob->GetBufferPointer()) << endl;
-
-	return shaderCode;
 }
