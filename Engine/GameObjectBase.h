@@ -5,6 +5,8 @@ class Renderer;
 
 class GameObjectBase // TODO: 부모-자식 관계 구현
 {
+	friend class SceneBase;
+
 	UINT m_id = 0; // 디버깅용 고유 ID
 
 	// 변환 관련 멤버 뱐수
@@ -30,26 +32,12 @@ class GameObjectBase // TODO: 부모-자식 관계 구현
 	std::unordered_map<std::type_index, std::unique_ptr<ComponentBase>> m_components = {}; // 컴포넌트 맵
 
 public:
-	GameObjectBase();
-	virtual ~GameObjectBase() { End(); }
-	GameObjectBase(const GameObjectBase&) = delete;
-	GameObjectBase& operator=(const GameObjectBase&) = delete;
-	GameObjectBase(GameObjectBase&&) = default;
-	GameObjectBase& operator=(GameObjectBase&&) = delete;
-
-	// 게임 오브젝트 초기화 // 씬이 AddGameObject에서 호출 // 가능하면 다른 곳에서 호출하지 말 것
-	void Initialize();
-	// 월드 행렬 갱신 // 씬이 TransformGameObjects에서 호출 // 가능하면 다른 곳에서 호출하지 말 것
-	void UpdateWorldMatrix();
-	// 렌더링 // 씬이 Render에서 호출 // 가능하면 다른 곳에서 호출하지 말 것
-	void Render(DirectX::XMMATRIX viewMatrix, DirectX::XMMATRIX projectionMatrix);
-
-	// 게임 오브젝트 Initialize에서 호출 // 가능하면 다른 곳에서 호출하지 말 것
-	virtual void Begin() {}
-	// 매 프레임 씬 Render에서 호출 // 가능하면 다른 곳에서 호출하지 말 것
-	virtual void Update(float deltaTime) {}
-	// 게임 오브젝트 소멸자가 호출 // 가능하면 다른 곳에서 호출하지 말 것
-	virtual void End() {}
+	GameObjectBase(); // 무조건 CreateGameObject로 생성
+	virtual ~GameObjectBase() = default;
+	GameObjectBase(const GameObjectBase&) = delete; // 복사 금지
+	GameObjectBase& operator=(const GameObjectBase&) = delete; // 복사 대입 금지
+	GameObjectBase(GameObjectBase&&) = default; // 이동 허용
+	GameObjectBase& operator=(GameObjectBase&&) = delete; // 이동 대입 금지
 
 	UINT GetID() const { return m_id; }
 	// 변환 관련 함수
@@ -95,30 +83,50 @@ public:
 	template<typename T>
 	void RemoveComponent(); // 컴포넌트 제거
 
+protected:
+	// 게임 오브젝트 Initialize에서 호출
+	virtual void Begin() {}
+	// 매 프레임 씬 Render에서 호출
+	virtual void Update(float deltaTime) {}
+	// 게임 오브젝트 소멸자가 호출
+	virtual void End() {}
+
 private:
 	void SetDirty() { m_isDirty = true; } // 위치 갱신 필요로 설정
+
+	// 게임 오브젝트 초기화 // 씬이 CreateGameObject에서 호출
+	void Initialize();
+	// 월드 행렬 갱신 // 씬이 TransformGameObjects에서 호출
+	void UpdateWorldMatrix();
+	// 렌더링 // 씬이 Render에서 호출
+	void Render(DirectX::XMMATRIX viewMatrix, DirectX::XMMATRIX projectionMatrix);
+	// 게임 오브젝트 종료 // 씬이 Finalize에서 호출
+	void Finalize();
 };
 
-template<typename T, typename... Args>
-T* GameObjectBase::AddComponent(Args&&... args)
+template<typename T, typename ...Args>
+inline T* GameObjectBase::AddComponent(Args && ...args)
 {
 	auto component = std::make_unique<T>(std::forward<Args>(args)...);
+
 	component->Initialize(this);
 	T* componentPtr = component.get();
 	m_components[std::type_index(typeid(T))] = std::move(component);
+
 	return componentPtr;
 }
 
 template<typename T>
-T* GameObjectBase::GetComponent()
+inline T* GameObjectBase::GetComponent()
 {
 	auto it = m_components.find(std::type_index(typeid(T)));
 	if (it != m_components.end()) return static_cast<T*>(it->second.get());
+
 	return nullptr;
 }
 
 template<typename T>
-void GameObjectBase::RemoveComponent()
+inline void GameObjectBase::RemoveComponent()
 {
 	auto it = m_components.find(std::type_index(typeid(T)));
 	if (it != m_components.end()) m_components.erase(it);

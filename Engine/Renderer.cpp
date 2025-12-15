@@ -4,10 +4,6 @@
 using namespace std;
 using namespace DirectX;
 
-Renderer::~Renderer()
-{
-}
-
 void Renderer::Initialize(HWND hWnd)
 {
 	CreateDeviceAndContext();
@@ -178,35 +174,6 @@ com_ptr<ID3D11PixelShader> Renderer::GetPixelShader(wstring shaderName)
 	CheckResult(hr, "픽셀 셰이더 생성 실패.");
 
 	return m_pixelShaders[shaderName];
-}
-
-com_ptr<ID3DBlob> Renderer::CompileShader(filesystem::path shaderName, const char* shaderModel)
-{
-	HRESULT hr = S_OK;
-
-	const filesystem::path shaderPath = L"../Asset/Shader/" / shaderName;
-	com_ptr<ID3DBlob> shaderCode = nullptr;
-	com_ptr<ID3DBlob> errorBlob = nullptr;
-
-	hr = D3DCompileFromFile
-	(
-		shaderPath.wstring().c_str(),
-		nullptr,
-		D3D_COMPILE_STANDARD_FILE_INCLUDE,
-		"main",
-		shaderModel,
-		#ifdef _DEBUG
-		D3DCOMPILE_PACK_MATRIX_COLUMN_MAJOR | D3DCOMPILE_DEBUG | D3DCOMPILE_SKIP_OPTIMIZATION,
-		#else
-		D3DCOMPILE_PACK_MATRIX_COLUMN_MAJOR | D3DCOMPILE_OPTIMIZATION_LEVEL3,
-		#endif
-		0,
-		shaderCode.GetAddressOf(),
-		errorBlob.GetAddressOf()
-	);
-	if (errorBlob) cerr << shaderName.string() << " 셰이더 컴파일 오류: " << static_cast<const char*>(errorBlob->GetBufferPointer()) << endl;
-
-	return shaderCode;
 }
 
 void Renderer::CheckResult(HRESULT hr, const char* msg) const
@@ -598,4 +565,33 @@ void Renderer::RenderSceneToBackBuffer()
 	m_deviceContext->PSSetSamplers(0, 1, m_samplerStates[SSBackBuffer].GetAddressOf());
 
 	m_deviceContext->Draw(3, 0);
+}
+
+com_ptr<ID3DBlob> Renderer::CompileShader(filesystem::path shaderName, const char* shaderModel)
+{
+	HRESULT hr = S_OK;
+
+	const filesystem::path shaderPath = L"../Asset/Shader/" / shaderName;
+	com_ptr<ID3DBlob> shaderCode = nullptr;
+	com_ptr<ID3DBlob> errorBlob = nullptr;
+
+	hr = D3DCompileFromFile
+	(
+		shaderPath.wstring().c_str(),
+		nullptr,
+		D3D_COMPILE_STANDARD_FILE_INCLUDE,
+		"main",
+		shaderModel,
+		#ifdef _DEBUG
+		D3DCOMPILE_PACK_MATRIX_COLUMN_MAJOR | D3DCOMPILE_DEBUG | D3DCOMPILE_SKIP_OPTIMIZATION,
+		#else
+		D3DCOMPILE_PACK_MATRIX_COLUMN_MAJOR | D3DCOMPILE_OPTIMIZATION_LEVEL3,
+		#endif
+		0,
+		shaderCode.GetAddressOf(),
+		errorBlob.GetAddressOf()
+	);
+	if (errorBlob) cerr << shaderName.string() << " 셰이더 컴파일 오류: " << static_cast<const char*>(errorBlob->GetBufferPointer()) << endl;
+
+	return shaderCode;
 }

@@ -137,6 +137,7 @@
     <ClInclude Include="ModelComponent.h" />
     <ClInclude Include="Renderer.h" />
     <ClInclude Include="SceneBase.h" />
+    <ClInclude Include="SceneManager.h" />
     <ClInclude Include="SingletonBase.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="WindowManager.h" />
@@ -148,6 +149,7 @@
     <ClCompile Include="ModelComponent.cpp" />
     <ClCompile Include="Renderer.cpp" />
     <ClCompile Include="SceneBase.cpp" />
+    <ClCompile Include="SceneManager.cpp" />
     <ClCompile Include="WindowManager.cpp" />
   </ItemGroup>
   <ItemGroup>

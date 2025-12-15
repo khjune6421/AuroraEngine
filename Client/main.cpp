@@ -2,6 +2,7 @@
 
 #include "WindowManager.h"
 #include "Renderer.h"
+#include "SceneManager.h"
 
 #include "TestScene.h"
 
@@ -12,13 +13,8 @@ int main()
 
 	Renderer::GetInstance().Initialize(windowManager.GetHWnd());
 
-	TestScene testScene;
-	testScene.Initialize();
+	SceneManager& sceneManager = SceneManager::GetInstance();
+	sceneManager.ChangeScene<TestScene>();
 
-	while (windowManager.ProcessMessages())
-	{
-		testScene.Update(0.015f);
-		testScene.TransformGameObjects();
-		testScene.Render();
-	};
+	while (windowManager.ProcessMessages()) sceneManager.Run();
 }

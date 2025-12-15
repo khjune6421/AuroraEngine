@@ -1,10 +1,29 @@
 #include "stdafx.h"
 #include "SceneBase.h"
 
+#include "CameraComponent.h"
 #include "Renderer.h"
 
 using namespace std;
 using namespace DirectX;
+
+GameObjectBase* SceneBase::CreateCameraObject()
+{
+	GameObjectBase* cameraGameObject = CreateGameObject<GameObjectBase>();
+	cameraGameObject->SetPosition({ 0.0f, 5.0f, -10.0f, 1.0f });
+	cameraGameObject->LookAt({ 0.0f, 0.0f, 0.0f, 1.0f });
+
+	return cameraGameObject;
+}
+
+void SceneBase::RemoveGameObject(GameObjectBase* gameObject)
+{
+	auto it = find_if(m_gameObjects.begin(), m_gameObjects.end(), [gameObject](const unique_ptr<GameObjectBase>& obj) { return obj.get() == gameObject; });
+	if (it == m_gameObjects.end()) return;
+
+	it->get()->Finalize();
+	m_gameObjects.erase(it);
+}
 
 void SceneBase::Initialize()
 {
@@ -41,20 +60,7 @@ void SceneBase::Render()
 	renderer.EndFrame();
 }
 
-GameObjectBase* SceneBase::CreateCameraObject()
+void SceneBase::Finalize()
 {
-	unique_ptr<GameObjectBase> cameraGameObject = make_unique<GameObjectBase>();
-	cameraGameObject->SetPosition({ 0.0f, 5.0f, -10.0f, 1.0f });
-	cameraGameObject->LookAt({ 0.0f, 0.0f, 0.0f, 1.0f });
-
-	return AddGameObject(move(cameraGameObject));
-}
-
-GameObjectBase* SceneBase::AddGameObject(unique_ptr<GameObjectBase> gameObject)
-{
-	gameObject->Initialize();
-	GameObjectBase* gameObjectPtr = gameObject.get();
-	m_gameObjects.push_back(move(gameObject));
-
-	return gameObjectPtr;
+	End();
 }

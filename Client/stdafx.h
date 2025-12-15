@@ -21,5 +21,8 @@
 #include <SimpleMath.h>
 #pragma comment(lib, "DirectXTK.lib")
 
+// 기타 사용자 정의 헤더
+#include "SingletonBase.h"
+
 // 메크로 정의
 #define com_ptr Microsoft::WRL::ComPtr
