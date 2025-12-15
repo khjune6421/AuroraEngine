@@ -3,6 +3,7 @@
 
 #include "CameraComponent.h"
 #include "Renderer.h"
+#include "RenderResourceManager.h"
 
 using namespace std;
 using namespace DirectX;
@@ -27,7 +28,7 @@ void SceneBase::RemoveGameObject(GameObjectBase* gameObject)
 
 void SceneBase::Initialize()
 {
-	m_viewProjectionConstantBuffer = Renderer::GetInstance().GetConstantBuffer(sizeof(ViewProjectionBuffer));
+	m_viewProjectionConstantBuffer = RenderResourceManager::GetInstance().GetConstantBuffer(sizeof(ViewProjectionBuffer));
 	m_mainCamera = CreateCameraObject()->AddComponent<CameraComponent>();
 
 	Begin();

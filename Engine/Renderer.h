@@ -41,6 +41,8 @@ class Renderer : public SingletonBase<Renderer>
 	};
 
 	RenderTarget m_backBuffer; // 백 버퍼 렌더 타겟 // 화면에 출력되는 버퍼 // UI만을 직접적으로 랜더
+	com_ptr<ID3D11RasterizerState> m_backBufferRasterState = nullptr; // 백 버퍼용 래스터 상태
+	com_ptr<ID3D11SamplerState> m_backBufferSamplerState = nullptr; // 백 버퍼용 샘플러 상태
 	struct BackBufferVertex
 	{
 		DirectX::XMFLOAT4 position = {};
@@ -50,34 +52,12 @@ class Renderer : public SingletonBase<Renderer>
 	std::pair<com_ptr<ID3D11VertexShader>, com_ptr<ID3D11InputLayout>> m_backBufferVertexShaderAndInputLayout = {}; // 백 버퍼용 버텍스 셰이더 및 입력 레이아웃
 	com_ptr<ID3D11PixelShader> m_backBufferPixelShader = nullptr; // 백 버퍼용 후처리 픽셀 셰이더
 
-	DXGI_SAMPLE_DESC m_sceneBufferSampleDesc = { 4, 0 }; // 백 버퍼 샘플링 설정 // count <=1: FXAA, count>1: MSAA // FXAA는 아직 없음
+	DXGI_SAMPLE_DESC m_sceneBufferSampleDesc = { 4, 0 }; // 씬 렌더 타겟용 샘플 설명 // 멀티샘플링 설정
 	RenderTarget m_sceneBuffer; // 씬 렌더 타겟 // 실제 게임 씬을 랜더링하는 버퍼
+	com_ptr<ID3D11RasterizerState> m_sceneRasterState = nullptr; // 씬 렌더 타겟용 래스터 상태
+	com_ptr<ID3D11SamplerState> m_sceneSamplerState = nullptr; // 씬 렌더 타겟용 샘플러 상태
 	com_ptr<ID3D11Texture2D> m_sceneResultTexture = nullptr; // 씬 렌더 타겟의 결과 텍스처 // MSAA 다운샘플링 후 결과 저장
 	com_ptr<ID3D11ShaderResourceView> m_sceneShaderResourceView = nullptr; // 씬 렌더 타겟의 셰이더 리소스 뷰 // 백 버퍼에 적용하면서 후처리됨
-
-	enum RasterState
-	{
-		RSBackBuffer, // 백 버퍼 전용 래스터 상태 // AA 없음
-		RSSolid,
-		RSWireframe,
-
-		RSCount
-	};
-	RasterState m_rasterState = RSSolid;
-	std::array<com_ptr<ID3D11RasterizerState>, RSCount> m_rasterStates = {}; // 래스터 상태 배열
-
-	enum SamplerState
-	{
-		SSBackBuffer, // 백 버퍼 전용 샘플러 상태
-		SSScene,
-
-		SSCount
-	};
-	std::array<com_ptr<ID3D11SamplerState>, SSCount> m_samplerStates = {}; // 샘플러 상태 배열
-
-	std::unordered_map<UINT, com_ptr<ID3D11Buffer>> m_constantBuffers = {}; // 상수 버퍼 맵 // 키: 버퍼 크기
-	std::unordered_map<std::wstring, std::pair<com_ptr<ID3D11VertexShader>, com_ptr<ID3D11InputLayout>>> m_vertexShadersAndInputLayouts = {}; // 버텍스 셰이더 및 입력 레이아웃 맵 // 키: 셰이더 파일 이름
-	std::unordered_map<std::wstring, com_ptr<ID3D11PixelShader>> m_pixelShaders = {}; // 픽셀 셰이더 맵 // 키: 셰이더 파일 이름
 
 public:
 	Renderer() = default;
@@ -108,20 +88,6 @@ public:
 	// 스왑 체인 설정 조회
 	const DXGI_SWAP_CHAIN_DESC1& GetSwapChainDesc() const { return m_swapChainDesc; }
 
-	// 레스터 상태 설정 및 조회
-	HRESULT SetRasterState(RasterState state);
-	RasterState GetRasterState() const { return m_rasterState; }
-
-	// 헬퍼 함수
-	// 상수 버퍼 얻기 // 이미 생성된 버퍼가 있으면 재사용 // 없으면 새로 생성
-	com_ptr<ID3D11Buffer> GetConstantBuffer(UINT bufferSize);
-	// 버텍스 셰이더 및 입력 레이아웃 얻기
-	std::pair<com_ptr<ID3D11VertexShader>, com_ptr<ID3D11InputLayout>> GetVertexShaderAndInputLayout(std::wstring shaderName, const std::vector<D3D11_INPUT_ELEMENT_DESC>& inputElementDescs);
-	// 픽셀 셰이더 얻기
-	com_ptr<ID3D11PixelShader> GetPixelShader(std::wstring shaderName);
-	// HRESULT 결과 확인
-	void CheckResult(HRESULT hr, const char* msg) const;
-
 private:
 	// 초기화 함수
 	// 디바이스 및 디바이스 컨텍스트 생성
@@ -136,10 +102,6 @@ private:
 	void CreateSceneRenderTarget();
 	// 뷰포트 설정
 	void SetViewport();
-	// 래스터 상태 생성
-	void CreateRasterStates();
-	// 샘플러 상태 생성
-	void CreateSamplerStates();
 
 	// 랜더링 파이프라인 함수
 	// 렌더 타겟 클리어
@@ -148,8 +110,4 @@ private:
 	void ResolveSceneMSAA();
 	// 백 버퍼 랜더링
 	void RenderSceneToBackBuffer();
-
-	// 헬퍼 함수
-	// 셰이더 컴파일 함수
-	com_ptr<ID3DBlob> CompileShader(std::filesystem::path shaderName, const char* shaderModel);
 };
