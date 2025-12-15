@@ -76,7 +76,7 @@ public:
 	void Render();
 
 	void SetRenderData(const RenderData& renderData) { m_renderData = renderData; }
-	RenderData& GetRenderData() { return m_renderData; }
+	const RenderData& GetRenderData() const { return m_renderData; }
 
 protected:
 	void Begin() override;

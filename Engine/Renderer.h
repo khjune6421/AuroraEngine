@@ -103,9 +103,10 @@ public:
 	// 화면 크기 조정
 	HRESULT Resize(UINT width, UINT height);
 
-	// 스왑 체인 설정 조회
+	// 스왑 체인 설정 변경
 	void SetSwapChainDesc(const DXGI_SWAP_CHAIN_DESC1& desc) { m_swapChainDesc = desc; }
-	void GetSwapChainDesc(_Out_ DXGI_SWAP_CHAIN_DESC1& desc) const { desc = m_swapChainDesc; }
+	// 스왑 체인 설정 조회
+	const DXGI_SWAP_CHAIN_DESC1& GetSwapChainDesc() const { return m_swapChainDesc; }
 
 	// 레스터 상태 설정 및 조회
 	HRESULT SetRasterState(RasterState state);
