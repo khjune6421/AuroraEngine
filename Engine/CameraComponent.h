@@ -17,10 +17,10 @@ class CameraComponent : public ComponentBase
 public:
 	CameraComponent() = default;
 	~CameraComponent() override = default;
-	CameraComponent(const CameraComponent&) = delete;
-	CameraComponent& operator=(const CameraComponent&) = delete;
-	CameraComponent(CameraComponent&&) = delete;
-	CameraComponent& operator=(CameraComponent&&) = delete;
+	CameraComponent(const CameraComponent&) = default;
+	CameraComponent& operator=(const CameraComponent&) = default;
+	CameraComponent(CameraComponent&&) = default;
+	CameraComponent& operator=(CameraComponent&&) = default;
 
 	void SetFovY(float fovY) { m_fovY = fovY; UpdateProjectionMatrix(); }
 	void SetScreenSize(UINT width, UINT height) { m_screenWidth = width; m_screenHeight = height; UpdateProjectionMatrix(); }

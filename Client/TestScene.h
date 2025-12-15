@@ -1,5 +1,6 @@
 #pragma once
 #include "SceneBase.h"
+#include "TestCameraObject.h"
 
 class TestScene : public SceneBase
 {

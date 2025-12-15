@@ -34,10 +34,10 @@ class GameObjectBase // TODO: 부모-자식 관계 구현
 public:
 	GameObjectBase(); // 무조건 CreateGameObject로 생성
 	virtual ~GameObjectBase() = default;
-	GameObjectBase(const GameObjectBase&) = delete; // 복사 금지
-	GameObjectBase& operator=(const GameObjectBase&) = delete; // 복사 대입 금지
-	GameObjectBase(GameObjectBase&&) = default; // 이동 허용
-	GameObjectBase& operator=(GameObjectBase&&) = delete; // 이동 대입 금지
+	GameObjectBase(const GameObjectBase&) = default; // 복사
+	GameObjectBase& operator=(const GameObjectBase&) = default; // 복사 대입
+	GameObjectBase(GameObjectBase&&) = default; // 이동
+	GameObjectBase& operator=(GameObjectBase&&) = default; // 이동 대입
 
 	UINT GetID() const { return m_id; }
 	// 변환 관련 함수

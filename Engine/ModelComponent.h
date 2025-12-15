@@ -68,10 +68,10 @@ class ModelComponent : public ComponentBase
 public:
 	ModelComponent() = default;
 	~ModelComponent() override = default;
-	ModelComponent(const ModelComponent&) = delete;
-	ModelComponent& operator=(const ModelComponent&) = delete;
-	ModelComponent(ModelComponent&&) = delete;
-	ModelComponent& operator=(ModelComponent&&) = delete;
+	ModelComponent(const ModelComponent&) = default;
+	ModelComponent& operator=(const ModelComponent&) = default;
+	ModelComponent(ModelComponent&&) = default;
+	ModelComponent& operator=(ModelComponent&&) = default;
 
 	void Render();
 

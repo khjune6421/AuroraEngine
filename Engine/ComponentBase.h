@@ -12,10 +12,10 @@ protected:
 public:
 	ComponentBase() = default;
 	virtual ~ComponentBase() = default;
-	ComponentBase(const ComponentBase&) = delete; // 복사 금지
-	ComponentBase& operator=(const ComponentBase&) = delete; // 복사 대입 금지
-	ComponentBase(ComponentBase&&) = delete; // 이동 금지
-	ComponentBase& operator=(ComponentBase&&) = delete; // 이동 대입 금지
+	ComponentBase(const ComponentBase&) = default; // 복사
+	ComponentBase& operator=(const ComponentBase&) = default; // 복사 대입
+	ComponentBase(ComponentBase&&) = default; // 이동
+	ComponentBase& operator=(ComponentBase&&) = default; // 이동 대입
 
 protected:
 	// 컴포넌트 초기화 // ComponentBase의 Initialize에서 호출
