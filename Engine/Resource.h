@@ -114,6 +114,7 @@ struct Mesh
 {
 	std::vector<Vertex> vertices = {};
 	std::vector<UINT> indices = {};
+	UINT indexCount = 0;
 
 	BoundingBox boundingBox = {};
 

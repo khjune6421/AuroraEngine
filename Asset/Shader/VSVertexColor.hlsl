@@ -12,7 +12,9 @@ cbuffer WorldWVP : register(b1)
 struct VertexInput
 {
     float4 Position : POSITION;
-    float4 Color : COLOR0;
+    float3 Normal : NORMAL;
+    float3 Tangent : TANGENT;
+    float2 UV : TEXCOORD;
 };
 
 struct VertexOutput
@@ -27,7 +29,7 @@ VertexOutput main(VertexInput input)
     
     input.Position.w = 1.0f;
     output.Position = mul(input.Position, WVP);
-    output.Color = input.Color;
+    output.Color = float4(input.UV, 0.0f, 1.0f);
     
     return output;
 }

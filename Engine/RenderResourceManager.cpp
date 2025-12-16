@@ -99,7 +99,7 @@ const Model* RenderResourceManager::LoadModel(const string& fileName)
 
 	Assimp::Importer importer;
 
-	string fullPath = "../Asset/Model/" + fileName;
+	const string fullPath = "../Asset/Model/" + fileName;
 
 	const aiScene* scene = importer.ReadFile
 	(
@@ -205,6 +205,7 @@ Mesh RenderResourceManager::ProcessMesh(const aiMesh* mesh)
 		const aiFace& face = mesh->mFaces[i];
 		for (UINT j = 0; j < face.mNumIndices; ++j) resultMesh.indices.push_back(face.mIndices[j]);
 	}
+	resultMesh.indexCount = static_cast<UINT>(resultMesh.indices.size());
 
 	// 바운딩 박스 처리
 	resultMesh.boundingBox =
