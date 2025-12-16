@@ -96,6 +96,66 @@ constexpr std::array<D3D11_SAMPLER_DESC, SSCount> SAMPLER_DESC_TEMPLATES =
 	}
 };
 
+enum InputElement
+{
+	Position,
+	Normal,
+	Tangent,
+	UV,
+
+	InputElementCount
+};
+constexpr std::array<D3D11_INPUT_ELEMENT_DESC, InputElementCount> INPUT_ELEMENT_DESC_TEMPLATES =
+{
+	// Position
+	D3D11_INPUT_ELEMENT_DESC
+	{
+		.SemanticName = "POSITION",
+		.SemanticIndex = 0,
+		.Format = DXGI_FORMAT_R32G32B32A32_FLOAT, // float4
+		.InputSlot = 0,
+		.AlignedByteOffset = D3D11_APPEND_ALIGNED_ELEMENT, // 자동 오프셋 계산
+		.InputSlotClass = D3D11_INPUT_PER_VERTEX_DATA,
+		.InstanceDataStepRate = 0
+	},
+
+	// Normal
+	D3D11_INPUT_ELEMENT_DESC
+	{
+		.SemanticName = "NORMAL",
+		.SemanticIndex = 0,
+		.Format = DXGI_FORMAT_R32G32B32_FLOAT, // float3
+		.InputSlot = 0,
+		.AlignedByteOffset = D3D11_APPEND_ALIGNED_ELEMENT,
+		.InputSlotClass = D3D11_INPUT_PER_VERTEX_DATA,
+		.InstanceDataStepRate = 0
+	},
+
+	// Tangent
+	D3D11_INPUT_ELEMENT_DESC
+	{
+		.SemanticName = "TANGENT",
+		.SemanticIndex = 0,
+		.Format = DXGI_FORMAT_R32G32B32_FLOAT, // float3
+		.InputSlot = 0,
+		.AlignedByteOffset = D3D11_APPEND_ALIGNED_ELEMENT,
+		.InputSlotClass = D3D11_INPUT_PER_VERTEX_DATA,
+		.InstanceDataStepRate = 0
+	},
+
+	// UV
+	D3D11_INPUT_ELEMENT_DESC
+	{
+		.SemanticName = "TEXCOORD",
+		.SemanticIndex = 0,
+		.Format = DXGI_FORMAT_R32G32_FLOAT, // float2
+		.InputSlot = 0,
+		.AlignedByteOffset = D3D11_APPEND_ALIGNED_ELEMENT,
+		.InputSlotClass = D3D11_INPUT_PER_VERTEX_DATA,
+		.InstanceDataStepRate = 0
+	}
+};
+
 struct Vertex
 {
 	DirectX::XMFLOAT4 position = {};
@@ -104,7 +164,7 @@ struct Vertex
 	DirectX::XMFLOAT2 UV = {};
 };
 
-struct BoundingBox
+struct MeshBoundingBox
 {
 	DirectX::XMFLOAT3 min = {};
 	DirectX::XMFLOAT3 max = {};
@@ -116,7 +176,7 @@ struct Mesh
 	std::vector<UINT> indices = {};
 	UINT indexCount = 0;
 
-	BoundingBox boundingBox = {};
+	MeshBoundingBox boundingBox = {};
 
 	com_ptr<ID3D11Buffer> vertexBuffer = nullptr;
 	com_ptr<ID3D11Buffer> indexBuffer = nullptr;

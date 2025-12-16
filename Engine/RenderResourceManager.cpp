@@ -37,7 +37,7 @@ com_ptr<ID3D11Buffer> RenderResourceManager::GetConstantBuffer(UINT bufferSize)
 	return constantBuffer;
 }
 
-pair<com_ptr<ID3D11VertexShader>, com_ptr<ID3D11InputLayout>> RenderResourceManager::GetVertexShaderAndInputLayout(string shaderName, const vector<D3D11_INPUT_ELEMENT_DESC>& inputElementDescs)
+pair<com_ptr<ID3D11VertexShader>, com_ptr<ID3D11InputLayout>> RenderResourceManager::GetVertexShaderAndInputLayout(const string& shaderName, const vector<InputElement>& inputElements)
 {
 	// 기존에 생성된 셰이더 및 입력 레이아웃이 있으면 재사용
 	auto it = m_vertexShadersAndInputLayouts.find(shaderName);
@@ -57,6 +57,9 @@ pair<com_ptr<ID3D11VertexShader>, com_ptr<ID3D11InputLayout>> RenderResourceMana
 	CheckResult(hr, "정점 셰이더 생성 실패.");
 
 	// 입력 레이아웃 생성
+	vector<D3D11_INPUT_ELEMENT_DESC> inputElementDescs;
+	for (const auto& element : inputElements) inputElementDescs.push_back(INPUT_ELEMENT_DESC_TEMPLATES[element]);
+
 	hr = m_device->CreateInputLayout
 	(
 		inputElementDescs.data(),
@@ -70,7 +73,7 @@ pair<com_ptr<ID3D11VertexShader>, com_ptr<ID3D11InputLayout>> RenderResourceMana
 	return m_vertexShadersAndInputLayouts[shaderName];
 }
 
-com_ptr<ID3D11PixelShader> RenderResourceManager::GetPixelShader(string shaderName)
+com_ptr<ID3D11PixelShader> RenderResourceManager::GetPixelShader(const string& shaderName)
 {
 	// 기존에 생성된 픽셀 셰이더가 있으면 재사용
 	auto it = m_pixelShaders.find(shaderName);
@@ -263,7 +266,7 @@ void RenderResourceManager::CreateMeshBuffers(Mesh& mesh)
 	CheckResult(hr, "메쉬 인덱스 버퍼 생성 실패.");
 }
 
-com_ptr<ID3DBlob> RenderResourceManager::CompileShader(string shaderName, const char* shaderModel)
+com_ptr<ID3DBlob> RenderResourceManager::CompileShader(const string& shaderName, const char* shaderModel)
 {
 	HRESULT hr = S_OK;
 

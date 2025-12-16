@@ -1,5 +1,6 @@
 #pragma once
 #include "ComponentBase.h"
+#include "Resource.h"
 
 class ModelComponent : public ComponentBase
 {
@@ -8,51 +9,19 @@ class ModelComponent : public ComponentBase
 	std::pair<com_ptr<ID3D11VertexShader>, com_ptr<ID3D11InputLayout>> m_vertexShaderAndInputLayout = {}; // 정점 셰이더 및 입력 레이아웃
 	com_ptr<ID3D11PixelShader> m_pixelShader = nullptr; // 픽셀 셰이더
 
-	std::string m_vsShaderName = "VSVertexColor.hlsl"; // 기본 정점 셰이더
-	std::vector<D3D11_INPUT_ELEMENT_DESC> m_inputElementDescs = // 입력 레이아웃 배열 // 기본값: Vertex 구조체에 맞춤
+	std::string m_modelFileName = "box.fbx"; // 기본 모델 파일 이름
+
+	std::string m_vsShaderName = "VSModel.hlsl"; // 기본 모델 정점 셰이더
+	std::string m_psShaderName = "PSModel.hlsl"; // 기본 모델 픽셀 셰이더
+
+	// 입력 레이아웃 목록 // 위치, 노말, 접선, UV
+	std::vector<InputElement> m_inputElements =
 	{
-		D3D11_INPUT_ELEMENT_DESC
-		{
-			.SemanticName = "POSITION",
-			.SemanticIndex = 0,
-			.Format = DXGI_FORMAT_R32G32B32A32_FLOAT, // float4
-			.InputSlot = 0,
-			.AlignedByteOffset = D3D11_APPEND_ALIGNED_ELEMENT, // 자동 오프셋 계산
-			.InputSlotClass = D3D11_INPUT_PER_VERTEX_DATA,
-			.InstanceDataStepRate = 0
-		},
-		D3D11_INPUT_ELEMENT_DESC
-		{
-			.SemanticName = "NORMAL",
-			.SemanticIndex = 0,
-			.Format = DXGI_FORMAT_R32G32B32_FLOAT, // float3
-			.InputSlot = 0,
-			.AlignedByteOffset = D3D11_APPEND_ALIGNED_ELEMENT,
-			.InputSlotClass = D3D11_INPUT_PER_VERTEX_DATA,
-			.InstanceDataStepRate = 0
-		},
-		D3D11_INPUT_ELEMENT_DESC
-		{
-			.SemanticName = "TANGENT",
-			.SemanticIndex = 0,
-			.Format = DXGI_FORMAT_R32G32B32_FLOAT, // float3
-			.InputSlot = 0,
-			.AlignedByteOffset = D3D11_APPEND_ALIGNED_ELEMENT,
-			.InputSlotClass = D3D11_INPUT_PER_VERTEX_DATA,
-			.InstanceDataStepRate = 0
-		},
-		D3D11_INPUT_ELEMENT_DESC
-		{
-			.SemanticName = "TEXCOORD",
-			.SemanticIndex = 0,
-			.Format = DXGI_FORMAT_R32G32_FLOAT, // float2
-			.InputSlot = 0,
-			.AlignedByteOffset = D3D11_APPEND_ALIGNED_ELEMENT,
-			.InputSlotClass = D3D11_INPUT_PER_VERTEX_DATA,
-			.InstanceDataStepRate = 0
-		}
+		InputElement::Position,
+		InputElement::Normal,
+		InputElement::Tangent,
+		InputElement::UV
 	};
-	std::string m_psShaderName = "PSVertexColor.hlsl"; // 기본 픽셀 셰이더
 
 public:
 	ModelComponent() = default;

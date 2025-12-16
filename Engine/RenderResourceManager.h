@@ -36,9 +36,9 @@ public:
 	// 상수 버퍼 얻기 // 이미 생성된 버퍼가 있으면 재사용 // 없으면 새로 생성
 	com_ptr<ID3D11Buffer> GetConstantBuffer(UINT bufferSize);
 	// 정점 셰이더 및 입력 레이아웃 얻기
-	std::pair<com_ptr<ID3D11VertexShader>, com_ptr<ID3D11InputLayout>> GetVertexShaderAndInputLayout(std::string shaderName, const std::vector<D3D11_INPUT_ELEMENT_DESC>& inputElementDescs);
+	std::pair<com_ptr<ID3D11VertexShader>, com_ptr<ID3D11InputLayout>> GetVertexShaderAndInputLayout(const std::string& shaderName, const std::vector<InputElement>& inputElements);
 	// 픽셀 셰이더 얻기
-	com_ptr<ID3D11PixelShader> GetPixelShader(std::string shaderName);
+	com_ptr<ID3D11PixelShader> GetPixelShader(const std::string& shaderName);
 	// 모델 파일로부터 모델 로드
 	const Model* LoadModel(const std::string& fileName);
 
@@ -57,5 +57,5 @@ private:
 	void CreateMeshBuffers(Mesh& mesh);
 
 	// 셰이더 컴파일 함수
-	com_ptr<ID3DBlob> CompileShader(std::string shaderName, const char* shaderModel);
+	com_ptr<ID3DBlob> CompileShader(const std::string& shaderName, const char* shaderModel);
 };
