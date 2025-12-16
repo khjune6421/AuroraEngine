@@ -47,9 +47,17 @@ void SceneBase::TransformGameObjects()
 void SceneBase::Render()
 {
 	Renderer& renderer = Renderer::GetInstance();
-	com_ptr<ID3D11DeviceContext> deviceContext = renderer.GetDeviceContext();
-
 	renderer.BeginFrame(m_clearColor);
+
+	RenderGameObjects();
+	RenderImGui();
+
+	renderer.EndFrame();
+}
+
+void SceneBase::RenderGameObjects()
+{
+	com_ptr<ID3D11DeviceContext> deviceContext = Renderer::GetInstance().GetDeviceContext();
 
 	m_viewProjectionData.viewMatrix = XMMatrixTranspose(m_mainCamera->GetViewMatrix());
 	m_viewProjectionData.projectionMatrix = XMMatrixTranspose(m_mainCamera->GetProjectionMatrix());
@@ -57,8 +65,15 @@ void SceneBase::Render()
 	deviceContext->VSSetConstantBuffers(0, 1, m_viewProjectionConstantBuffer.GetAddressOf());
 
 	for (unique_ptr<GameObjectBase>& gameObject : m_gameObjects) gameObject->Render(m_viewProjectionData.viewMatrix, m_viewProjectionData.projectionMatrix);
+}
 
-	renderer.EndFrame();
+void SceneBase::RenderImGui()
+{
+	ImGui::NewFrame();
+
+	ImGui::ShowDemoWindow();
+
+	ImGui::Render();
 }
 
 void SceneBase::Finalize()

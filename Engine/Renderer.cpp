@@ -20,6 +20,9 @@ void Renderer::BeginFrame(const array<FLOAT, 4>& clearColor)
 {
 	HRESULT hr = S_OK;
 
+	// ImGui DirectX11 새 프레임 시작
+	ImGui_ImplDX11_NewFrame();
+
 	// 래스터 상태 변경
 	m_deviceContext->RSSetState(m_sceneRasterState.Get());
 
@@ -43,9 +46,20 @@ void Renderer::EndFrame()
 	// 백 버퍼로 씬 렌더링
 	RenderSceneToBackBuffer();
 
+	// ImGui 렌더링
+	ImGui_ImplDX11_RenderDrawData(ImGui::GetDrawData());
+
 	// 스왑 체인 프레젠트
 	hr = m_swapChain->Present(1, 0);
 	CheckResult(hr, "스왑 체인 프레젠트 실패.");
+}
+
+void Renderer::Finalize()
+{
+	// ImGui DirectX11 종료
+	ImGui_ImplDX11_Shutdown();
+
+	// RenderResourceManager 종료는 따로 필요 없음
 }
 
 HRESULT Renderer::Resize(UINT width, UINT height)
@@ -106,6 +120,8 @@ void Renderer::CreateDeviceAndContext()
 	);
 	CheckResult(hr, "디바이스 및 디바이스 컨텍스트 생성 실패.");
 
+	// ImGui DirectX11 초기화
+	ImGui_ImplDX11_Init(m_device.Get(), m_deviceContext.Get());
 	// RenderResourceManager 초기화
 	RenderResourceManager::GetInstance().Initialize(m_device);
 }

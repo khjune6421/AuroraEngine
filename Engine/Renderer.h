@@ -66,13 +66,15 @@ public:
 	Renderer(Renderer&&) = delete;
 	Renderer& operator=(Renderer&&) = delete;
 
-	// 렌더러 초기화 // 렌더러 사용 전 반드시 호출해야 함
+	// 렌더러 초기화 // WindowManager에서 윈도우 생성 후 호출
 	void Initialize(HWND hWnd);
 
 	// 프레임 시작
 	void BeginFrame(const std::array<FLOAT, 4>& clearColor);
 	// 프레임 종료 // 화면에 내용 출력
 	void EndFrame();
+	// 렌더러 종료 // WindowManager에서 윈도우 종료 전 호출
+	void Finalize();
 
 	// 디바이스 조회
 	com_ptr<ID3D11Device> GetDevice() const { return m_device; }

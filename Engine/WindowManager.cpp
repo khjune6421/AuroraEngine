@@ -1,10 +1,16 @@
 #include "stdafx.h"
 #include "WindowManager.h"
 
+#include "Renderer.h"
+
 using namespace std;
+
+extern IMGUI_IMPL_API LRESULT ImGui_ImplWin32_WndProcHandler(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
 
 LRESULT CALLBACK WindowManager::WindowProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
+	if (ImGui_ImplWin32_WndProcHandler(hWnd, message, wParam, lParam)) return true;
+
 	switch (message)
 	{
 	case WM_DESTROY:
@@ -60,7 +66,11 @@ void WindowManager::Initialize(const wchar_t* windowTitle, int width, int height
 	}
 
 	ShowWindow(m_hWnd, SW_SHOW);
-	UpdateWindow(m_hWnd);
+
+	// ImGui Win32 초기화
+	ImGui_ImplWin32_Init(m_hWnd);
+	// 렌더러 초기화
+	Renderer::GetInstance().Initialize(m_hWnd);
 }
 
 bool WindowManager::ProcessMessages()
@@ -76,5 +86,22 @@ bool WindowManager::ProcessMessages()
 		DispatchMessage(&msg);
 	}
 
+	// ImGui Win32 새 프레임 시작
+	ImGui_ImplWin32_NewFrame();
+
 	return true;
+}
+
+void WindowManager::Finalize()
+{
+	// 렌더러 종료
+	Renderer::GetInstance().Finalize();
+
+	// ImGui Win32 종료
+	ImGui_ImplWin32_Shutdown();
+
+	// 윈도우 파괴 및 클래스 등록 해제
+	DestroyWindow(m_hWnd);
+	m_hWnd = nullptr;
+	UnregisterClass(L"EngineWindowClass", m_hInstance);
 }

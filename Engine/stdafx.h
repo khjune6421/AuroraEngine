@@ -26,6 +26,11 @@
 #include <assimp/postprocess.h>
 #include <assimp/scene.h>
 
+// ImGui 헤더
+#include <imgui.h>
+#include <imgui_impl_win32.h>
+#include <imgui_impl_dx11.h>
+
 // 기타 사용자 정의 헤더
 #include "SingletonBase.h"
 

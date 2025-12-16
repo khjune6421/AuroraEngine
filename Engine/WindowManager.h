@@ -8,8 +8,12 @@ class WindowManager
 	static LRESULT CALLBACK WindowProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
 
 public:
+	// 윈도우 초기화
 	void Initialize(const wchar_t* windowTitle, int width = 1280, int height = 720, const wchar_t* className = L"EngineWindowClass");
+	// 메시지 처리
 	bool ProcessMessages();
+	// 윈도우 종료
+	void Finalize();
 
 	HWND GetHWnd() const { return m_hWnd; }
 };

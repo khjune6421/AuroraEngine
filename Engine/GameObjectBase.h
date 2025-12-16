@@ -96,11 +96,13 @@ private:
 
 	// 게임 오브젝트 초기화 // 씬이 CreateGameObject에서 호출
 	void Initialize();
+
 	// 월드 행렬 갱신 // 씬이 TransformGameObjects에서 호출
 	void UpdateWorldMatrix();
 	// 렌더링 // 씬이 Render에서 호출
 	void Render(DirectX::XMMATRIX viewMatrix, DirectX::XMMATRIX projectionMatrix);
-	// 게임 오브젝트 종료 // 씬이 Finalize에서 호출
+
+	// 게임 오브젝트 종료 // 씬이 호출
 	void Finalize();
 };
 

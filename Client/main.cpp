@@ -1,20 +1,26 @@
 #include "stdafx.h"
 
 #include "WindowManager.h"
-#include "Renderer.h"
 #include "SceneManager.h"
 
 #include "TestScene.h"
 
 int main()
 {
+	IMGUI_CHECKVERSION();
+	ImGui::CreateContext();
+	ImGuiIO& io = ImGui::GetIO();
+	io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;
+
 	WindowManager windowManager;
 	windowManager.Initialize(L"Window");
 
-	Renderer::GetInstance().Initialize(windowManager.GetHWnd());
-
 	SceneManager& sceneManager = SceneManager::GetInstance();
-	sceneManager.ChangeScene<TestScene>();
+	sceneManager.ChangeScene<TestScene>(); // »ç½Ç»ó Initialize()
 
 	while (windowManager.ProcessMessages()) sceneManager.Run();
+
+	windowManager.Finalize();
+
+	ImGui::DestroyContext();
 }
