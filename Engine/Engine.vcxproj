@@ -156,7 +156,6 @@
     <ClCompile Include="RenderResourceManager.cpp" />
     <ClCompile Include="SceneBase.cpp" />
     <ClCompile Include="SceneManager.cpp" />
-    <ClCompile Include="stdafx.cpp" />
     <ClCompile Include="WindowManager.cpp" />
   </ItemGroup>
   <ItemGroup>

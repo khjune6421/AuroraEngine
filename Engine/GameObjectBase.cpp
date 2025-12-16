@@ -29,7 +29,7 @@ void GameObjectBase::SetRotation(const XMVECTOR& rotation)
 	SetDirty();
 }
 
-XMVECTOR GameObjectBase::GetRotation() const
+XMFLOAT3 GameObjectBase::GetRotation() const
 {
 	float x = XMVectorGetX(m_quaternion);
 	float y = XMVectorGetY(m_quaternion);
@@ -49,7 +49,11 @@ XMVECTOR GameObjectBase::GetRotation() const
 	float cosRoll = 1.0f - 2.0f * (y * y + z * z);
 	float roll = atan2f(sinRoll, cosRoll);
 
-	return XMVectorSet(pitch, yaw, roll, 0.0f);
+	pitch = ToDegree(pitch);
+	yaw = ToDegree(yaw);
+	roll = ToDegree(roll);
+
+	return XMFLOAT3(pitch, yaw, roll);
 }
 
 void GameObjectBase::Rotate(const XMVECTOR& deltaRotation)
@@ -142,16 +146,26 @@ void GameObjectBase::UpdateWorldMatrix()
 
 void GameObjectBase::Render(XMMATRIX viewMatrix, XMMATRIX projectionMatrix)
 {
+	if (ImGui::TreeNode((void*)(intptr_t)m_id, "GameObject #%u", m_id))
+	{
+		ImGui::Text("Position: (%.2f, %.2f, %.2f)", XMVectorGetX(m_position), XMVectorGetY(m_position), XMVectorGetZ(m_position));
+		XMFLOAT3 rotation = GetRotation();
+		ImGui::Text("Rotation: (%.2f, %.2f, %.2f)", rotation.x, rotation.y, rotation.z);
+		ImGui::Text("Scale: (%.2f, %.2f, %.2f)", m_scale.x, m_scale.y, m_scale.z);
+		ImGui::TreePop();
+	}
+
 	ModelComponent* model = GetComponent<ModelComponent>();
 	if (!model) return;
 
+	// 월드 및 WVP 행렬 상수 버퍼 업데이트 및 셰이더에 설정
 	const com_ptr<ID3D11DeviceContext> deviceContext = Renderer::GetInstance().GetDeviceContext();
-
 	m_worldWVPData.worldMatrix = XMMatrixTranspose(m_worldMatrix);
 	m_worldWVPData.WVPMatrix = projectionMatrix * viewMatrix * m_worldWVPData.worldMatrix;
 	deviceContext->UpdateSubresource(m_worldWVPConstantBuffer.Get(), 0, nullptr, &m_worldWVPData, 0, 0);
 	deviceContext->VSSetConstantBuffers(1, 1, m_worldWVPConstantBuffer.GetAddressOf());
 
+	// 모델 렌더링
 	model->Render();
 }
 

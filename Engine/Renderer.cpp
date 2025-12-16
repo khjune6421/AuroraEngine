@@ -20,8 +20,9 @@ void Renderer::BeginFrame(const array<FLOAT, 4>& clearColor)
 {
 	HRESULT hr = S_OK;
 
-	// ImGui DirectX11 새 프레임 시작
+	// ImGui 새 프레임 시작
 	ImGui_ImplDX11_NewFrame();
+	ImGui::NewFrame();
 
 	// 래스터 상태 변경
 	m_deviceContext->RSSetState(m_sceneRasterState.Get());
@@ -47,6 +48,7 @@ void Renderer::EndFrame()
 	RenderSceneToBackBuffer();
 
 	// ImGui 렌더링
+	ImGui::Render();
 	ImGui_ImplDX11_RenderDrawData(ImGui::GetDrawData());
 
 	// 스왑 체인 프레젠트

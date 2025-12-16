@@ -14,6 +14,4 @@ public:
 	bool ProcessMessages();
 	// 윈도우 종료
 	void Finalize();
-
-	HWND GetHWnd() const { return m_hWnd; }
 };

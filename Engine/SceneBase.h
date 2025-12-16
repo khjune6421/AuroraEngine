@@ -47,10 +47,6 @@ private:
 	void TransformGameObjects();
 	// 씬 렌더링 // 매 프레임 씬 매니저가 호출
 	void Render();
-	// 게임 오브젝트 렌더링
-	void RenderGameObjects();
-	// ImGui 렌더링
-	void RenderImGui();
 
 	// 씬 종료 // 씬 매니저가 씬을 교체할 때 호출
 	void Finalize();

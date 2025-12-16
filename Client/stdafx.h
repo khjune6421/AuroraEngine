@@ -36,6 +36,3 @@
 
 // 메크로 정의
 #define com_ptr Microsoft::WRL::ComPtr
-
-// HRESULT 결과 확인
-void CheckResult(HRESULT hr, const char* msg);

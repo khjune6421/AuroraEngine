@@ -48,32 +48,23 @@ void SceneBase::Render()
 {
 	Renderer& renderer = Renderer::GetInstance();
 	renderer.BeginFrame(m_clearColor);
+	ImGui::Begin("Scene");
 
-	RenderGameObjects();
-	RenderImGui();
+	ImGui::Text("Total Objects: %zu", m_gameObjects.size());
+	ImGui::Separator();
 
-	renderer.EndFrame();
-}
-
-void SceneBase::RenderGameObjects()
-{
-	com_ptr<ID3D11DeviceContext> deviceContext = Renderer::GetInstance().GetDeviceContext();
-
+	// 뷰-투영 상수 버퍼 업데이트 및 셰이더에 설정
+	com_ptr<ID3D11DeviceContext> deviceContext = renderer.GetDeviceContext();
 	m_viewProjectionData.viewMatrix = XMMatrixTranspose(m_mainCamera->GetViewMatrix());
 	m_viewProjectionData.projectionMatrix = XMMatrixTranspose(m_mainCamera->GetProjectionMatrix());
 	deviceContext->UpdateSubresource(m_viewProjectionConstantBuffer.Get(), 0, nullptr, &m_viewProjectionData, 0, 0);
 	deviceContext->VSSetConstantBuffers(0, 1, m_viewProjectionConstantBuffer.GetAddressOf());
 
+	// 게임 오브젝트 렌더링
 	for (unique_ptr<GameObjectBase>& gameObject : m_gameObjects) gameObject->Render(m_viewProjectionData.viewMatrix, m_viewProjectionData.projectionMatrix);
-}
 
-void SceneBase::RenderImGui()
-{
-	ImGui::NewFrame();
-
-	ImGui::ShowDemoWindow();
-
-	ImGui::Render();
+	ImGui::End();
+	renderer.EndFrame();
 }
 
 void SceneBase::Finalize()

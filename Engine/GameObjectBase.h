@@ -17,7 +17,6 @@ class GameObjectBase // TODO: 부모-자식 관계 구현
 
 	DirectX::XMVECTOR m_position = DirectX::XMVectorZero(); // 위치
 	DirectX::XMVECTOR m_quaternion = DirectX::XMQuaternionIdentity(); // 쿼터니언 각 // 실제 회전 계산용
-	DirectX::XMVECTOR m_rotation = DirectX::XMVectorZero(); // 회전 (라디안 단위) // 오일러 각도 (Pitch, Yaw, Roll) // 출력용
 	DirectX::XMFLOAT3 m_scale = { 1.0f, 1.0f, 1.0f }; // 크기
 	bool m_isDirty = true; // 위치 갱신 필요 여부
 
@@ -58,8 +57,8 @@ public:
 
 	// 회전 지정 // 라디안 단위
 	void SetRotation(const DirectX::XMVECTOR& rotation);
-	// 회전 가져오기 // 라디안 단위
-	DirectX::XMVECTOR GetRotation() const;
+	// 회전 가져오기 // 도 단위
+	DirectX::XMFLOAT3 GetRotation() const;
 	// 회전 이동 // 라디안 단위
 	void Rotate(const DirectX::XMVECTOR& deltaRotation);
 	// 특정 위치 바라보기

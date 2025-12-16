@@ -73,6 +73,7 @@ public:
 	void BeginFrame(const std::array<FLOAT, 4>& clearColor);
 	// 프레임 종료 // 화면에 내용 출력
 	void EndFrame();
+
 	// 렌더러 종료 // WindowManager에서 윈도우 종료 전 호출
 	void Finalize();
 
