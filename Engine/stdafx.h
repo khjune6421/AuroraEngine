@@ -5,6 +5,7 @@
 #include <filesystem>
 #include <iostream>
 #include <typeindex>
+#include <unordered_map>
 
 // 윈도우 헤더
 #include <wrl/client.h>
@@ -14,6 +15,7 @@
 #include <d3d11.h>
 #include <d3dcompiler.h>
 #include <dxgi1_2.h>
+#include <DirectXMath.h>
 #pragma comment(lib, "d3d11.lib")
 #pragma comment(lib, "d3dcompiler.lib")
 #pragma comment(lib, "dxgi.lib")
@@ -36,12 +38,6 @@
 
 // 메크로 정의
 #define com_ptr Microsoft::WRL::ComPtr
-
-constexpr float PI = 3.14159265359f; // 원주율
-// 도-라디안 변환 함수
-constexpr float DegreeToRadian(float degree) { return degree * (PI / 180.0f); }
-// 라디안-도 변환 함수
-constexpr float RadianToDegree(float radian) { return radian * (180.0f / PI); }
 
 // HRESULT 결과 확인
 constexpr void CheckResult(HRESULT hr, const char* msg)

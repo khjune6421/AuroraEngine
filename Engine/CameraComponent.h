@@ -31,11 +31,10 @@ public:
 	DirectX::XMMATRIX GetProjectionMatrix() const { return m_projectionMatrix; }
 
 	// 뷰 행렬 갱신 // 오브젝트의 UpdateWorldMatrix에서 호출
-	void UpdateViewMatrix(DirectX::XMVECTOR eyePosition, DirectX::XMVECTOR focusPosition, DirectX::XMVECTOR upVector) { m_viewMatrix = DirectX::XMMatrixLookAtLH(eyePosition, focusPosition, upVector); }
+	void UpdateViewMatrix(const DirectX::XMVECTOR& eyePosition, const DirectX::XMVECTOR& focusPosition, const DirectX::XMVECTOR& upVector) { m_viewMatrix = DirectX::XMMatrixLookAtLH(eyePosition, focusPosition, upVector); }
 
 private:
 	void Begin() override { UpdateProjectionMatrix(); }
 	// 투영 행렬 갱신
 	void UpdateProjectionMatrix() { m_projectionMatrix = DirectX::XMMatrixPerspectiveFovLH(m_fovY, static_cast<float>(m_screenWidth) / static_cast<float>(m_screenHeight), m_nearZ, m_farZ); }
-
 };

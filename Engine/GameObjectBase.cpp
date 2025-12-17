@@ -8,7 +8,6 @@
 
 using namespace std;
 using namespace DirectX;
-using namespace DirectX::SimpleMath;
 
 GameObjectBase::GameObjectBase()
 {
@@ -23,23 +22,22 @@ void GameObjectBase::MoveDirection(float distance, Direction direction)
 	MovePosition(deltaPosition);
 }
 
-void GameObjectBase::SetRotation(const Vector3& rotation)
+void GameObjectBase::SetRotation(const XMVECTOR& rotation)
 {
 	// 오일러 각도 저장
 	m_euler = rotation;
 	// 쿼터니언 업데이트
-	m_quaternion = Quaternion::CreateFromYawPitchRoll(m_euler.y, m_euler.x, m_euler.z);
+	m_quaternion = XMQuaternionRotationRollPitchYawFromVector(m_euler);
 
 	SetDirty();
 }
 
-void GameObjectBase::Rotate(const Vector3& deltaRotation)
+void GameObjectBase::Rotate(const XMVECTOR& deltaRotation)
 {
 	// 오일러 각도 업데이트
 	m_euler += deltaRotation;
-
 	// 쿼터니언 업데이트
-	m_quaternion = Quaternion::CreateFromYawPitchRoll(m_euler.y, m_euler.x, m_euler.z);
+	m_quaternion = XMQuaternionRotationRollPitchYawFromVector(m_euler);
 
 	SetDirty();
 }
@@ -47,41 +45,36 @@ void GameObjectBase::Rotate(const Vector3& deltaRotation)
 void GameObjectBase::LookAt(const XMVECTOR& targetPosition)
 {
 	XMVECTOR direction = XMVector3Normalize(XMVectorSubtract(targetPosition, m_position));
-	XMVECTOR right = XMVector3Normalize(XMVector3Cross(GetDirectionVector(Direction::Up), direction));
+	XMVECTOR right = XMVector3Cross(GetDirectionVector(Direction::Up), direction);
 	XMVECTOR up = XMVector3Cross(direction, right);
 
-	XMMATRIX lookAtMatrix = XMMATRIX
-	(
-		right,
-		up,
-		direction,
-		XMVectorSet(0.0f, 0.0f, 0.0f, 1.0f)
-	);
-
-	m_quaternion = Quaternion::CreateFromRotationMatrix(lookAtMatrix);
-	m_euler = m_quaternion.ToEuler();
+	m_quaternion = XMQuaternionRotationMatrix({ right, up, direction, { 0.0f, 0.0f, 0.0f, 1.0f } });
+	m_euler = static_cast<XMVECTOR>(static_cast<SimpleMath::Quaternion>(m_quaternion).ToEuler());
 
 	SetDirty();
 }
 
-Vector3 GameObjectBase::GetDirectionVector(Direction direction) const
+XMVECTOR GameObjectBase::GetDirectionVector(Direction direction) const
 {
 	switch (direction)
 	{
 	case Direction::Forward:
-		return Vector3::Transform({ 0.0f, 0.0f, 1.0f }, m_quaternion);
+		return XMVector3Rotate(XMVectorSet(0.0f, 0.0f, 1.0f, 0.0f), m_quaternion);
 	case Direction::Backward:
-		return Vector3::Transform({ 0.0f, 0.0f, -1.0f }, m_quaternion);
+		return XMVector3Rotate(XMVectorSet(0.0f, 0.0f, -1.0f, 0.0f), m_quaternion);
+
 	case Direction::Left:
-		return Vector3::Transform({ -1.0f, 0.0f, 0.0f }, m_quaternion);
+		return XMVector3Rotate(XMVectorSet(-1.0f, 0.0f, 0.0f, 0.0f), m_quaternion);
 	case Direction::Right:
-		return Vector3::Transform({ 1.0f, 0.0f, 0.0 }, m_quaternion);
+		return XMVector3Rotate(XMVectorSet(1.0f, 0.0f, 0.0f, 0.0f), m_quaternion);
+
 	case Direction::Up:
-		return Vector3::Transform({ 0.0f, 1.0f, 0.0f }, m_quaternion);
+		return XMVector3Rotate(XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f), m_quaternion);
 	case Direction::Down:
-		return Vector3::Transform({ 0.0f, -1.0f, 0.0f }, m_quaternion);
+		return XMVector3Rotate(XMVectorSet(0.0f, -1.0f, 0.0f, 0.0f), m_quaternion);
+
 	default:
-		return Vector3{ 0.0f, 0.0f, 0.0f };
+		return XMVectorZero();
 	}
 }
 
@@ -97,8 +90,8 @@ void GameObjectBase::UpdateWorldMatrix()
 	if (!m_isDirty) return;
 
 	m_positionMatrix = XMMatrixTranslationFromVector(m_position);
-	m_rotationMatrix = Matrix::CreateFromQuaternion(m_quaternion);
-	m_scaleMatrix = XMMatrixScaling(m_scale.x, m_scale.y, m_scale.z);
+	m_rotationMatrix = XMMatrixRotationQuaternion(m_quaternion);
+	m_scaleMatrix = XMMatrixScalingFromVector(m_scale);
 
 	m_worldMatrix = m_scaleMatrix * m_rotationMatrix * m_positionMatrix;
 
@@ -114,36 +107,19 @@ void GameObjectBase::Render(XMMATRIX viewMatrix, XMMATRIX projectionMatrix)
 	if (ImGui::TreeNode((void*)(intptr_t)m_id, "GameObject #%u", m_id))
 	{
 		// Position (위치)
-		XMFLOAT3 position = {};
-		XMStoreFloat3(&position, m_position);
-		if (ImGui::DragFloat3("Position", &position.x, 0.1f))
-		{
-			SetPosition(XMLoadFloat3(&position));
-		}
+		if (ImGui::DragFloat3("Position", &m_position.m128_f32[0], 0.1f))  SetDirty();
 
 		// Rotation (회전 - 라디안을 도(degree)로 변환하여 표시)
-		Vector3 rotationDegrees =
-		{
-			XMConvertToDegrees(m_euler.x),
-			XMConvertToDegrees(m_euler.y),
-			XMConvertToDegrees(m_euler.z)
-		};
+		XMFLOAT3 rotationDegrees = {};
+		XMStoreFloat3(&rotationDegrees, XMVectorScale(m_euler, 180.0f / XM_PI));
 		if (ImGui::DragFloat3("Rotation", &rotationDegrees.x, 0.5f))
 		{
-			Vector3 rotationRadians =
-			{
-				XMConvertToRadians(rotationDegrees.x),
-				XMConvertToRadians(rotationDegrees.y),
-				XMConvertToRadians(rotationDegrees.z)
-			};
+			XMVECTOR rotationRadians = XMVectorScale(XMLoadFloat3(&rotationDegrees), XM_PI / 180.0f);
 			SetRotation(rotationRadians);
 		}
 
 		// Scale (크기)
-		if (ImGui::DragFloat3("Scale", &m_scale.x, 0.01f, 0.001f, 100.0f))
-		{
-			SetDirty();
-		}
+		if (ImGui::DragFloat3("Scale", &m_scale.m128_f32[0], 0.1f)) SetDirty();
 
 		ImGui::TreePop();
 	}

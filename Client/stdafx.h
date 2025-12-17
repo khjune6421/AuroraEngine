@@ -5,6 +5,7 @@
 #include <filesystem>
 #include <iostream>
 #include <typeindex>
+#include <unordered_map>
 
 // 윈도우 헤더
 #include <wrl/client.h>
@@ -14,6 +15,7 @@
 #include <d3d11.h>
 #include <d3dcompiler.h>
 #include <dxgi1_2.h>
+#include <DirectXMath.h>
 #pragma comment(lib, "d3d11.lib")
 #pragma comment(lib, "d3dcompiler.lib")
 #pragma comment(lib, "dxgi.lib")
