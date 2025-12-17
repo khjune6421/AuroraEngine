@@ -38,10 +38,10 @@
 #define com_ptr Microsoft::WRL::ComPtr
 
 constexpr float PI = 3.14159265359f; // 원주율
-// 라디안-도 변환 함수
-constexpr float ToDegree(float radian) { return radian * (180.0f / PI); }
 // 도-라디안 변환 함수
-constexpr float ToRadian(float degree) { return degree * (PI / 180.0f); }
+constexpr float DegreeToRadian(float degree) { return degree * (PI / 180.0f); }
+// 라디안-도 변환 함수
+constexpr float RadianToDegree(float radian) { return radian * (180.0f / PI); }
 
 // HRESULT 결과 확인
 constexpr void CheckResult(HRESULT hr, const char* msg)

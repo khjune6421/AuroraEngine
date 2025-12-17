@@ -8,6 +8,7 @@
 
 using namespace std;
 using namespace DirectX;
+using namespace DirectX::SimpleMath;
 
 GameObjectBase::GameObjectBase()
 {
@@ -22,44 +23,23 @@ void GameObjectBase::MoveDirection(float distance, Direction direction)
 	MovePosition(deltaPosition);
 }
 
-void GameObjectBase::SetRotation(const XMVECTOR& rotation)
+void GameObjectBase::SetRotation(const Vector3& rotation)
 {
-	m_quaternion = XMQuaternionRotationRollPitchYawFromVector(rotation);
+	// 오일러 각도 저장
+	m_euler = rotation;
+	// 쿼터니언 업데이트
+	m_quaternion = Quaternion::CreateFromYawPitchRoll(m_euler.y, m_euler.x, m_euler.z);
 
 	SetDirty();
 }
 
-XMFLOAT3 GameObjectBase::GetRotation() const
+void GameObjectBase::Rotate(const Vector3& deltaRotation)
 {
-	float x = XMVectorGetX(m_quaternion);
-	float y = XMVectorGetY(m_quaternion);
-	float z = XMVectorGetZ(m_quaternion);
-	float w = XMVectorGetW(m_quaternion);
+	// 오일러 각도 업데이트
+	m_euler += deltaRotation;
 
-	float sinPitch = 2.0f * (w * x + y * z);
-	float cosPitch = 1.0f - 2.0f * (x * x + y * y);
-	float pitch = atan2f(sinPitch, cosPitch);
-
-	float sinYaw = 2.0f * (w * y - z * x);
-	float yaw = 0.0f;
-	if (fabsf(sinYaw) >= 1.0f) yaw = copysignf(XM_PIDIV2, sinYaw); // 짐벌락 터짐
-	else yaw = asinf(sinYaw);
-
-	float sinRoll = 2.0f * (w * z + x * y);
-	float cosRoll = 1.0f - 2.0f * (y * y + z * z);
-	float roll = atan2f(sinRoll, cosRoll);
-
-	pitch = ToDegree(pitch);
-	yaw = ToDegree(yaw);
-	roll = ToDegree(roll);
-
-	return XMFLOAT3(pitch, yaw, roll);
-}
-
-void GameObjectBase::Rotate(const XMVECTOR& deltaRotation)
-{
-	XMVECTOR deltaQuaternion = XMQuaternionRotationRollPitchYawFromVector(deltaRotation);
-	m_quaternion = XMQuaternionMultiply(m_quaternion, deltaQuaternion);
+	// 쿼터니언 업데이트
+	m_quaternion = Quaternion::CreateFromYawPitchRoll(m_euler.y, m_euler.x, m_euler.z);
 
 	SetDirty();
 }
@@ -77,47 +57,32 @@ void GameObjectBase::LookAt(const XMVECTOR& targetPosition)
 		direction,
 		XMVectorSet(0.0f, 0.0f, 0.0f, 1.0f)
 	);
-	m_quaternion = XMQuaternionRotationMatrix(lookAtMatrix);
+
+	m_quaternion = Quaternion::CreateFromRotationMatrix(lookAtMatrix);
+	m_euler = m_quaternion.ToEuler();
 
 	SetDirty();
 }
 
-XMVECTOR GameObjectBase::GetDirectionVector(Direction direction) const
+Vector3 GameObjectBase::GetDirectionVector(Direction direction) const
 {
 	switch (direction)
 	{
 	case Direction::Forward:
-		return XMVector3Rotate(XMVectorSet(0.0f, 0.0f, 1.0f, 0.0f), m_quaternion);
+		return Vector3::Transform({ 0.0f, 0.0f, 1.0f }, m_quaternion);
 	case Direction::Backward:
-		return XMVector3Rotate(XMVectorSet(0.0f, 0.0f, -1.0f, 0.0f), m_quaternion);
-
+		return Vector3::Transform({ 0.0f, 0.0f, -1.0f }, m_quaternion);
 	case Direction::Left:
-		return XMVector3Rotate(XMVectorSet(-1.0f, 0.0f, 0.0f, 0.0f), m_quaternion);
+		return Vector3::Transform({ -1.0f, 0.0f, 0.0f }, m_quaternion);
 	case Direction::Right:
-		return XMVector3Rotate(XMVectorSet(1.0f, 0.0f, 0.0f, 0.0f), m_quaternion);
-
+		return Vector3::Transform({ 1.0f, 0.0f, 0.0 }, m_quaternion);
 	case Direction::Up:
-		return XMVector3Rotate(XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f), m_quaternion);
+		return Vector3::Transform({ 0.0f, 1.0f, 0.0f }, m_quaternion);
 	case Direction::Down:
-		return XMVector3Rotate(XMVectorSet(0.0f, -1.0f, 0.0f, 0.0f), m_quaternion);
-
+		return Vector3::Transform({ 0.0f, -1.0f, 0.0f }, m_quaternion);
 	default:
-		#ifdef _DEBUG
-		cerr << "GameObjectBase::GetDirectionVector: 알 수 없는 방향입니다." << endl;
-		#else
-		MessageBoxA(nullptr, "GameObjectBase::GetDirectionVector: 알 수 없는 방향입니다.", "오류", MB_OK | MB_ICONERROR);
-		#endif
-		return XMVectorZero();
+		return Vector3{ 0.0f, 0.0f, 0.0f };
 	}
-}
-
-void GameObjectBase::Scale(const XMFLOAT3& deltaScale)
-{
-	m_scale.x *= deltaScale.x;
-	m_scale.y *= deltaScale.y;
-	m_scale.z *= deltaScale.z;
-
-	SetDirty();
 }
 
 void GameObjectBase::Initialize()
@@ -132,7 +97,7 @@ void GameObjectBase::UpdateWorldMatrix()
 	if (!m_isDirty) return;
 
 	m_positionMatrix = XMMatrixTranslationFromVector(m_position);
-	m_rotationMatrix = XMMatrixRotationQuaternion(m_quaternion);
+	m_rotationMatrix = Matrix::CreateFromQuaternion(m_quaternion);
 	m_scaleMatrix = XMMatrixScaling(m_scale.x, m_scale.y, m_scale.z);
 
 	m_worldMatrix = m_scaleMatrix * m_rotationMatrix * m_positionMatrix;
@@ -148,10 +113,38 @@ void GameObjectBase::Render(XMMATRIX viewMatrix, XMMATRIX projectionMatrix)
 {
 	if (ImGui::TreeNode((void*)(intptr_t)m_id, "GameObject #%u", m_id))
 	{
-		ImGui::Text("Position: (%.2f, %.2f, %.2f)", XMVectorGetX(m_position), XMVectorGetY(m_position), XMVectorGetZ(m_position));
-		XMFLOAT3 rotation = GetRotation();
-		ImGui::Text("Rotation: (%.2f, %.2f, %.2f)", rotation.x, rotation.y, rotation.z);
-		ImGui::Text("Scale: (%.2f, %.2f, %.2f)", m_scale.x, m_scale.y, m_scale.z);
+		// Position (위치)
+		XMFLOAT3 position = {};
+		XMStoreFloat3(&position, m_position);
+		if (ImGui::DragFloat3("Position", &position.x, 0.1f))
+		{
+			SetPosition(XMLoadFloat3(&position));
+		}
+
+		// Rotation (회전 - 라디안을 도(degree)로 변환하여 표시)
+		Vector3 rotationDegrees =
+		{
+			XMConvertToDegrees(m_euler.x),
+			XMConvertToDegrees(m_euler.y),
+			XMConvertToDegrees(m_euler.z)
+		};
+		if (ImGui::DragFloat3("Rotation", &rotationDegrees.x, 0.5f))
+		{
+			Vector3 rotationRadians =
+			{
+				XMConvertToRadians(rotationDegrees.x),
+				XMConvertToRadians(rotationDegrees.y),
+				XMConvertToRadians(rotationDegrees.z)
+			};
+			SetRotation(rotationRadians);
+		}
+
+		// Scale (크기)
+		if (ImGui::DragFloat3("Scale", &m_scale.x, 0.01f, 0.001f, 100.0f))
+		{
+			SetDirty();
+		}
+
 		ImGui::TreePop();
 	}
 

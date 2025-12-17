@@ -41,6 +41,11 @@ void WindowManager::Initialize(const wchar_t* windowTitle, int width, int height
 		exit(EXIT_FAILURE);
 	}
 
+	RECT windowRect = { 0, 0, width, height };
+	AdjustWindowRect(&windowRect, WS_OVERLAPPEDWINDOW, FALSE);
+	const int adjustedWidth = windowRect.right - windowRect.left;
+	const int adjustedHeight = windowRect.bottom - windowRect.top;
+
 	m_hWnd = CreateWindow
 	(
 		className,
@@ -48,8 +53,8 @@ void WindowManager::Initialize(const wchar_t* windowTitle, int width, int height
 		WS_OVERLAPPEDWINDOW,
 		CW_USEDEFAULT,
 		CW_USEDEFAULT,
-		width,
-		height,
+		adjustedWidth,
+		adjustedHeight,
 		nullptr,
 		nullptr,
 		m_hInstance,
@@ -70,7 +75,7 @@ void WindowManager::Initialize(const wchar_t* windowTitle, int width, int height
 	// ImGui Win32 초기화
 	ImGui_ImplWin32_Init(m_hWnd);
 	// 렌더러 초기화
-	Renderer::GetInstance().Initialize(m_hWnd);
+	Renderer::GetInstance().Initialize(m_hWnd, width, height);
 }
 
 bool WindowManager::ProcessMessages()

@@ -16,8 +16,9 @@ class GameObjectBase // TODO: 부모-자식 관계 구현
 	DirectX::XMMATRIX m_scaleMatrix = DirectX::XMMatrixIdentity(); // 스케일 행렬
 
 	DirectX::XMVECTOR m_position = DirectX::XMVectorZero(); // 위치
-	DirectX::XMVECTOR m_quaternion = DirectX::XMQuaternionIdentity(); // 쿼터니언 각 // 실제 회전 계산용
-	DirectX::XMFLOAT3 m_scale = { 1.0f, 1.0f, 1.0f }; // 크기
+	DirectX::SimpleMath::Quaternion m_quaternion = { 0.0f, 0.0f, 0.0f, 1.0f }; // 쿼터니언 각
+	DirectX::SimpleMath::Vector3 m_euler = { 0.0f, 0.0f, 0.0f }; // 오일러 각 // 디버깅용
+	DirectX::SimpleMath::Vector3 m_scale = { 1.0f, 1.0f, 1.0f }; // 크기
 	bool m_isDirty = true; // 위치 갱신 필요 여부
 
 	struct WorldWVPBuffer // 월드 및 WVP 행렬 상수 버퍼 구조체
@@ -56,22 +57,22 @@ public:
 	void MoveDirection(float distance, Direction direction);
 
 	// 회전 지정 // 라디안 단위
-	void SetRotation(const DirectX::XMVECTOR& rotation);
-	// 회전 가져오기 // 도 단위
-	DirectX::XMFLOAT3 GetRotation() const;
+	void SetRotation(const DirectX::SimpleMath::Vector3& rotation);
+	// 회전 가져오기 // 라디안 단위
+	DirectX::SimpleMath::Vector3 GetRotation() const { return m_euler; }
 	// 회전 이동 // 라디안 단위
-	void Rotate(const DirectX::XMVECTOR& deltaRotation);
+	void Rotate(const DirectX::SimpleMath::Vector3& deltaRotation);
 	// 특정 위치 바라보기
 	void LookAt(const DirectX::XMVECTOR& targetPosition);
 	// 정규화된 방향 벡터 가져오기
-	DirectX::XMVECTOR GetDirectionVector(Direction direction) const;
+	DirectX::SimpleMath::Vector3 GetDirectionVector(Direction direction) const;
 
 	// 크기 지정
-	void SetScale(const DirectX::XMFLOAT3& scale) { m_scale = scale; SetDirty(); }
+	void SetScale(const DirectX::SimpleMath::Vector3& scale) { m_scale = scale; SetDirty(); }
 	// 크기 가져오기
-	DirectX::XMFLOAT3 GetScale() const { return m_scale; }
+	DirectX::SimpleMath::Vector3 GetScale() const { return m_scale; }
 	// 크기 변경
-	void Scale(const DirectX::XMFLOAT3& deltaScale);
+	void Scale(const DirectX::SimpleMath::Vector3& deltaScale) { m_scale *= deltaScale; SetDirty(); }
 
 	DirectX::XMMATRIX GetWorldMatrix() const { return m_worldMatrix; }
 

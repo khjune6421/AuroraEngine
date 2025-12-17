@@ -67,7 +67,7 @@ public:
 	Renderer& operator=(Renderer&&) = delete;
 
 	// 렌더러 초기화 // WindowManager에서 윈도우 생성 후 호출
-	void Initialize(HWND hWnd);
+	void Initialize(HWND hWnd, UINT width, UINT height);
 
 	// 프레임 시작
 	void BeginFrame(const std::array<FLOAT, 4>& clearColor);
