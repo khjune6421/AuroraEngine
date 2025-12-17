@@ -15,13 +15,6 @@ class CameraComponent : public ComponentBase
 	DirectX::XMMATRIX m_projectionMatrix = DirectX::XMMatrixIdentity(); // 투영 행렬
 
 public:
-	CameraComponent() = default;
-	~CameraComponent() override = default;
-	CameraComponent(const CameraComponent&) = default;
-	CameraComponent& operator=(const CameraComponent&) = default;
-	CameraComponent(CameraComponent&&) = default;
-	CameraComponent& operator=(CameraComponent&&) = default;
-
 	void SetFovY(float fovY) { m_fovY = fovY; UpdateProjectionMatrix(); }
 	void SetScreenSize(UINT width, UINT height) { m_screenWidth = width; m_screenHeight = height; UpdateProjectionMatrix(); }
 	void SetNearZ(float nearZ) { m_nearZ = nearZ; UpdateProjectionMatrix(); }
@@ -33,8 +26,11 @@ public:
 	// 뷰 행렬 갱신 // 오브젝트의 UpdateWorldMatrix에서 호출
 	void UpdateViewMatrix(const DirectX::XMVECTOR& eyePosition, const DirectX::XMVECTOR& focusPosition, const DirectX::XMVECTOR& upVector) { m_viewMatrix = DirectX::XMMatrixLookAtLH(eyePosition, focusPosition, upVector); }
 
+protected:
+	void Begin() override { m_name = "CameraComponent"; UpdateProjectionMatrix(); }
+	void SerializeImGui() override;
+
 private:
-	void Begin() override { UpdateProjectionMatrix(); }
 	// 투영 행렬 갱신
 	void UpdateProjectionMatrix() { m_projectionMatrix = DirectX::XMMatrixPerspectiveFovLH(m_fovY, static_cast<float>(m_screenWidth) / static_cast<float>(m_screenHeight), m_nearZ, m_farZ); }
 };

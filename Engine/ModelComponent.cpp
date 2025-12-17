@@ -28,9 +28,33 @@ void ModelComponent::Render()
 
 void ModelComponent::Begin()
 {
+	m_name = "ModelComponent";
+
 	m_model = RenderResourceManager::GetInstance().LoadModel(m_modelFileName);
 
 	CreateShaders();
+}
+
+void ModelComponent::SerializeImGui()
+{
+	// Model File Name
+	char modelFileNameBuffer[256];
+	strcpy_s(modelFileNameBuffer, m_modelFileName.c_str());
+	if (ImGui::InputText("Model File Name", modelFileNameBuffer, sizeof(modelFileNameBuffer))) m_modelFileName = modelFileNameBuffer;
+
+	char vsShaderNameBuffer[256];
+	strcpy_s(vsShaderNameBuffer, m_vsShaderName.c_str());
+	if (ImGui::InputText("Vertex Shader Name", vsShaderNameBuffer, sizeof(vsShaderNameBuffer))) m_vsShaderName = vsShaderNameBuffer;
+
+	char psShaderNameBuffer[256];
+	strcpy_s(psShaderNameBuffer, m_psShaderName.c_str());
+	if (ImGui::InputText("Pixel Shader Name", psShaderNameBuffer, sizeof(psShaderNameBuffer))) m_psShaderName = psShaderNameBuffer;
+
+	if (ImGui::Button("Load"))
+	{
+		m_model = RenderResourceManager::GetInstance().LoadModel(m_modelFileName);
+		CreateShaders();
+	}
 }
 
 void ModelComponent::CreateShaders()

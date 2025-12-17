@@ -7,6 +7,7 @@ class ComponentBase
 	friend class GameObjectBase;
 
 protected:
+	std::string m_name = "Component"; // 컴포넌트 이름
 	GameObjectBase* m_owner = nullptr; // 소유 게임 오브젝트 포인터
 
 public:
@@ -20,9 +21,14 @@ public:
 protected:
 	// 컴포넌트 초기화 // ComponentBase의 Initialize에서 호출
 	virtual void Begin() {};
+	// 매 프레임 RenderImGui에서 호출
+	virtual void SerializeImGui() {};
+
 	virtual void End() {};
 
 private:
 	void Initialize(GameObjectBase* owner) { m_owner = owner; Begin(); }
+	// ImGui 렌더링 // GameObjectBase의 RenderImGui에서 호출
+	void RenderImGui();
 	void Finalize() { End(); }
 };

@@ -91,6 +91,8 @@ protected:
 	virtual void Begin() {}
 	// 매 프레임 씬 Render에서 호출
 	virtual void Update(float deltaTime) {}
+	// 매 프레임 RenderImGui에서 호출
+	virtual void SerializeImGui() {}
 	// 게임 오브젝트 소멸자가 호출
 	virtual void End() {}
 
@@ -104,6 +106,8 @@ private:
 	void UpdateWorldMatrix();
 	// 렌더링 // 씬이 Render에서 호출
 	void Render(DirectX::XMMATRIX viewMatrix, DirectX::XMMATRIX projectionMatrix);
+	// ImGui 렌더링 // 씬이 RenderImGui에서 호출
+	void RenderImGui();
 
 	// 게임 오브젝트 종료 // 씬이 호출
 	void Finalize();

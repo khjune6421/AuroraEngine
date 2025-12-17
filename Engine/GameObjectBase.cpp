@@ -86,18 +86,6 @@ void GameObjectBase::UpdateWorldMatrix()
 
 void GameObjectBase::Render(XMMATRIX viewMatrix, XMMATRIX projectionMatrix)
 {
-	if (ImGui::TreeNode(m_name.c_str()))
-	{
-		// Position (위치)
-		if (ImGui::DragFloat3("Position", &m_position.m128_f32[0], 0.1f))  SetDirty();
-		// Rotation (회전)
-		if (ImGui::DragFloat3("Rotation", &m_euler.m128_f32[0], 0.1f)) SetDirty();
-		// Scale (크기)
-		if (ImGui::DragFloat3("Scale", &m_scale.m128_f32[0], 0.1f)) SetDirty();
-
-		ImGui::TreePop();
-	}
-
 	ModelComponent* model = GetComponent<ModelComponent>();
 	if (!model) return;
 
@@ -110,6 +98,25 @@ void GameObjectBase::Render(XMMATRIX viewMatrix, XMMATRIX projectionMatrix)
 
 	// 모델 렌더링
 	model->Render();
+}
+
+void GameObjectBase::RenderImGui()
+{
+	if (ImGui::TreeNode(m_name.c_str()))
+	{
+		// Position (위치)
+		if (ImGui::DragFloat3("Position", &m_position.m128_f32[0], 0.01f))  SetDirty();
+		// Rotation (회전)
+		if (ImGui::DragFloat3("Rotation", &m_euler.m128_f32[0], 0.01f)) SetDirty();
+		// Scale (크기)
+		if (ImGui::DragFloat3("Scale", &m_scale.m128_f32[0], 0.01f)) SetDirty();
+
+		SerializeImGui();
+
+		for (auto& [typeIndex, component] : m_components) component->RenderImGui();
+
+		ImGui::TreePop();
+	}
 }
 
 void GameObjectBase::Finalize()
