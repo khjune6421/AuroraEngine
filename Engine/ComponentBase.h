@@ -23,7 +23,7 @@ protected:
 	virtual void Begin() {};
 	// 매 프레임 RenderImGui에서 호출
 	virtual void SerializeImGui() {};
-
+	// 컴포넌트 Finalize에서 호출
 	virtual void End() {};
 
 private:

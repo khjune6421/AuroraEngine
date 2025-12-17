@@ -15,6 +15,13 @@ class CameraComponent : public ComponentBase
 	DirectX::XMMATRIX m_projectionMatrix = DirectX::XMMatrixIdentity(); // 투영 행렬
 
 public:
+	CameraComponent() = default;
+	~CameraComponent() override = default;
+	CameraComponent(const CameraComponent&) = default;
+	CameraComponent& operator=(const CameraComponent&) = default;
+	CameraComponent(CameraComponent&&) = default;
+	CameraComponent& operator=(CameraComponent&&) = default;
+
 	void SetFovY(float fovY) { m_fovY = fovY; UpdateProjectionMatrix(); }
 	void SetScreenSize(UINT width, UINT height) { m_screenWidth = width; m_screenHeight = height; UpdateProjectionMatrix(); }
 	void SetNearZ(float nearZ) { m_nearZ = nearZ; UpdateProjectionMatrix(); }

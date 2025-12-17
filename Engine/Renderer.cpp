@@ -220,9 +220,9 @@ void Renderer::CreateBackBufferResources()
 
 	RenderResourceManager& resourceManager = RenderResourceManager::GetInstance();
 	// 래스터 상태 생성
-	m_backBufferRasterState = resourceManager.GetRasterState(RSBackBuffer);
+	m_backBufferRasterState = resourceManager.GetRasterState(RasterState::BackBuffer);
 	// 샘플러 상태 생성
-	m_backBufferSamplerState = resourceManager.GetSamplerState(SSBackBuffer);
+	m_backBufferSamplerState = resourceManager.GetSamplerState(SamplerState::BackBuffer);
 	// 정점 셰이더 및 입력 레이아웃 생성
 	vector<InputElement> inputElements = { InputElement::Position, InputElement::UV };
 	m_backBufferVertexShaderAndInputLayout = resourceManager.GetVertexShaderAndInputLayout("VSPostProcessing.hlsl", inputElements);
@@ -320,7 +320,7 @@ void Renderer::CreateSceneRenderTarget()
 
 	RenderResourceManager& resourceManager = RenderResourceManager::GetInstance();
 	// 래스터 상태 생성
-	m_sceneRasterState = resourceManager.GetRasterState(RSSolid);
+	m_sceneRasterState = resourceManager.GetRasterState(RasterState::Solid);
 }
 
 void Renderer::SetViewport()

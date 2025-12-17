@@ -1,14 +1,14 @@
 #pragma once
 
-enum RasterState
+enum class RasterState
 {
-	RSBackBuffer, // 백 버퍼 전용 래스터 상태 // AA 없음
-	RSSolid,
-	RSWireframe,
+	BackBuffer, // 백 버퍼 전용 래스터 상태 // AA 없음
+	Solid,
+	Wireframe,
 
-	RSCount
+	Count
 };
-constexpr std::array<D3D11_RASTERIZER_DESC, RSCount> RASTERIZER_DESC_TEMPLATES =
+constexpr std::array<D3D11_RASTERIZER_DESC, static_cast<size_t>(RasterState::Count)> RASTERIZER_DESC_TEMPLATES =
 {
 	// RSBackBuffer
 	D3D11_RASTERIZER_DESC
@@ -56,14 +56,14 @@ constexpr std::array<D3D11_RASTERIZER_DESC, RSCount> RASTERIZER_DESC_TEMPLATES =
 	}
 };
 
-enum SamplerState
+enum class SamplerState
 {
-	SSBackBuffer, // 백 버퍼 전용 샘플러 상태
-	SSScene,
+	BackBuffer, // 백 버퍼 전용 샘플러 상태
+	Scene,
 
-	SSCount
+	Count
 };
-constexpr std::array<D3D11_SAMPLER_DESC, SSCount> SAMPLER_DESC_TEMPLATES =
+constexpr std::array<D3D11_SAMPLER_DESC, static_cast<size_t>(SamplerState::Count)> SAMPLER_DESC_TEMPLATES =
 {
 	// SSBackBuffer
 	D3D11_SAMPLER_DESC
@@ -96,7 +96,7 @@ constexpr std::array<D3D11_SAMPLER_DESC, SSCount> SAMPLER_DESC_TEMPLATES =
 	}
 };
 
-enum InputElement
+enum class InputElement
 {
 	Position,
 	Normal,
@@ -105,7 +105,7 @@ enum InputElement
 
 	InputElementCount
 };
-constexpr std::array<D3D11_INPUT_ELEMENT_DESC, InputElementCount> INPUT_ELEMENT_DESC_TEMPLATES =
+constexpr std::array<D3D11_INPUT_ELEMENT_DESC, static_cast<size_t>(InputElement::InputElementCount)> INPUT_ELEMENT_DESC_TEMPLATES =
 {
 	// Position
 	D3D11_INPUT_ELEMENT_DESC

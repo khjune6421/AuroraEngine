@@ -7,8 +7,8 @@ class RenderResourceManager : public SingletonBase<RenderResourceManager>
 
 	com_ptr<ID3D11Device> m_device = nullptr; // 디바이스
 
-	std::array<com_ptr<ID3D11RasterizerState>, RSCount> m_rasterStates = {}; // 래스터 상태 배열
-	std::array<com_ptr<ID3D11SamplerState>, SSCount> m_samplerStates = {}; // 샘플러 상태 배열
+	std::array<com_ptr<ID3D11RasterizerState>, static_cast<size_t>(RasterState::Count)> m_rasterStates = {}; // 래스터 상태 배열
+	std::array<com_ptr<ID3D11SamplerState>, static_cast<size_t>(SamplerState::Count)> m_samplerStates = {}; // 샘플러 상태 배열
 
 	std::unordered_map<UINT, com_ptr<ID3D11Buffer>> m_constantBuffers = {}; // 상수 버퍼 맵 // 키: 버퍼 크기
 
@@ -30,9 +30,9 @@ public:
 
 	// 자원 획득 함수들
 	// 래스터 상태 얻기
-	com_ptr<ID3D11RasterizerState> GetRasterState(RasterState state) { return m_rasterStates[state]; }
+	com_ptr<ID3D11RasterizerState> GetRasterState(RasterState state) { return m_rasterStates[static_cast<size_t>(state)]; }
 	// 샘플러 상태 얻기
-	com_ptr<ID3D11SamplerState> GetSamplerState(SamplerState state) { return m_samplerStates[state]; }
+	com_ptr<ID3D11SamplerState> GetSamplerState(SamplerState state) { return m_samplerStates[static_cast<size_t>(state)]; }
 	// 상수 버퍼 얻기 // 이미 생성된 버퍼가 있으면 재사용 // 없으면 새로 생성
 	com_ptr<ID3D11Buffer> GetConstantBuffer(UINT bufferSize);
 	// 정점 셰이더 및 입력 레이아웃 얻기

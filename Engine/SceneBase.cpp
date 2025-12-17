@@ -71,9 +71,8 @@ void SceneBase::RenderImGui()
 
 	if (ImGui::ColorEdit3("Clear Color", m_clearColor.data())) {}
 
-	ImGui::Text("Total Objects: %zu", m_gameObjects.size());
 	ImGui::Separator();
-
+	ImGui::Text("Total Objects: %zu", m_gameObjects.size());
 	for (unique_ptr<GameObjectBase>& gameObject : m_gameObjects) gameObject->RenderImGui();
 
 	ImGui::End();

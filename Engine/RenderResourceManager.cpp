@@ -58,7 +58,7 @@ pair<com_ptr<ID3D11VertexShader>, com_ptr<ID3D11InputLayout>> RenderResourceMana
 
 	// 입력 레이아웃 생성
 	vector<D3D11_INPUT_ELEMENT_DESC> inputElementDescs;
-	for (const auto& element : inputElements) inputElementDescs.push_back(INPUT_ELEMENT_DESC_TEMPLATES[element]);
+	for (const auto& element : inputElements) inputElementDescs.push_back(INPUT_ELEMENT_DESC_TEMPLATES[static_cast<size_t>(element)]);
 
 	hr = m_device->CreateInputLayout
 	(
@@ -146,7 +146,7 @@ void RenderResourceManager::CreateRasterStates()
 {
 	HRESULT hr = S_OK;
 
-	for (size_t i = 0; i < RSCount; ++i)
+	for (size_t i = 0; i < static_cast<size_t>(RasterState::Count); ++i)
 	{
 		hr = m_device->CreateRasterizerState(&RASTERIZER_DESC_TEMPLATES[i], m_rasterStates[i].GetAddressOf());
 		CheckResult(hr, "래스터 상태 생성 실패.");
@@ -157,7 +157,7 @@ void RenderResourceManager::CreateSamplerStates()
 {
 	HRESULT hr = S_OK;
 
-	for (size_t i = 0; i < SSCount; ++i)
+	for (size_t i = 0; i < static_cast<size_t>(SamplerState::Count); ++i)
 	{
 		hr = m_device->CreateSamplerState(&SAMPLER_DESC_TEMPLATES[i], m_samplerStates[i].GetAddressOf());
 		CheckResult(hr, "샘플러 상태 생성 실패.");

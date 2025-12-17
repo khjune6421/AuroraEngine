@@ -24,6 +24,13 @@ class ModelComponent : public ComponentBase
 	};
 
 public:
+	ModelComponent() = default;
+	~ModelComponent() override = default;
+	ModelComponent(const ModelComponent&) = default;
+	ModelComponent& operator=(const ModelComponent&) = default;
+	ModelComponent(ModelComponent&&) = default;
+	ModelComponent& operator=(ModelComponent&&) = default;
+
 	void Render();
 
 protected:
