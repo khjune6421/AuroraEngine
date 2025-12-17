@@ -102,7 +102,7 @@ void GameObjectBase::Render(XMMATRIX viewMatrix, XMMATRIX projectionMatrix)
 
 void GameObjectBase::RenderImGui()
 {
-	if (ImGui::TreeNode(m_name.c_str()))
+	if (ImGui::TreeNode(typeid(*this).name()))
 	{
 		// Position (À§Ä¡)
 		if (ImGui::DragFloat3("Position", &m_position.m128_f32[0], 0.01f))  SetDirty();
@@ -113,6 +113,8 @@ void GameObjectBase::RenderImGui()
 
 		SerializeImGui();
 
+		ImGui::Separator();
+		ImGui::Text("Components:");
 		for (auto& [typeIndex, component] : m_components) component->RenderImGui();
 
 		ImGui::TreePop();

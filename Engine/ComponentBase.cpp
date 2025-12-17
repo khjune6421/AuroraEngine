@@ -3,7 +3,7 @@
 
 void ComponentBase::RenderImGui()
 {
-	if (ImGui::TreeNode(m_name.c_str()))
+	if (ImGui::TreeNode(typeid(*this).name()))
 	{
 		SerializeImGui();
 		ImGui::TreePop();

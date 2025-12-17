@@ -67,12 +67,12 @@ void SceneBase::Render()
 
 void SceneBase::RenderImGui()
 {
-	ImGui::Begin(m_name.c_str());
+	ImGui::Begin(typeid(*this).name());
 
 	if (ImGui::ColorEdit3("Clear Color", m_clearColor.data())) {}
 
 	ImGui::Separator();
-	ImGui::Text("Total Objects: %zu", m_gameObjects.size());
+	ImGui::Text("Game Objects:");
 	for (unique_ptr<GameObjectBase>& gameObject : m_gameObjects) gameObject->RenderImGui();
 
 	ImGui::End();

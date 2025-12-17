@@ -7,7 +7,6 @@ class ComponentBase
 	friend class GameObjectBase;
 
 protected:
-	std::string m_name = "Component"; // 컴포넌트 이름
 	GameObjectBase* m_owner = nullptr; // 소유 게임 오브젝트 포인터
 
 public:

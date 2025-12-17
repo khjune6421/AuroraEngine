@@ -28,8 +28,6 @@ void ModelComponent::Render()
 
 void ModelComponent::Begin()
 {
-	m_name = "ModelComponent";
-
 	m_model = RenderResourceManager::GetInstance().LoadModel(m_modelFileName);
 
 	CreateShaders();

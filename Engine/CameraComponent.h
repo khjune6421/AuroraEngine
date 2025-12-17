@@ -34,7 +34,7 @@ public:
 	void UpdateViewMatrix(const DirectX::XMVECTOR& eyePosition, const DirectX::XMVECTOR& focusPosition, const DirectX::XMVECTOR& upVector) { m_viewMatrix = DirectX::XMMatrixLookAtLH(eyePosition, focusPosition, upVector); }
 
 protected:
-	void Begin() override { m_name = "CameraComponent"; UpdateProjectionMatrix(); }
+	void Begin() override { UpdateProjectionMatrix(); }
 	void SerializeImGui() override;
 
 private:
