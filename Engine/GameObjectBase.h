@@ -37,7 +37,7 @@ protected:
 
 public:
 	GameObjectBase(); // 무조건 CreateGameObject로 생성
-	virtual ~GameObjectBase() = default;
+	virtual ~GameObjectBase(); // 컴포넌트 제거
 	GameObjectBase(const GameObjectBase&) = default; // 복사
 	GameObjectBase& operator=(const GameObjectBase&) = default; // 복사 대입
 	GameObjectBase(GameObjectBase&&) = default; // 이동
@@ -140,5 +140,9 @@ template<typename T>
 inline void GameObjectBase::RemoveComponent()
 {
 	auto it = m_components.find(std::type_index(typeid(T)));
-	if (it != m_components.end()) m_components.erase(it);
+	if (it != m_components.end())
+	{
+		it->second->Finalize();
+		m_components.erase(it);
+	}
 }

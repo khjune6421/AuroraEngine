@@ -15,6 +15,11 @@ GameObjectBase::GameObjectBase()
 	m_id = idIndex++;
 }
 
+GameObjectBase::~GameObjectBase()
+{
+	for (auto& [typeIndex, component] : m_components) component->Finalize();
+}
+
 void GameObjectBase::MoveDirection(float distance, Direction direction)
 {
 	XMVECTOR directionVector = GetDirectionVector(direction);
