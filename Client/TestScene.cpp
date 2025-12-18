@@ -13,6 +13,5 @@ GameObjectBase* TestScene::CreateCameraObject()
 
 void TestScene::Begin()
 {
-	m_name = "TestScene";
 	CreateGameObject<TestObject>();
 }

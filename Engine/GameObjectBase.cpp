@@ -60,10 +60,12 @@ XMVECTOR GameObjectBase::GetDirectionVector(Direction direction)
 	}
 }
 
-void GameObjectBase::Initialize()
+void GameObjectBase::Initialize(SceneBase* parentScene)
 {
 	m_typeName = typeid(*this).name();
 	if (m_typeName.find("class ") == 0) m_typeName = m_typeName.substr(6);
+
+	m_parentScene = parentScene;
 
 	m_worldWVPConstantBuffer = RenderResourceManager::GetInstance().GetConstantBuffer(sizeof(WorldWVPBuffer));
 

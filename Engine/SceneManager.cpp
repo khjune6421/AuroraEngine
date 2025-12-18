@@ -15,6 +15,7 @@ void SceneManager::Run()
 	}
 
 	m_currentScene->Update(GetDeltaTime());
+	m_currentScene->RemovePendingGameObjects();
 	m_currentScene->TransformGameObjects();
 	m_currentScene->Render();
 }

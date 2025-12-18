@@ -33,6 +33,14 @@ public:
 
 	void Render();
 
+	const std::string& GetModelFileName() const { return m_modelFileName; }
+	void SetModelFileName(const std::string& modelFileName) { m_modelFileName = modelFileName; }
+
+	const std::string& GetVertexShaderName() const { return m_vsShaderName; }
+	void SetVertexShaderName(const std::string& vsShaderName) { m_vsShaderName = vsShaderName; }
+	const std::string& GetPixelShaderName() const { return m_psShaderName; }
+	void SetPixelShaderName(const std::string& psShaderName) { m_psShaderName = psShaderName; }
+
 protected:
 	void Begin() override;
 	void SerializeImGui() override;

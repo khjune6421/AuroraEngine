@@ -17,15 +17,6 @@ GameObjectBase* SceneBase::CreateCameraObject()
 	return cameraGameObject;
 }
 
-void SceneBase::RemoveGameObject(GameObjectBase* gameObject)
-{
-	auto it = find_if(m_gameObjects.begin(), m_gameObjects.end(), [gameObject](const unique_ptr<GameObjectBase>& obj) { return obj.get() == gameObject; });
-	if (it == m_gameObjects.end()) return;
-
-	it->get()->Finalize();
-	m_gameObjects.erase(it);
-}
-
 void SceneBase::Initialize()
 {
 	m_typeName = typeid(*this).name();
@@ -40,6 +31,26 @@ void SceneBase::Initialize()
 void SceneBase::Update(float deltaTime)
 {
 	for (unique_ptr<GameObjectBase>& gameObject : m_gameObjects) gameObject->Update(deltaTime);
+}
+
+void SceneBase::RemovePendingGameObjects()
+{
+	for (GameObjectBase* gameObjectToRemove : m_gameObjectsToRemove)
+	{
+		std::erase_if
+		(
+			m_gameObjects, [gameObjectToRemove](const unique_ptr<GameObjectBase>& obj)
+			{
+				if (obj.get() == gameObjectToRemove)
+				{
+					obj->Finalize();
+					return true;
+				}
+			return false;
+			}
+		);
+	}
+	m_gameObjectsToRemove.clear();
 }
 
 void SceneBase::TransformGameObjects()

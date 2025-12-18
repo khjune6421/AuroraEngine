@@ -7,7 +7,8 @@ class GameObjectBase // TODO: 부모-자식 관계 구현
 {
 	friend class SceneBase;
 
-	UINT m_id = 0; // 디버깅용 고유 ID
+	UINT m_id = 0; // 고유 ID
+	std::string m_typeName = "GameObjectBase"; // 게임 오브젝트 타입 이름
 
 	// 변환 관련 멤버 뱐수
 	DirectX::XMMATRIX m_worldMatrix = DirectX::XMMatrixIdentity(); // 월드 행렬
@@ -32,7 +33,7 @@ class GameObjectBase // TODO: 부모-자식 관계 구현
 	std::unordered_map<std::type_index, std::unique_ptr<ComponentBase>> m_components = {}; // 컴포넌트 맵
 
 protected:
-	std::string m_typeName = "GameObjectBase"; // 게임 오브젝트 타입 이름
+	SceneBase* m_parentScene = nullptr; // 소유 씬 포인터
 
 public:
 	GameObjectBase(); // 무조건 CreateGameObject로 생성
@@ -43,6 +44,7 @@ public:
 	GameObjectBase& operator=(GameObjectBase&&) = default; // 이동 대입
 
 	UINT GetID() const { return m_id; }
+
 	// 변환 관련 함수
 	// 위치 지정
 	void SetPosition(const DirectX::XMVECTOR& position) { m_position = position; SetDirty(); }
@@ -100,7 +102,7 @@ private:
 	void SetDirty() { m_isDirty = true; } // 위치 갱신 필요로 설정
 
 	// 게임 오브젝트 초기화 // 씬이 CreateGameObject에서 호출
-	void Initialize();
+	void Initialize(SceneBase* parentScene);
 
 	// 월드 행렬 갱신 // 씬이 TransformGameObjects에서 호출
 	void UpdateWorldMatrix();
