@@ -5,6 +5,8 @@ class SceneBase
 {
 	friend class SceneManager;
 
+	std::string m_typeName = "SceneBase"; // 씬 타입 이름
+
 	std::vector<std::unique_ptr<GameObjectBase>> m_gameObjects = {}; // 게임 오브젝트 배열
 
 	struct ViewProjectionBuffer // 뷰-투영 상수 버퍼 구조체

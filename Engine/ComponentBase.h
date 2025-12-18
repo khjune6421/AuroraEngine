@@ -6,6 +6,8 @@ class ComponentBase
 {
 	friend class GameObjectBase;
 
+	std::string m_typeName = "ComponentBase"; // 컴포넌트 타입 이름
+
 protected:
 	GameObjectBase* m_owner = nullptr; // 소유 게임 오브젝트 포인터
 
@@ -26,7 +28,7 @@ protected:
 	virtual void End() {};
 
 private:
-	void Initialize(GameObjectBase* owner) { m_owner = owner; Begin(); }
+	void Initialize(GameObjectBase* owner);
 	// ImGui 렌더링 // GameObjectBase의 RenderImGui에서 호출
 	void RenderImGui();
 	void Finalize() { End(); }

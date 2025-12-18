@@ -8,7 +8,6 @@ using namespace DirectX;
 
 void TestObject::Begin()
 {
-	m_name = "TestObject";
 	AddComponent<ModelComponent>(); // 기본 생성
 	SetScale({ 1.0f, 1.0f, 1.0f });
 }

@@ -28,6 +28,9 @@ void SceneBase::RemoveGameObject(GameObjectBase* gameObject)
 
 void SceneBase::Initialize()
 {
+	m_typeName = typeid(*this).name();
+	if (m_typeName.find("class ") == 0) m_typeName = m_typeName.substr(6);
+
 	m_viewProjectionConstantBuffer = RenderResourceManager::GetInstance().GetConstantBuffer(sizeof(ViewProjectionBuffer));
 	m_mainCamera = CreateCameraObject()->AddComponent<CameraComponent>();
 
@@ -67,7 +70,7 @@ void SceneBase::Render()
 
 void SceneBase::RenderImGui()
 {
-	ImGui::Begin(typeid(*this).name());
+	ImGui::Begin(m_typeName.c_str());
 
 	if (ImGui::ColorEdit3("Clear Color", m_clearColor.data())) {}
 

@@ -62,6 +62,9 @@ XMVECTOR GameObjectBase::GetDirectionVector(Direction direction)
 
 void GameObjectBase::Initialize()
 {
+	m_typeName = typeid(*this).name();
+	if (m_typeName.find("class ") == 0) m_typeName = m_typeName.substr(6);
+
 	m_worldWVPConstantBuffer = RenderResourceManager::GetInstance().GetConstantBuffer(sizeof(WorldWVPBuffer));
 
 	Begin();
@@ -102,7 +105,7 @@ void GameObjectBase::Render(XMMATRIX viewMatrix, XMMATRIX projectionMatrix)
 
 void GameObjectBase::RenderImGui()
 {
-	if (ImGui::TreeNode(typeid(*this).name()))
+	if (ImGui::TreeNode(m_typeName.c_str()))
 	{
 		// Position (À§Ä¡)
 		if (ImGui::DragFloat3("Position", &m_position.m128_f32[0], 0.01f))  SetDirty();

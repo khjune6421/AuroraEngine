@@ -21,6 +21,7 @@ void Renderer::BeginFrame(const array<FLOAT, 4>& clearColor)
 	// ImGui 새 프레임 시작
 	ImGui_ImplDX11_NewFrame();
 	ImGui::NewFrame();
+	ImGui::DockSpaceOverViewport(0, ImGui::GetMainViewport(), ImGuiDockNodeFlags_PassthruCentralNode);
 
 	// 래스터 상태 변경
 	m_deviceContext->RSSetState(m_sceneRasterState.Get());
