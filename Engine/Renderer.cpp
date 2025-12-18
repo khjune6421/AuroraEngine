@@ -173,10 +173,6 @@ void Renderer::CreateBackBufferRenderTarget()
 {
 	HRESULT hr = S_OK;
 
-	// 기존 렌더 타겟 해제
-	m_backBuffer.renderTarget.Reset();
-	m_backBuffer.renderTargetView.Reset();
-
 	hr = m_swapChain->GetBuffer(0, IID_PPV_ARGS(&m_backBuffer.renderTarget));
 	CheckResult(hr, "스왑 체인 버퍼 얻기 실패.");
 
@@ -234,11 +230,6 @@ void Renderer::CreateBackBufferResources()
 void Renderer::CreateSceneRenderTarget()
 {
 	HRESULT hr = S_OK;
-
-	m_sceneBuffer.renderTarget.Reset();
-	m_sceneBuffer.renderTargetView.Reset();
-	m_sceneBuffer.depthStencilTexture.Reset();
-	m_sceneBuffer.depthStencilView.Reset();
 
 	// 렌더 타겟 텍스처 생성
 	const D3D11_TEXTURE2D_DESC textureDesc =

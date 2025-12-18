@@ -230,7 +230,7 @@ void RenderResourceManager::CreateMeshBuffers(Mesh& mesh)
 	const D3D11_BUFFER_DESC vertexBufferDesc =
 	{
 		.ByteWidth = static_cast<UINT>(sizeof(Vertex) * mesh.vertices.size()),
-		.Usage = D3D11_USAGE_DEFAULT,
+		.Usage = D3D11_USAGE_DEFAULT, // GPU 읽기/쓰기 // 이거 D3D11_USAGE_IMMUTABLE로 바꿀 수 있나?
 		.BindFlags = D3D11_BIND_VERTEX_BUFFER,
 		.CPUAccessFlags = 0,
 		.MiscFlags = 0,
@@ -250,7 +250,7 @@ void RenderResourceManager::CreateMeshBuffers(Mesh& mesh)
 	const D3D11_BUFFER_DESC indexBufferDesc =
 	{
 		.ByteWidth = static_cast<UINT>(sizeof(UINT) * mesh.indices.size()),
-		.Usage = D3D11_USAGE_DEFAULT,
+		.Usage = D3D11_USAGE_DEFAULT, // 이것도
 		.BindFlags = D3D11_BIND_INDEX_BUFFER,
 		.CPUAccessFlags = 0,
 		.MiscFlags = 0,

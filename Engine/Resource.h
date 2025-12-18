@@ -1,5 +1,14 @@
 #pragma once
 
+struct RenderTarget
+{
+	com_ptr<ID3D11Texture2D> renderTarget = nullptr; // 렌더 타겟 텍스처
+	com_ptr<ID3D11RenderTargetView> renderTargetView = nullptr; // 렌더 타겟 뷰
+
+	com_ptr<ID3D11Texture2D> depthStencilTexture = nullptr; // 깊이-스텐실 텍스처
+	com_ptr<ID3D11DepthStencilView> depthStencilView = nullptr; // 깊이-스텐실 뷰
+};
+
 enum class RasterState
 {
 	BackBuffer, // 백 버퍼 전용 래스터 상태 // AA 없음
