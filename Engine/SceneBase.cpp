@@ -64,9 +64,10 @@ void SceneBase::Render()
 	renderer.BeginFrame(m_clearColor);
 
 	// 뷰-투영 상수 버퍼 업데이트 및 셰이더에 설정
-	com_ptr<ID3D11DeviceContext> deviceContext = renderer.GetDeviceContext();
 	m_viewProjectionData.viewMatrix = XMMatrixTranspose(m_mainCamera->GetViewMatrix());
 	m_viewProjectionData.projectionMatrix = XMMatrixTranspose(m_mainCamera->GetProjectionMatrix());
+
+	com_ptr<ID3D11DeviceContext> deviceContext = renderer.GetDeviceContext();
 	deviceContext->UpdateSubresource(m_viewProjectionConstantBuffer.Get(), 0, nullptr, &m_viewProjectionData, 0, 0);
 	deviceContext->VSSetConstantBuffers(0, 1, m_viewProjectionConstantBuffer.GetAddressOf());
 

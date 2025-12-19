@@ -14,4 +14,5 @@ GameObjectBase* TestScene::CreateCameraObject()
 void TestScene::Begin()
 {
 	CreateGameObject<TestObject>();
+	CreateGameObject<TestObject>()->SetPosition({ 3.0f, 0.0f, 0.0f });
 }

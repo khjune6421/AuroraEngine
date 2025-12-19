@@ -65,14 +65,14 @@ XMVECTOR GameObjectBase::GetDirectionVector(Direction direction)
 	}
 }
 
-void GameObjectBase::Initialize(SceneBase* parentScene)
+void GameObjectBase::Initialize(SceneBase* scene)
 {
 	m_typeName = typeid(*this).name();
 	if (m_typeName.find("class ") == 0) m_typeName = m_typeName.substr(6);
 
-	m_parentScene = parentScene;
+	m_scene = scene;
 
-	m_worldWVPConstantBuffer = ResourceManager::GetInstance().GetConstantBuffer(sizeof(WorldWVPBuffer));
+	m_worldWVPConstantBuffer = ResourceManager::GetInstance().GetConstantBuffer(sizeof(WorldBuffer));
 
 	Begin();
 }
@@ -87,6 +87,10 @@ void GameObjectBase::UpdateWorldMatrix()
 
 	m_worldMatrix = m_scaleMatrix * m_rotationMatrix * m_positionMatrix;
 
+	XMVECTOR scaleSquared = XMVectorMultiply(m_scale, m_scale);
+	XMVECTOR invScaleSquared = XMVectorReciprocal(scaleSquared);
+	m_inverseScaleSquareMatrix = XMMatrixScalingFromVector(invScaleSquared);
+
 	// 카메라 컴포넌트가 있으면 뷰 행렬 갱신
 	CameraComponent* cameraComponent = GetComponent<CameraComponent>();
 	if (cameraComponent) cameraComponent->UpdateViewMatrix(m_position, XMVectorAdd(m_position, GetDirectionVector(Direction::Forward)), GetDirectionVector(Direction::Up));
@@ -100,10 +104,12 @@ void GameObjectBase::Render(XMMATRIX viewMatrix, XMMATRIX projectionMatrix)
 	if (!model) return;
 
 	// 월드 및 WVP 행렬 상수 버퍼 업데이트 및 셰이더에 설정
+	m_worldData.worldMatrix = XMMatrixTranspose(m_worldMatrix);
+	m_worldData.normalMatrix = XMMatrixTranspose(m_worldMatrix * m_inverseScaleSquareMatrix);
+	m_worldData.WVPMatrix = projectionMatrix * viewMatrix * m_worldData.worldMatrix;
+
 	const com_ptr<ID3D11DeviceContext> deviceContext = Renderer::GetInstance().GetDeviceContext();
-	m_worldWVPData.worldMatrix = XMMatrixTranspose(m_worldMatrix);
-	m_worldWVPData.WVPMatrix = projectionMatrix * viewMatrix * m_worldWVPData.worldMatrix;
-	deviceContext->UpdateSubresource(m_worldWVPConstantBuffer.Get(), 0, nullptr, &m_worldWVPData, 0, 0);
+	deviceContext->UpdateSubresource(m_worldWVPConstantBuffer.Get(), 0, nullptr, &m_worldData, 0, 0);
 	deviceContext->VSSetConstantBuffers(1, 1, m_worldWVPConstantBuffer.GetAddressOf());
 
 	// 모델 렌더링
