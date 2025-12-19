@@ -2,10 +2,6 @@
 
 class IBase
 {
-protected:
-	IBase* m_parent = nullptr;
-	std::vector<std::unique_ptr<IBase>> m_children = {};
-
 public:
 	virtual ~IBase() = default;
 	IBase(const IBase&) = delete;
