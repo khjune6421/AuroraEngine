@@ -214,14 +214,14 @@ Mesh ResourceManager::ProcessMesh(const aiMesh* mesh, const aiScene* scene)
 		// 위치
 		vertex.position = { mesh->mVertices[i].x, mesh->mVertices[i].y, mesh->mVertices[i].z, 1.0f };
 
+		// UV // 첫 번째 UV 채널만 사용
+		if (mesh->mTextureCoords[0]) vertex.UV = { mesh->mTextureCoords[0][i].x, mesh->mTextureCoords[0][i].y };
+
 		// 법선
 		if (mesh->HasNormals()) vertex.normal = { mesh->mNormals[i].x, mesh->mNormals[i].y, mesh->mNormals[i].z };
 
 		// 접선
 		if (mesh->HasTangentsAndBitangents()) vertex.tangent = { mesh->mTangents[i].x, mesh->mTangents[i].y, mesh->mTangents[i].z };
-
-		// UV // 첫 번째 UV 채널만 사용
-		if (mesh->mTextureCoords[0]) vertex.UV = { mesh->mTextureCoords[0][i].x, mesh->mTextureCoords[0][i].y };
 
 		resultMesh.vertices.push_back(vertex);
 	}
@@ -257,10 +257,16 @@ Mesh ResourceManager::ProcessMesh(const aiMesh* mesh, const aiScene* scene)
 		aiMaterial* material = scene->mMaterials[mesh->mMaterialIndex];
 		resultMesh.materialFactor = ProcessMaterialFactor(material);
 
-		resultMesh.materialTexture.albedoTextureSRV = LoadMaterialTexture(material, aiTextureType_DIFFUSE);
-		resultMesh.materialTexture.normalTextureSRV = LoadMaterialTexture(material, aiTextureType_NORMALS);
-		resultMesh.materialTexture.metallicTextureSRV = LoadMaterialTexture(material, aiTextureType_METALNESS);
-		resultMesh.materialTexture.roughnessTextureSRV = LoadMaterialTexture(material, aiTextureType_DIFFUSE_ROUGHNESS);
+		// 쓰면 터짐 // 일단은 텍스처는 따로 불러오게
+		//resultMesh.materialTexture.albedoTextureSRV = LoadMaterialTexture(material, aiTextureType_DIFFUSE);
+		//resultMesh.materialTexture.normalTextureSRV = LoadMaterialTexture(material, aiTextureType_NORMALS);
+		//resultMesh.materialTexture.metallicTextureSRV = LoadMaterialTexture(material, aiTextureType_METALNESS);
+		//resultMesh.materialTexture.roughnessTextureSRV = LoadMaterialTexture(material, aiTextureType_DIFFUSE_ROUGHNESS);
+
+		resultMesh.materialTexture.albedoTextureSRV = LoadTexture("SampleAlbedo.jpg");
+		resultMesh.materialTexture.normalTextureSRV = LoadTexture("SampleNormal.jpg");
+		resultMesh.materialTexture.metallicTextureSRV = LoadTexture("SampleMetallic.jpg");
+		resultMesh.materialTexture.roughnessTextureSRV = LoadTexture("SampleRoughness.jpg");
 	}
 
 	CreateMeshBuffers(resultMesh);

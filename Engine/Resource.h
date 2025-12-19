@@ -108,9 +108,9 @@ constexpr std::array<D3D11_SAMPLER_DESC, static_cast<size_t>(SamplerState::Count
 enum class InputElement
 {
 	Position,
+	UV,
 	Normal,
 	Tangent,
-	UV,
 
 	InputElementCount
 };
@@ -124,6 +124,18 @@ constexpr std::array<D3D11_INPUT_ELEMENT_DESC, static_cast<size_t>(InputElement:
 		.Format = DXGI_FORMAT_R32G32B32A32_FLOAT, // float4
 		.InputSlot = 0,
 		.AlignedByteOffset = D3D11_APPEND_ALIGNED_ELEMENT, // 자동 오프셋 계산
+		.InputSlotClass = D3D11_INPUT_PER_VERTEX_DATA,
+		.InstanceDataStepRate = 0
+	},
+
+	// UV
+	D3D11_INPUT_ELEMENT_DESC
+	{
+		.SemanticName = "TEXCOORD",
+		.SemanticIndex = 0,
+		.Format = DXGI_FORMAT_R32G32_FLOAT, // float2
+		.InputSlot = 0,
+		.AlignedByteOffset = D3D11_APPEND_ALIGNED_ELEMENT,
 		.InputSlotClass = D3D11_INPUT_PER_VERTEX_DATA,
 		.InstanceDataStepRate = 0
 	},
@@ -150,27 +162,15 @@ constexpr std::array<D3D11_INPUT_ELEMENT_DESC, static_cast<size_t>(InputElement:
 		.AlignedByteOffset = D3D11_APPEND_ALIGNED_ELEMENT,
 		.InputSlotClass = D3D11_INPUT_PER_VERTEX_DATA,
 		.InstanceDataStepRate = 0
-	},
-
-	// UV
-	D3D11_INPUT_ELEMENT_DESC
-	{
-		.SemanticName = "TEXCOORD",
-		.SemanticIndex = 0,
-		.Format = DXGI_FORMAT_R32G32_FLOAT, // float2
-		.InputSlot = 0,
-		.AlignedByteOffset = D3D11_APPEND_ALIGNED_ELEMENT,
-		.InputSlotClass = D3D11_INPUT_PER_VERTEX_DATA,
-		.InstanceDataStepRate = 0
 	}
 };
 
 struct Vertex
 {
 	DirectX::XMFLOAT4 position = {};
+	DirectX::XMFLOAT2 UV = {};
 	DirectX::XMFLOAT3 normal = {};
 	DirectX::XMFLOAT3 tangent = {};
-	DirectX::XMFLOAT2 UV = {};
 };
 
 struct MaterialFactor

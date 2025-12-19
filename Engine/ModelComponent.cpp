@@ -26,6 +26,15 @@ void ModelComponent::Render()
 		deviceContext->UpdateSubresource(m_materialConstantBuffer.Get(), 0, nullptr, &mesh.materialFactor, 0, 0);
 		deviceContext->PSSetConstantBuffers(0, 1, m_materialConstantBuffer.GetAddressOf());
 
+		// 샘플러 상태 설정
+		deviceContext->PSSetSamplers(0, 1, ResourceManager::GetInstance().GetSamplerState(SamplerState::Scene).GetAddressOf());
+
+		// 재질 텍스처 셰이더에 설정
+		deviceContext->PSSetShaderResources(0, 1, mesh.materialTexture.albedoTextureSRV.GetAddressOf());
+		deviceContext->PSSetShaderResources(1, 1, mesh.materialTexture.normalTextureSRV.GetAddressOf());
+		deviceContext->PSSetShaderResources(2, 1, mesh.materialTexture.metallicTextureSRV.GetAddressOf());
+		deviceContext->PSSetShaderResources(3, 1, mesh.materialTexture.roughnessTextureSRV.GetAddressOf());
+
 		deviceContext->DrawIndexed(mesh.indexCount, 0, 0);
 	}
 }

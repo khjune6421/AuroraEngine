@@ -16,13 +16,13 @@ class ModelComponent : public ComponentBase
 	std::string m_vsShaderName = "VSModel.hlsl"; // 기본 모델 정점 셰이더
 	std::string m_psShaderName = "PSModel.hlsl"; // 기본 모델 픽셀 셰이더
 
-	// 입력 요소 배열 // 위치, 법선, 접선, UV
+	// 입력 요소 배열 // 위치, UV, 법선, 접선
 	std::vector<InputElement> m_inputElements =
 	{
 		InputElement::Position,
+		InputElement::UV,
 		InputElement::Normal,
-		InputElement::Tangent,
-		InputElement::UV
+		InputElement::Tangent
 	};
 
 public:
