@@ -1,10 +1,9 @@
 #pragma once
 #include "GameObjectBase.h"
+#include "IBase.h"
 
-class SceneBase
+class SceneBase : public IBase
 {
-	friend class SceneManager;
-
 	std::string m_typeName = "SceneBase"; // 씬 타입 이름
 
 	std::vector<std::unique_ptr<GameObjectBase>> m_gameObjects = {}; // 게임 오브젝트 배열
@@ -30,35 +29,40 @@ public:
 	SceneBase(SceneBase&&) = delete; // 이동 금지
 	SceneBase& operator=(SceneBase&&) = delete; // 이동 대입 금지
 
+	// 씬 초기화 // 씬 사용 전 반드시 호출해야 함
+	void Initialize() override;
+	// 씬 업데이트 // 씬 매니저가 호출
+	void Update(float deltaTime) override;
+	// 씬 렌더링 // 씬 매니저가 호출
+	void Render() override;
+	// 씬 종료 // 씬 매니저가 씬을 교체할 때 호출
+	void Finalize() override { FinalizeScene(); }
+
 	template<typename T, typename... Args>
 	T* CreateGameObject(Args&&... args);
 	void RemoveGameObject(GameObjectBase* gameObject) { m_gameObjectsToRemove.push_back(gameObject); }
 
 protected:
+	// 씬 초기화 // Initialize에서 호출
+	virtual void InitializeScene() = 0;
+	// 씬 업데이트 // Update에서 호출
+	virtual void UpdateScene(float deltaTime) {}
+	// 씬 렌더링 // Render에서 호출
+	virtual void RenderScene() {}
+	// 씬 종료 // Finalize에서 호출
+	virtual void FinalizeScene() = 0;
+
 	// 메인 카메라 게임 오브젝트 설정
 	virtual GameObjectBase* CreateCameraObject();
-	virtual void Begin() {}
-	// 매 프레임 RenderImGui에서 호출
-	virtual void SerializeImGui() {}
-	virtual void End() {}
 
 private:
-	// 씬 초기화 // 씬 사용 전 반드시 호출해야 함
-	void Initialize();
-
-	// 씬 업데이트 // 매 프레임 씬 매니저가 호출
-	void Update(float deltaTime);
-	// 게임 오브젝트 변환 갱신 // 매 프레임 씬 매니저가 호출
-	void TransformGameObjects();
-	// 제거할 게임 오브젝트 제거 // 매 프레임 씬 매니저가 호출
+	// 제거할 게임 오브젝트 제거 // Update에서 호출
 	void RemovePendingGameObjects();
-	// 씬 렌더링 // 매 프레임 씬 매니저가 호출
-	void Render();
+	// 게임 오브젝트 변환 갱신 // Update에서 호출
+	void UpdateGameObjectsTransform();
+
 	// ImGui 렌더링
 	void RenderImGui();
-
-	// 씬 종료 // 씬 매니저가 씬을 교체할 때 호출
-	void Finalize();
 };
 
 template<typename T, typename ...Args>

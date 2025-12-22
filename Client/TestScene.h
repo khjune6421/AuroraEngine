@@ -7,12 +7,14 @@ class TestScene : public SceneBase
 public:
 	TestScene() = default;
 	~TestScene() override = default;
-	TestScene(const TestScene&) = delete;
-	TestScene& operator=(const TestScene&) = delete;
-	TestScene(TestScene&&) = delete;
-	TestScene& operator=(TestScene&&) = delete;
+	TestScene(const TestScene&) = default;
+	TestScene& operator=(const TestScene&) = default;
+	TestScene(TestScene&&) = default;
+	TestScene& operator=(TestScene&&) = default;
 
 private:
+	void InitializeScene() override;
 	GameObjectBase* CreateCameraObject() override;
-	void Begin() override;
+
+	void FinalizeScene() override {}
 };
