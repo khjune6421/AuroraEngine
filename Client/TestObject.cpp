@@ -15,16 +15,16 @@ void TestObject::InitializeGameObject()
 	if (count < 10)
 	{
 		count++;
-		CreateChildGameObject<TestObject>()->SetPosition({ 2.0f, 0.0f, 0.0f });
+		CreateChildGameObject<TestObject>()->SetPosition({ 0.0f, 0.0f, 2.0f });
 	}
 }
 
 void TestObject::UpdateGameObject(float deltaTime)
 {
-	if (GetAsyncKeyState('W') & 0x8000) Rotate({ -deltaTime * 2.0f, 0.0f, 0.0f });
-	if (GetAsyncKeyState('S') & 0x8000) Rotate({ deltaTime * 2.0f, 0.0f, 0.0f });
-	if (GetAsyncKeyState('A') & 0x8000) Rotate({ 0.0f, -deltaTime * 2.0f, 0.0f });
-	if (GetAsyncKeyState('D') & 0x8000) Rotate({ 0.0f, deltaTime * 2.0f, 0.0f });
-	if (GetAsyncKeyState('Q') & 0x8000) Rotate({ 0.0f, 0.0f, -deltaTime * 2.0f });
-	if (GetAsyncKeyState('E') & 0x8000) Rotate({ 0.0f, 0.0f, deltaTime * 2.0f });
+	if (GetAsyncKeyState('W') & 0x8000) Rotate({ -deltaTime, 0.0f, 0.0f });
+	if (GetAsyncKeyState('S') & 0x8000) Rotate({ deltaTime, 0.0f, 0.0f });
+	if (GetAsyncKeyState('A') & 0x8000) Rotate({ 0.0f, -deltaTime, 0.0f });
+	if (GetAsyncKeyState('D') & 0x8000) Rotate({ 0.0f, deltaTime, 0.0f });
+	if (GetAsyncKeyState('Q') & 0x8000) Rotate({ 0.0f, 0.0f, -deltaTime });
+	if (GetAsyncKeyState('E') & 0x8000) Rotate({ 0.0f, 0.0f, deltaTime });
 }
