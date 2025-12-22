@@ -8,7 +8,7 @@ using namespace std;
 
 void TestScene::InitializeScene()
 {
-	CreateRootGameObject<TestObject>()->CreateChildGameObject<TestObject>()->SetPosition({ 2.0f, 0.0f, 0.0f });
+	CreateRootGameObject<TestObject>();
 }
 
 GameObjectBase* TestScene::CreateCameraObject()
