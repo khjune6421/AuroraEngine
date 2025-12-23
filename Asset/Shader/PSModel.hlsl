@@ -24,9 +24,8 @@ Texture2D roughnessTexture : register(t5);
 
 struct PixelInput
 {
-    float4 Position : SV_POSITION;
-    
     float4 WorldPosition : POSITION0;
+    float4 Position : SV_POSITION;
     float2 UV : TEXCOORD0;
     float3x3 TBN : TBN0;
 };
