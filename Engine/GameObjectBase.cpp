@@ -49,7 +49,7 @@ void GameObjectBase::Render()
 	{
 		// 월드 및 WVP 행렬 상수 버퍼 업데이트 및 셰이더에 설정
 		m_worldData.worldMatrix = XMMatrixTranspose(m_worldMatrix);
-		m_worldData.normalMatrix = XMMatrixTranspose(m_worldMatrix * m_inverseScaleSquareMatrix);
+		m_worldData.normalMatrix = XMMatrixTranspose(m_inverseScaleSquareMatrix * m_worldMatrix);
 
 		const com_ptr<ID3D11DeviceContext> deviceContext = Renderer::GetInstance().GetDeviceContext();
 		deviceContext->UpdateSubresource(m_worldWVPConstantBuffer.Get(), 0, nullptr, &m_worldData, 0, 0);

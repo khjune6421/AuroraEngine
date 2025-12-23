@@ -21,7 +21,8 @@ struct VertexInput
 
 struct VertexOutput
 {
-    float4 Position : SV_POSITION0;
+    float4 Position : SV_POSITION;
+    
     float4 WorldPosition : POSITION0;
     float2 UV : TEXCOORD0;
     float3x3 TBN : TBN0;
@@ -31,7 +32,6 @@ VertexOutput main(VertexInput input)
 {
     VertexOutput output;
     
-    input.Position.w = 1.0f;
     output.WorldPosition = mul(input.Position, WorldMatrix);
     output.Position = mul(output.WorldPosition, VPMatrix);
     

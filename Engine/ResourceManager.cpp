@@ -14,10 +14,6 @@ void ResourceManager::Initialize(com_ptr<ID3D11Device> device)
 
 com_ptr<ID3D11Buffer> ResourceManager::GetConstantBuffer(UINT bufferSize)
 {
-	// 기존에 생성된 상수 버퍼가 있으면 재사용
-	auto it = m_constantBuffers.find(bufferSize);
-	if (it != m_constantBuffers.end()) return it->second;
-
 	HRESULT hr = S_OK;
 
 	com_ptr<ID3D11Buffer> constantBuffer = nullptr;
@@ -32,8 +28,6 @@ com_ptr<ID3D11Buffer> ResourceManager::GetConstantBuffer(UINT bufferSize)
 	};
 	hr = m_device->CreateBuffer(&bufferDesc, nullptr, constantBuffer.GetAddressOf());
 	CheckResult(hr, "상수 버퍼 생성 실패.");
-
-	m_constantBuffers[bufferSize] = constantBuffer;
 
 	return constantBuffer;
 }

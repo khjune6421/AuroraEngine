@@ -143,12 +143,14 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="CamRotObject.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="TestCameraObject.cpp" />
     <ClCompile Include="TestObject.cpp" />
     <ClCompile Include="TestScene.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="CamRotObject.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="TestCameraObject.h" />
     <ClInclude Include="TestObject.h" />

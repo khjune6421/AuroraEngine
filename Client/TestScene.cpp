@@ -3,6 +3,7 @@
 
 #include "TestObject.h"
 #include "TestCameraObject.h"
+#include "CamRotObject.h"
 
 using namespace std;
 

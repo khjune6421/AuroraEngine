@@ -15,8 +15,10 @@ void SceneBase::Initialize()
 
 	m_mainCamera = CreateCameraObject()->CreateComponent<CameraComponent>();
 
-	m_viewProjectionConstantBuffer = ResourceManager::GetInstance().GetConstantBuffer(sizeof(ViewProjectionBuffer));
-	m_directionalLightConstantBuffer = ResourceManager::GetInstance().GetConstantBuffer(sizeof(DirectionalLightBuffer));
+	ResourceManager& resourceManager = ResourceManager::GetInstance();
+
+	m_directionalLightConstantBuffer = resourceManager.GetConstantBuffer(sizeof(DirectionalLightBuffer));
+	m_viewProjectionConstantBuffer = resourceManager.GetConstantBuffer(sizeof(ViewProjectionBuffer));
 
 	InitializeScene();
 }
@@ -30,22 +32,22 @@ void SceneBase::Update(float deltaTime)
 void SceneBase::Render()
 {
 	Renderer& renderer = Renderer::GetInstance();
-	renderer.BeginFrame(m_clearColor);
+	renderer.BeginFrame(m_sceneColor);
+
+	com_ptr<ID3D11DeviceContext> deviceContext = renderer.GetDeviceContext();
+
+	// 방향광 상수 버퍼 업데이트 및 셰이더에 설정
+	m_directionalLightData.lightDirection = XMVector3Normalize(m_directionalLightDirection);
+	m_directionalLightData.lightColor = m_sceneColor;
+	deviceContext->UpdateSubresource(m_directionalLightConstantBuffer.Get(), 0, nullptr, &m_directionalLightData, 0, 0);
+	deviceContext->PSSetConstantBuffers(static_cast<UINT>(PSConstBuffers::DirectionalLight), 1, m_directionalLightConstantBuffer.GetAddressOf());
 
 	// 뷰-투영 상수 버퍼 업데이트 및 셰이더에 설정
 	m_viewProjectionData.viewMatrix = XMMatrixTranspose(m_mainCamera->GetViewMatrix());
 	m_viewProjectionData.projectionMatrix = XMMatrixTranspose(m_mainCamera->GetProjectionMatrix());
 	m_viewProjectionData.VPMatrix = m_viewProjectionData.projectionMatrix * m_viewProjectionData.viewMatrix;
-
-	com_ptr<ID3D11DeviceContext> deviceContext = renderer.GetDeviceContext();
 	deviceContext->UpdateSubresource(m_viewProjectionConstantBuffer.Get(), 0, nullptr, &m_viewProjectionData, 0, 0);
 	deviceContext->VSSetConstantBuffers(static_cast<UINT>(VSConstBuffers::ViewProjection), 1, m_viewProjectionConstantBuffer.GetAddressOf());
-
-	// 방향광 상수 버퍼 업데이트 및 셰이더에 설정
-	m_directionalLightData.lightDirection = DirectionalLightDirection;
-	m_directionalLightData.lightColor = m_clearColor;
-	deviceContext->UpdateSubresource(m_directionalLightConstantBuffer.Get(), 0, nullptr, &m_directionalLightData, 0, 0);
-	deviceContext->PSSetConstantBuffers(static_cast<UINT>(PSConstBuffers::DirectionalLight), 1, m_directionalLightConstantBuffer.GetAddressOf());
 
 	// 게임 오브젝트 렌더링
 	for (unique_ptr<GameObjectBase>& gameObject : m_gameObjects) gameObject->Render();
@@ -60,7 +62,8 @@ void SceneBase::RenderImGui()
 {
 	ImGui::Begin(m_typeName.c_str());
 
-	if (ImGui::ColorEdit3("Clear Color", &m_clearColor.x)) {}
+	if (ImGui::DragFloat3("Directional Light Direction", &m_directionalLightDirection.m128_f32[0], 0.001f, -1.0f, 1.0f)) {}
+	if (ImGui::ColorEdit3("Scene Color", &m_sceneColor.x)) {}
 
 	ImGui::Separator();
 	ImGui::Text("Game Objects:");
