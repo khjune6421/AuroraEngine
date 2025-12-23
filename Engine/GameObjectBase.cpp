@@ -67,11 +67,15 @@ void GameObjectBase::RenderImGui()
 {
 	if (ImGui::TreeNode(m_typeName.c_str()))
 	{
-		// Position (위치)
+		// 위치
 		if (ImGui::DragFloat3("Position", &m_position.m128_f32[0], 0.05f))  SetDirty();
-		// Rotation (회전)
-		if (ImGui::DragFloat3("Rotation", &m_euler.m128_f32[0], 0.01f)) SetDirty();
-		// Scale (크기)
+		// 회전
+		if (ImGui::DragFloat3("Rotation", &m_euler.m128_f32[0], 0.5f))
+		{
+			m_quaternion = XMQuaternionRotationRollPitchYawFromVector(ToRadians(m_euler)); // 라디안으로 변환
+			SetDirty();
+		};
+		// 크기
 		if (ImGui::DragFloat3("Scale", &m_scale.m128_f32[0], 0.01f)) SetDirty();
 
 		RenderImGuiGameObject();
@@ -115,6 +119,22 @@ void GameObjectBase::MoveDirection(float distance, Direction direction)
 	MovePosition(deltaPosition);
 }
 
+void GameObjectBase::SetRotation(const DirectX::XMVECTOR& rotation)
+{
+	m_euler = rotation;
+	m_quaternion = XMQuaternionRotationRollPitchYawFromVector(ToRadians(m_euler)); // 라디안으로 변환
+
+	SetDirty();
+}
+
+void GameObjectBase::Rotate(const DirectX::XMVECTOR& deltaRotation)
+{
+	m_euler = XMVectorAdd(m_euler, deltaRotation);
+	m_quaternion = XMQuaternionRotationRollPitchYawFromVector(ToRadians(m_euler)); // 라디안으로 변환
+
+	SetDirty();
+}
+
 void GameObjectBase::LookAt(const XMVECTOR& targetPosition)
 {
 	XMVECTOR direction = XMVector3Normalize(XMVectorSubtract(targetPosition, m_position));
@@ -122,15 +142,13 @@ void GameObjectBase::LookAt(const XMVECTOR& targetPosition)
 	XMVECTOR up = XMVector3Cross(direction, right);
 
 	m_quaternion = XMQuaternionRotationMatrix({ right, up, direction, { 0.0f, 0.0f, 0.0f, 1.0f } });
-	m_euler = static_cast<XMVECTOR>(static_cast<SimpleMath::Quaternion>(m_quaternion).ToEuler());
+	m_euler = ToDegrees(static_cast<XMVECTOR>(static_cast<SimpleMath::Quaternion>(m_quaternion).ToEuler())); // 도 단위로 변환
 
 	SetDirty();
 }
 
 XMVECTOR GameObjectBase::GetDirectionVector(Direction direction)
 {
-	m_quaternion = XMQuaternionRotationRollPitchYawFromVector(m_euler);
-
 	switch (direction)
 	{
 	case Direction::Forward:
@@ -184,7 +202,7 @@ void GameObjectBase::UpdateWorldMatrix()
 	if (!m_isDirty) return;
 
 	m_positionMatrix = XMMatrixTranslationFromVector(m_position);
-	m_rotationMatrix = XMMatrixRotationRollPitchYawFromVector(m_euler);
+	m_rotationMatrix = XMMatrixRotationQuaternion(m_quaternion);
 	m_scaleMatrix = XMMatrixScalingFromVector(m_scale);
 
 	m_worldMatrix = m_scaleMatrix * m_rotationMatrix * m_positionMatrix;

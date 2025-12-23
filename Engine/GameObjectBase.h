@@ -15,7 +15,7 @@ class GameObjectBase
 
 	DirectX::XMVECTOR m_position = DirectX::XMVectorZero(); // 위치
 	DirectX::XMVECTOR m_quaternion = DirectX::XMQuaternionIdentity(); // 쿼터니언
-	DirectX::XMVECTOR m_euler = DirectX::XMVectorZero(); // 오일러 각도 // 라디안 단위
+	DirectX::XMVECTOR m_euler = DirectX::XMVectorZero(); // 오일러
 	DirectX::XMVECTOR m_scale = DirectX::XMVectorSet(1.0f, 1.0f, 1.0f, 1.0f); // 크기
 	bool m_isDirty = true; // 위치 갱신 필요 여부
 
@@ -71,12 +71,12 @@ public:
 	// 방향 이동
 	void MoveDirection(float distance, Direction direction);
 
-	// 회전 지정 // 라디안 단위
-	void SetRotation(const DirectX::XMVECTOR& rotation) { m_euler = rotation; SetDirty(); }
-	// 회전 가져오기 // 라디안 단위
+	// 회전 지정
+	void SetRotation(const DirectX::XMVECTOR& rotation);
+	// 회전 가져오기
 	DirectX::XMVECTOR GetRotation() const { return m_euler; }
-	// 회전 이동 // 라디안 단위
-	void Rotate(const DirectX::XMVECTOR& deltaRotation) { m_euler = DirectX::XMVectorAdd(m_euler, deltaRotation); SetDirty(); }
+	// 회전 이동
+	void Rotate(const DirectX::XMVECTOR& deltaRotation);
 	// 특정 위치 바라보기
 	void LookAt(const DirectX::XMVECTOR& targetPosition);
 	// 정규화된 방향 벡터 가져오기

@@ -37,6 +37,7 @@ float4 main(PixelInput input) : SV_TARGET
     float3 normal = normalize(mul(normalMap, input.TBN)); // 이것도 normalize 꼭 필요하나?
     float3 lightDir = -lightDirection.xyz;
     float NdotL = dot(normal, lightDir);
+    
     albedo.rgb *= saturate(NdotL) * lightColor.rgb * lightFactor;
     
     return albedo;
