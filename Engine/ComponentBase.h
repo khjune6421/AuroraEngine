@@ -18,6 +18,7 @@ public:
 	ComponentBase& operator=(ComponentBase&&) = default; // 이동 대입
 
 	void Initialize(GameObjectBase* owner);
+	void Update(float deltaTime) { UpdateComponent(deltaTime); }
 	// ImGui 렌더링 // GameObjectBase의 RenderImGui에서 호출
 	void RenderImGui();
 	void Finalize() { FinalizeComponent(); }
@@ -25,6 +26,8 @@ public:
 protected:
 	// 컴포넌트 초기화 // ComponentBase의 Initialize에서 호출
 	virtual void InitializeComponent() {};
+	// 컴포넌트 업데이트 // Update에서 호출
+	virtual void UpdateComponent(float deltaTime) {};
 	// 컴포넌트 ImGui 렌더링 // RenderImGui에서 호출
 	virtual void RenderImGuiComponent() {};
 	// 컴포넌트 Finalize에서 호출

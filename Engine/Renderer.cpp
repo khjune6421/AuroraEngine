@@ -14,7 +14,7 @@ void Renderer::Initialize(HWND hWnd, UINT width, UINT height)
 	CreateBackBufferResources();
 }
 
-void Renderer::BeginFrame(const array<FLOAT, 4>& clearColor)
+void Renderer::BeginFrame(const XMFLOAT4& clearColor)
 {
 	HRESULT hr = S_OK;
 
@@ -121,11 +121,11 @@ void Renderer::CreateDeviceAndContext()
 		nullptr,
 		D3D_DRIVER_TYPE_HARDWARE,
 		nullptr,
-		#ifdef _DEBUG
+#ifdef _DEBUG
 		D3D11_CREATE_DEVICE_DEBUG,
-		#else
+#else
 		0,
-		#endif
+#endif
 		m_featureLevels.data(),
 		static_cast<UINT>(m_featureLevels.size()),
 		D3D11_SDK_VERSION,
@@ -138,7 +138,7 @@ void Renderer::CreateDeviceAndContext()
 	// ImGui DirectX11 초기화
 	ImGui_ImplDX11_Init(m_device.Get(), m_deviceContext.Get());
 	// RenderResourceManager 초기화
-	ResourceManager::GetInstance().Initialize(m_device);
+	ResourceManager::GetInstance().Initialize(m_device, m_deviceContext);
 }
 
 void Renderer::CreateSwapChain(HWND hWnd)
@@ -192,9 +192,9 @@ void Renderer::CreateBackBufferResources()
 
 	constexpr array<BackBufferVertex, 3> backBufferVertices = // 전체 화면 삼각형 정점 데이터
 	{
-		BackBufferVertex{ .position = { -1.0f, -1.0f, 0.0f, 1.0f }, .UV = { 0.0f, 1.0f } },
-		BackBufferVertex{ .position = { -1.0f, 3.0f, 0.0f, 1.0f }, .UV = { 0.0f, -1.0f } },
-		BackBufferVertex{ .position = { 3.0f, -1.0f, 0.0f, 1.0f }, .UV = { 2.0f, 1.0f } }
+		BackBufferVertex{.position = { -1.0f, -1.0f, 0.0f, 1.0f }, .UV = { 0.0f, 1.0f } },
+		BackBufferVertex{.position = { -1.0f, 3.0f, 0.0f, 1.0f }, .UV = { 0.0f, -1.0f } },
+		BackBufferVertex{.position = { 3.0f, -1.0f, 0.0f, 1.0f }, .UV = { 2.0f, 1.0f } }
 	};
 	constexpr D3D11_BUFFER_DESC bufferDesc =
 	{
@@ -305,7 +305,7 @@ void Renderer::CreateSceneRenderTarget()
 	{
 		.Format = textureDesc.Format,
 		.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D,
-		.Texture2D = { .MostDetailedMip = 0, .MipLevels = 1 }
+		.Texture2D = {.MostDetailedMip = 0, .MipLevels = 1 }
 	};
 	hr = m_device->CreateShaderResourceView(m_sceneResultTexture.Get(), &srvDesc, m_sceneShaderResourceView.GetAddressOf());
 	CheckResult(hr, "씬 셰이더 리소스 뷰 생성 실패.");
@@ -329,9 +329,9 @@ void Renderer::SetViewport()
 	m_deviceContext->RSSetViewports(1, &viewport);
 }
 
-void Renderer::ClearRenderTarget(RenderTarget& target, const array<FLOAT, 4>& clearColor)
+void Renderer::ClearRenderTarget(RenderTarget& target, const XMFLOAT4& clearColor)
 {
-	m_deviceContext->ClearRenderTargetView(target.renderTargetView.Get(), clearColor.data());
+	m_deviceContext->ClearRenderTargetView(target.renderTargetView.Get(), &clearColor.x);
 	if (target.depthStencilView) m_deviceContext->ClearDepthStencilView(target.depthStencilView.Get(), D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
 }
 
@@ -351,7 +351,7 @@ void Renderer::RenderSceneToBackBuffer()
 	m_deviceContext->OMSetRenderTargets(1, m_backBuffer.renderTargetView.GetAddressOf(), m_backBuffer.depthStencilView.Get());
 
 	// 백 버퍼 클리어
-	constexpr array<FLOAT, 4> clearColor = { 1.0f, 0.0f, 0.0f, 1.0f };
+	constexpr XMFLOAT4 clearColor = { 1.0f, 0.0f, 0.0f, 1.0f };
 	ClearRenderTarget(m_backBuffer, clearColor);
 
 	// 전체 화면 삼각형 렌더링
@@ -365,8 +365,8 @@ void Renderer::RenderSceneToBackBuffer()
 	m_deviceContext->VSSetShader(m_backBufferVertexShaderAndInputLayout.first.Get(), nullptr, 0);
 	m_deviceContext->PSSetShader(m_backBufferPixelShader.Get(), nullptr, 0);
 
-	m_deviceContext->PSSetShaderResources(0, 1, m_sceneShaderResourceView.GetAddressOf());
-	m_deviceContext->PSSetSamplers(0, 1, m_backBufferSamplerState.GetAddressOf());
+	m_deviceContext->PSSetSamplers(static_cast<UINT>(SamplerState::BackBuffer), 1, m_backBufferSamplerState.GetAddressOf());
+	m_deviceContext->PSSetShaderResources(static_cast<UINT>(TextureSlots::BackBuffer), 1, m_sceneShaderResourceView.GetAddressOf());
 
 	m_deviceContext->Draw(3, 0);
 }

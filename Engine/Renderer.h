@@ -18,7 +18,7 @@ class Renderer : public SingletonBase<Renderer>
 		.Height = 720,
 		.Format = DXGI_FORMAT_R8G8B8A8_UNORM,
 		.Stereo = FALSE, // VR용 입체 영상용 // 사용 안함
-		.SampleDesc = { .Count = 1, .Quality = 0 }, // 멀티샘플링 설정 // 스왑 체인 자체에는 멀티샘플링 적용 못함
+		.SampleDesc = {.Count = 1, .Quality = 0 }, // 멀티샘플링 설정 // 스왑 체인 자체에는 멀티샘플링 적용 못함
 		.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT, // 렌더 타겟으로 사용
 		.BufferCount = 2, // 더블 버퍼링
 		.Scaling = DXGI_SCALING_STRETCH, // 창 크기에 맞게 스트레칭
@@ -62,7 +62,7 @@ public:
 	void Initialize(HWND hWnd, UINT width, UINT height);
 
 	// 프레임 시작
-	void BeginFrame(const std::array<FLOAT, 4>& clearColor);
+	void BeginFrame(const DirectX::XMFLOAT4& clearColor);
 	// 프레임 종료 // 화면에 내용 출력
 	void EndFrame();
 
@@ -97,7 +97,7 @@ private:
 
 	// 랜더링 파이프라인 함수
 	// 렌더 타겟 클리어
-	void ClearRenderTarget(RenderTarget& target, const std::array<FLOAT, 4>& clearColor);
+	void ClearRenderTarget(RenderTarget& target, const DirectX::XMFLOAT4& clearColor);
 	// 씬 렌더 타겟 MSAA 다운샘플링 // MSAA 미적용시 그냥 복사
 	void ResolveSceneMSAA();
 	// 백 버퍼 랜더링

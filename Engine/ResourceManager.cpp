@@ -4,20 +4,18 @@
 using namespace std;
 using namespace DirectX;
 
-void ResourceManager::Initialize(com_ptr<ID3D11Device> device)
+void ResourceManager::Initialize(com_ptr<ID3D11Device> device, com_ptr<ID3D11DeviceContext> deviceContext)
 {
 	m_device = device;
+	m_deviceContext = deviceContext;
 
 	CreateRasterStates();
 	CreateSamplerStates();
+	CacheAllTexture();
 }
 
 com_ptr<ID3D11Buffer> ResourceManager::GetConstantBuffer(UINT bufferSize)
 {
-	// 기존에 생성된 상수 버퍼가 있으면 재사용
-	auto it = m_constantBuffers.find(bufferSize);
-	if (it != m_constantBuffers.end()) return it->second;
-
 	HRESULT hr = S_OK;
 
 	com_ptr<ID3D11Buffer> constantBuffer = nullptr;
@@ -32,8 +30,6 @@ com_ptr<ID3D11Buffer> ResourceManager::GetConstantBuffer(UINT bufferSize)
 	};
 	hr = m_device->CreateBuffer(&bufferDesc, nullptr, constantBuffer.GetAddressOf());
 	CheckResult(hr, "상수 버퍼 생성 실패.");
-
-	m_constantBuffers[bufferSize] = constantBuffer;
 
 	return constantBuffer;
 }
@@ -96,6 +92,74 @@ com_ptr<ID3D11PixelShader> ResourceManager::GetPixelShader(const string& shaderN
 	return m_pixelShaders[shaderName];
 }
 
+com_ptr<ID3D11ShaderResourceView> ResourceManager::GetTexture(const string& fileName)
+{
+	// 기존에 생성된 텍스처가 있으면 재사용
+	auto it = m_textures.find(fileName);
+	if (it != m_textures.end()) return it->second;
+
+	HRESULT hr = S_OK;
+
+	// 캐시된 텍스처 데이터 사용
+	const auto cacheIt = m_textureCaches.find(fileName);
+	if (cacheIt == m_textureCaches.end())
+	{
+		#ifdef _DEBUG
+		cerr << "텍스처 데이터 캐시 없음: " << fileName << endl;
+		#else
+		MessageBoxA(nullptr, ("텍스처 데이터 캐시 없음: " + fileName).c_str(), "오류", MB_OK | MB_ICONERROR);
+		#endif
+		exit(EXIT_FAILURE);
+	}
+
+	// 파일 확장자 확인
+	const string extension = fileName.substr(fileName.find_last_of('.') + 1);
+	const bool isDDS = (extension == "dds" || extension == "DDS");
+
+	if (isDDS)
+	{
+		// DDS 파일 (큐브맵 등)
+		hr = CreateDDSTextureFromMemoryEx
+		(
+			m_device.Get(),
+			m_deviceContext.Get(),
+			cacheIt->second.data(),
+			cacheIt->second.size(),
+			0,
+			D3D11_USAGE_DEFAULT,
+			D3D11_BIND_SHADER_RESOURCE,
+			0,
+			D3D11_RESOURCE_MISC_GENERATE_MIPS, // mipmap 자동 생성
+			DDS_LOADER_DEFAULT,
+			nullptr,
+			m_textures[fileName].GetAddressOf()
+		);
+		CheckResult(hr, "DDS 텍스처 생성 실패.");
+	}
+	else
+	{
+		// WIC 지원 이미지 (jpg, png 등)
+		hr = CreateWICTextureFromMemoryEx
+		(
+			m_device.Get(),
+			m_deviceContext.Get(),
+			cacheIt->second.data(),
+			cacheIt->second.size(),
+			0,
+			D3D11_USAGE_DEFAULT,
+			D3D11_BIND_SHADER_RESOURCE,
+			0,
+			D3D11_RESOURCE_MISC_GENERATE_MIPS, // mipmap 자동 생성
+			WIC_LOADER_DEFAULT, // 나중에 감마 보정 옵션도 넣기
+			nullptr,
+			m_textures[fileName].GetAddressOf()
+		);
+		CheckResult(hr, "텍스처 생성 실패.");
+	}
+
+	return m_textures[fileName];
+}
+
 const Model* ResourceManager::LoadModel(const string& fileName)
 {
 	auto it = m_models.find(fileName);
@@ -134,38 +198,17 @@ const Model* ResourceManager::LoadModel(const string& fileName)
 	);
 	if (!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode)
 	{
+		#ifdef _DEBUG
 		cerr << "모델 로드 실패: " << importer.GetErrorString() << endl;
-		return nullptr;
+		#else
+		MessageBoxA(nullptr, ("모델 로드 실패: " + string(importer.GetErrorString())).c_str(), "오류", MB_OK | MB_ICONERROR);
+		#endif
+		exit(EXIT_FAILURE);
 	}
 
 	ProcessNode(scene->mRootNode, scene, m_models[fileName]);
 
 	return &m_models[fileName];
-}
-
-com_ptr<ID3D11ShaderResourceView> ResourceManager::LoadTexture(const std::string& fileName)
-{
-	// 기존에 생성된 텍스처가 있으면 재사용
-	auto it = m_textures.find(fileName);
-	if (it != m_textures.end()) return it->second;
-
-	HRESULT hr = S_OK;
-
-	const string fullPath = "../Asset/Texture/" + fileName;
-
-	com_ptr<ID3D11ShaderResourceView> textureSRV = nullptr;
-	hr = CreateWICTextureFromFile
-	(
-		m_device.Get(),
-		wstring(fullPath.begin(), fullPath.end()).c_str(),
-		nullptr,
-		textureSRV.GetAddressOf()
-	);
-	CheckResult(hr, "텍스처 로드 실패.");
-
-	m_textures[fileName] = textureSRV;
-
-	return textureSRV;
 }
 
 void ResourceManager::CreateRasterStates()
@@ -187,6 +230,33 @@ void ResourceManager::CreateSamplerStates()
 	{
 		hr = m_device->CreateSamplerState(&SAMPLER_DESC_TEMPLATES[i], m_samplerStates[i].GetAddressOf());
 		CheckResult(hr, "샘플러 상태 생성 실패.");
+	}
+}
+
+void ResourceManager::CacheAllTexture()
+{
+	const filesystem::path textureDirectory = "../Asset/Texture/";
+
+	for (const auto& dirEntry : filesystem::recursive_directory_iterator(textureDirectory))
+	{
+		if (dirEntry.is_regular_file())
+		{
+			const string fileName = filesystem::relative(dirEntry.path(), textureDirectory).string();
+
+			// 텍스처 파일 읽기
+			ifstream fileStream(dirEntry.path(), ios::binary | ios::ate);
+
+			if (fileStream)
+			{
+				const streamsize fileSize = fileStream.tellg();
+				fileStream.seekg(0, ios::beg);
+				vector<uint8_t> fileData(static_cast<size_t>(fileSize));
+
+				if (fileStream.read(reinterpret_cast<char*>(fileData.data()), fileSize)) m_textureCaches[fileName] = move(fileData);
+				else cerr << "텍스처 파일 읽기 실패: " << fileName << endl;
+			}
+			else cerr << "텍스처 파일 열기 실패: " << fileName << endl;
+		}
 	}
 }
 
@@ -257,16 +327,10 @@ Mesh ResourceManager::ProcessMesh(const aiMesh* mesh, const aiScene* scene)
 		aiMaterial* material = scene->mMaterials[mesh->mMaterialIndex];
 		resultMesh.materialFactor = ProcessMaterialFactor(material);
 
-		// 쓰면 터짐 // 일단은 텍스처는 따로 불러오게
-		//resultMesh.materialTexture.albedoTextureSRV = LoadMaterialTexture(material, aiTextureType_DIFFUSE);
-		//resultMesh.materialTexture.normalTextureSRV = LoadMaterialTexture(material, aiTextureType_NORMALS);
-		//resultMesh.materialTexture.metallicTextureSRV = LoadMaterialTexture(material, aiTextureType_METALNESS);
-		//resultMesh.materialTexture.roughnessTextureSRV = LoadMaterialTexture(material, aiTextureType_DIFFUSE_ROUGHNESS);
-
-		resultMesh.materialTexture.albedoTextureSRV = LoadTexture("SampleAlbedo.jpg");
-		resultMesh.materialTexture.normalTextureSRV = LoadTexture("SampleNormal.jpg");
-		resultMesh.materialTexture.metallicTextureSRV = LoadTexture("SampleMetallic.jpg");
-		resultMesh.materialTexture.roughnessTextureSRV = LoadTexture("SampleRoughness.jpg");
+		resultMesh.materialTexture.albedoTextureSRV = GetTexture("SampleAlbedo.jpg");
+		resultMesh.materialTexture.normalTextureSRV = GetTexture("SampleNormal.jpg");
+		resultMesh.materialTexture.metallicTextureSRV = GetTexture("SampleMetallic.jpg");
+		resultMesh.materialTexture.roughnessTextureSRV = GetTexture("SampleRoughness.jpg");
 	}
 
 	CreateMeshBuffers(resultMesh);
@@ -291,25 +355,6 @@ MaterialFactor ResourceManager::ProcessMaterialFactor(aiMaterial* material)
 	if (AI_SUCCESS == material->Get(AI_MATKEY_ROUGHNESS_FACTOR, roughnessFactor)) resultMaterialFactor.roughnessFactor = roughnessFactor;
 
 	return resultMaterialFactor;
-}
-
-com_ptr<ID3D11ShaderResourceView> ResourceManager::LoadMaterialTexture(aiMaterial* material, aiTextureType type)
-{
-	if (material->GetTextureCount(type) > 0)
-	{
-		aiString texturePath;
-		material->GetTexture(type, 0, &texturePath);
-
-		// 외부 파일 텍스처 처리
-		string fileName = texturePath.C_Str();
-
-		// 파일 경로에서 파일 이름만 추출 (경로 구분자 처리)
-		size_t lastSlash = fileName.find_last_of("/\\");
-		if (lastSlash != string::npos) fileName = fileName.substr(lastSlash + 1);
-
-		return LoadTexture(fileName);
-	}
-	return nullptr;
 }
 
 void ResourceManager::CreateMeshBuffers(Mesh& mesh)

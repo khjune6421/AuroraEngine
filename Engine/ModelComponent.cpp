@@ -12,7 +12,6 @@ void ModelComponent::Render()
 	constexpr UINT stride = sizeof(Vertex);
 	constexpr UINT offset = 0;
 
-	deviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 	deviceContext->IASetInputLayout(m_vertexShaderAndInputLayout.second.Get());
 	deviceContext->VSSetShader(m_vertexShaderAndInputLayout.first.Get(), nullptr, 0);
 	deviceContext->PSSetShader(m_pixelShader.Get(), nullptr, 0);
@@ -22,18 +21,18 @@ void ModelComponent::Render()
 		deviceContext->IASetVertexBuffers(0, 1, mesh.vertexBuffer.GetAddressOf(), &stride, &offset);
 		deviceContext->IASetIndexBuffer(mesh.indexBuffer.Get(), DXGI_FORMAT_R32_UINT, 0);
 
+		// 나중에 메쉬별로 설정 가능하게 변경
+		deviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+
 		// 재질 상수 버퍼 셰이더에 설정
 		deviceContext->UpdateSubresource(m_materialConstantBuffer.Get(), 0, nullptr, &mesh.materialFactor, 0, 0);
-		deviceContext->PSSetConstantBuffers(0, 1, m_materialConstantBuffer.GetAddressOf());
-
-		// 샘플러 상태 설정
-		deviceContext->PSSetSamplers(0, 1, ResourceManager::GetInstance().GetSamplerState(SamplerState::Scene).GetAddressOf());
+		deviceContext->PSSetConstantBuffers(static_cast<UINT>(PSConstBuffers::Material), 1, m_materialConstantBuffer.GetAddressOf());
 
 		// 재질 텍스처 셰이더에 설정
-		deviceContext->PSSetShaderResources(0, 1, mesh.materialTexture.albedoTextureSRV.GetAddressOf());
-		deviceContext->PSSetShaderResources(1, 1, mesh.materialTexture.normalTextureSRV.GetAddressOf());
-		deviceContext->PSSetShaderResources(2, 1, mesh.materialTexture.metallicTextureSRV.GetAddressOf());
-		deviceContext->PSSetShaderResources(3, 1, mesh.materialTexture.roughnessTextureSRV.GetAddressOf());
+		deviceContext->PSSetShaderResources(static_cast<UINT>(TextureSlots::Albedo), 1, mesh.materialTexture.albedoTextureSRV.GetAddressOf());
+		deviceContext->PSSetShaderResources(static_cast<UINT>(TextureSlots::Normal), 1, mesh.materialTexture.normalTextureSRV.GetAddressOf());
+		deviceContext->PSSetShaderResources(static_cast<UINT>(TextureSlots::Metallic), 1, mesh.materialTexture.metallicTextureSRV.GetAddressOf());
+		deviceContext->PSSetShaderResources(static_cast<UINT>(TextureSlots::Roughness), 1, mesh.materialTexture.roughnessTextureSRV.GetAddressOf());
 
 		deviceContext->DrawIndexed(mesh.indexCount, 0, 0);
 	}
@@ -65,7 +64,7 @@ void ModelComponent::InitializeComponent()
 {
 	ResourceManager& resourceManager = ResourceManager::GetInstance();
 
-	m_materialConstantBuffer = resourceManager.GetConstantBuffer(sizeof(MaterialFactor));
+	m_materialConstantBuffer = resourceManager.GetConstantBuffer(sizeof(MaterialFactor)); // TODO: 매번 재질 상수 버퍼 생성하지 말고 공유하도록 변경
 	m_model = resourceManager.LoadModel(m_modelFileName);
 
 	CreateShaders();

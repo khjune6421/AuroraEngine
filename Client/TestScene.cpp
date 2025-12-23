@@ -3,6 +3,7 @@
 
 #include "TestObject.h"
 #include "TestCameraObject.h"
+#include "CamRotObject.h"
 
 using namespace std;
 
@@ -13,5 +14,5 @@ void TestScene::InitializeScene()
 
 GameObjectBase* TestScene::CreateCameraObject()
 {
-	return CreateRootGameObject<TestCameraObject>();
+	return CreateRootGameObject<CamRotObject>()->CreateChildGameObject<TestCameraObject>();
 }
