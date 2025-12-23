@@ -92,7 +92,7 @@ com_ptr<ID3D11PixelShader> ResourceManager::GetPixelShader(const string& shaderN
 	return m_pixelShaders[shaderName];
 }
 
-com_ptr<ID3D11ShaderResourceView> ResourceManager::GetTexture(const std::string& fileName, com_ptr<ID3D11ShaderResourceView> textureSRV)
+com_ptr<ID3D11ShaderResourceView> ResourceManager::GetTexture(const std::string& fileName, D3D11_SHADER_RESOURCE_VIEW_DESC* srvDesc)
 {
 	// 기존에 생성된 텍스처가 있으면 재사용
 	auto it = m_textures.find(fileName);
@@ -125,13 +125,11 @@ com_ptr<ID3D11ShaderResourceView> ResourceManager::GetTexture(const std::string&
 		D3D11_RESOURCE_MISC_GENERATE_MIPS, // mipmap 자동 생성
 		WIC_LOADER_DEFAULT, // 나중에 감마 보정 옵션도 넣기
 		nullptr,
-		textureSRV.GetAddressOf()
+		m_textures[fileName].GetAddressOf()
 	);
 	CheckResult(hr, "텍스처 생성 실패.");
 
-	m_textures[fileName] = textureSRV;
-
-	return textureSRV;
+	return m_textures[fileName];
 }
 
 const Model* ResourceManager::LoadModel(const string& fileName)
@@ -301,12 +299,6 @@ Mesh ResourceManager::ProcessMesh(const aiMesh* mesh, const aiScene* scene)
 		aiMaterial* material = scene->mMaterials[mesh->mMaterialIndex];
 		resultMesh.materialFactor = ProcessMaterialFactor(material);
 
-		// 쓰면 터짐 // 일단은 텍스처는 따로 불러오게
-		//resultMesh.materialTexture.albedoTextureSRV = LoadMaterialTexture(material, aiTextureType_DIFFUSE);
-		//resultMesh.materialTexture.normalTextureSRV = LoadMaterialTexture(material, aiTextureType_NORMALS);
-		//resultMesh.materialTexture.metallicTextureSRV = LoadMaterialTexture(material, aiTextureType_METALNESS);
-		//resultMesh.materialTexture.roughnessTextureSRV = LoadMaterialTexture(material, aiTextureType_DIFFUSE_ROUGHNESS);
-
 		resultMesh.materialTexture.albedoTextureSRV = GetTexture("SampleAlbedo.jpg");
 		resultMesh.materialTexture.normalTextureSRV = GetTexture("SampleNormal.jpg");
 		resultMesh.materialTexture.metallicTextureSRV = GetTexture("SampleMetallic.jpg");
@@ -335,25 +327,6 @@ MaterialFactor ResourceManager::ProcessMaterialFactor(aiMaterial* material)
 	if (AI_SUCCESS == material->Get(AI_MATKEY_ROUGHNESS_FACTOR, roughnessFactor)) resultMaterialFactor.roughnessFactor = roughnessFactor;
 
 	return resultMaterialFactor;
-}
-
-com_ptr<ID3D11ShaderResourceView> ResourceManager::LoadMaterialTexture(aiMaterial* material, aiTextureType type)
-{
-	if (material->GetTextureCount(type) > 0)
-	{
-		aiString texturePath;
-		material->GetTexture(type, 0, &texturePath);
-
-		// 외부 파일 텍스처 처리
-		string fileName = texturePath.C_Str();
-
-		// 파일 경로에서 파일 이름만 추출 (경로 구분자 처리)
-		size_t lastSlash = fileName.find_last_of("/\\");
-		if (lastSlash != string::npos) fileName = fileName.substr(lastSlash + 1);
-
-		return GetTexture(fileName);
-	}
-	return nullptr;
 }
 
 void ResourceManager::CreateMeshBuffers(Mesh& mesh)
