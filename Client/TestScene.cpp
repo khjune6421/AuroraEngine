@@ -14,5 +14,5 @@ void TestScene::InitializeScene()
 
 GameObjectBase* TestScene::CreateCameraObject()
 {
-	return CreateRootGameObject<TestCameraObject>();
+	return CreateRootGameObject<CamRotObject>()->CreateChildGameObject<TestCameraObject>();
 }

@@ -58,8 +58,6 @@ public:
 	// 변환 관련 함수
 	// 위치 지정
 	void SetPosition(const DirectX::XMVECTOR& position) { m_position = position; SetDirty(); }
-	// 위치 가져오기
-	DirectX::XMVECTOR GetPosition() const { return m_position; }
 	// 위치 이동
 	void MovePosition(const DirectX::XMVECTOR& deltaPosition) { m_position = DirectX::XMVectorAdd(m_position, deltaPosition); SetDirty(); }
 	enum class Direction // 방향 열거형
@@ -70,26 +68,28 @@ public:
 	};
 	// 방향 이동
 	void MoveDirection(float distance, Direction direction);
+	// 위치 가져오기
+	const DirectX::XMVECTOR& GetPosition() const { return m_position; }
 
 	// 회전 지정
 	void SetRotation(const DirectX::XMVECTOR& rotation);
-	// 회전 가져오기
-	DirectX::XMVECTOR GetRotation() const { return m_euler; }
 	// 회전 이동
 	void Rotate(const DirectX::XMVECTOR& deltaRotation);
 	// 특정 위치 바라보기
 	void LookAt(const DirectX::XMVECTOR& targetPosition);
+	// 회전 가져오기
+	const DirectX::XMVECTOR& GetRotation() const { return m_euler; }
 	// 정규화된 방향 벡터 가져오기
-	DirectX::XMVECTOR GetDirectionVector(Direction direction);
+	DirectX::XMVECTOR GetDirectionVector(Direction direction) const;
 
 	// 크기 지정
 	void SetScale(const DirectX::XMVECTOR& scale) { m_scale = scale; SetDirty(); }
-	// 크기 가져오기
-	DirectX::XMVECTOR GetScale() const { return m_scale; }
 	// 크기 변경
 	void Scale(const DirectX::XMVECTOR& deltaScale) { m_scale = DirectX::XMVectorMultiply(m_scale, deltaScale); SetDirty(); }
+	// 크기 가져오기
+	const DirectX::XMVECTOR& GetScale() const { return m_scale; }
 
-	DirectX::XMMATRIX GetWorldMatrix() const { return m_worldMatrix; }
+	const DirectX::XMMATRIX& GetWorldMatrix() const { return m_worldMatrix; }
 
 	template<typename T, typename... Args> requires std::derived_from<T, GameObjectBase>
 	T* CreateChildGameObject(Args&&... args); // 자식 게임 오브젝트 생성
@@ -118,8 +118,8 @@ private:
 	void SetDirty();
 	// 제거할 자식 게임 오브젝트 제거
 	void RemovePendingChildGameObjects();
-	// 월드 행렬 갱신 // 씬이 TransformGameObjects에서 호출
-	void UpdateWorldMatrix();
+	// 월드 행렬 갱신
+	const DirectX::XMMATRIX& UpdateWorldMatrix();
 };
 
 template<typename T, typename ...Args> requires std::derived_from<T, GameObjectBase>

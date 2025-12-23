@@ -33,8 +33,12 @@ void GameObjectBase::Initialize()
 
 void GameObjectBase::Update(float deltaTime)
 {
+	// 게임 오브젝트 업데이트 // 파생 클래스에서 오버라이드
 	UpdateGameObject(deltaTime);
+	// 월드 행렬 업데이트
 	UpdateWorldMatrix();
+	// 컴포넌트 업데이트
+	for (auto& [typeIndex, component] : m_components) component->Update(deltaTime);
 
 	// 제거할 자식 게임 오브젝트 제거
 	RemovePendingChildGameObjects();
@@ -137,7 +141,7 @@ void GameObjectBase::Rotate(const DirectX::XMVECTOR& deltaRotation)
 
 void GameObjectBase::LookAt(const XMVECTOR& targetPosition)
 {
-	XMVECTOR direction = XMVector3Normalize(XMVectorSubtract(targetPosition, m_position));
+	XMVECTOR direction = XMVector3Normalize(XMVectorSubtract(targetPosition, UpdateWorldMatrix().r[3]));
 	XMVECTOR right = XMVector3Cross(GetDirectionVector(Direction::Up), direction);
 	XMVECTOR up = XMVector3Cross(direction, right);
 
@@ -147,7 +151,7 @@ void GameObjectBase::LookAt(const XMVECTOR& targetPosition)
 	SetDirty();
 }
 
-XMVECTOR GameObjectBase::GetDirectionVector(Direction direction)
+XMVECTOR GameObjectBase::GetDirectionVector(Direction direction) const
 {
 	switch (direction)
 	{
@@ -197,29 +201,28 @@ void GameObjectBase::RemovePendingChildGameObjects()
 	m_childrenToRemove.clear();
 }
 
-void GameObjectBase::UpdateWorldMatrix()
+const XMMATRIX& GameObjectBase::UpdateWorldMatrix()
 {
-	if (!m_isDirty) return;
-
-	m_positionMatrix = XMMatrixTranslationFromVector(m_position);
-	m_rotationMatrix = XMMatrixRotationQuaternion(m_quaternion);
-	m_scaleMatrix = XMMatrixScalingFromVector(m_scale);
-
-	m_worldMatrix = m_scaleMatrix * m_rotationMatrix * m_positionMatrix;
-
-	XMVECTOR scaleSquared = XMVectorMultiply(m_scale, m_scale);
-	XMVECTOR invScaleSquared = XMVectorReciprocal(scaleSquared);
-	m_inverseScaleSquareMatrix = XMMatrixScalingFromVector(invScaleSquared);
-
-	if (m_parent)
+	if (m_isDirty)
 	{
-		m_worldMatrix *= m_parent->m_worldMatrix;
-		m_inverseScaleSquareMatrix *= m_parent->m_inverseScaleSquareMatrix;
+		m_positionMatrix = XMMatrixTranslationFromVector(m_position);
+		m_rotationMatrix = XMMatrixRotationQuaternion(m_quaternion);
+		m_scaleMatrix = XMMatrixScalingFromVector(m_scale);
+
+		m_worldMatrix = m_scaleMatrix * m_rotationMatrix * m_positionMatrix;
+
+		XMVECTOR scaleSquared = XMVectorMultiply(m_scale, m_scale);
+		XMVECTOR invScaleSquared = XMVectorReciprocal(scaleSquared);
+		m_inverseScaleSquareMatrix = XMMatrixScalingFromVector(invScaleSquared);
+
+		if (m_parent)
+		{
+			m_worldMatrix *= m_parent->UpdateWorldMatrix();
+			m_inverseScaleSquareMatrix *= m_parent->m_inverseScaleSquareMatrix;
+		}
+
+		m_isDirty = false;
 	}
 
-	// 카메라 컴포넌트가 있으면 뷰 행렬 갱신 // TODO: 더 나은 방법 고민
-	CameraComponent* cameraComponent = GetComponent<CameraComponent>();
-	if (cameraComponent) cameraComponent->UpdateViewMatrix(m_position, XMVectorAdd(m_position, GetDirectionVector(Direction::Forward)), GetDirectionVector(Direction::Up));
-
-	m_isDirty = false;
+	return m_worldMatrix;
 }
