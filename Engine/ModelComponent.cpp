@@ -39,7 +39,6 @@ void ModelComponent::Render()
 
 void ModelComponent::RenderImGuiComponent()
 {
-	// Model File Name
 	char modelFileNameBuffer[256];
 	strcpy_s(modelFileNameBuffer, m_modelFileName.c_str());
 	if (ImGui::InputText("Model File Name", modelFileNameBuffer, sizeof(modelFileNameBuffer))) m_modelFileName = modelFileNameBuffer;
