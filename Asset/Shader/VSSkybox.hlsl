@@ -28,8 +28,7 @@ VSOutput main(uint vertexID : SV_VertexID)
     invVP = transpose(invVP);
     
     // 원점에서 멀리 떨어진 위치 계산
-    float4 farPos = mul(output.Position, invVP);
-    output.ViewDir = farPos.xyz;
+    output.ViewDir = mul(output.Position, invVP).xyz;
     
     return output;
 }
