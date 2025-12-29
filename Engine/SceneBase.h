@@ -1,7 +1,8 @@
 #pragma once
+#include "IBase.h"
 #include "GameObjectBase.h"
 
-class SceneBase
+class SceneBase : public IBase
 {
 	std::string m_typeName = "SceneBase"; // 씬 타입 이름
 
@@ -49,15 +50,15 @@ public:
 	SceneBase& operator=(SceneBase&&) = delete; // 이동 대입 금지
 
 	// 씬 초기화 // 씬 사용 전 반드시 호출해야 함
-	void Initialize();
+	void BaseInitialize() override;
 	// 씬 업데이트 // 씬 매니저가 호출
-	void Update(float deltaTime);
+	void BaseUpdate(float deltaTime) override;
 	// 씬 렌더링 // 씬 매니저가 호출
-	void Render();
+	void BaseRender() override;
 	// ImGui 렌더링
-	void RenderImGui();
+	void BaseRenderImGui() override;
 	// 씬 종료 // 씬 매니저가 씬을 교체할 때 호출
-	void Finalize() { FinalizeScene(); }
+	void BaseFinalize() override { Finalize(); }
 
 	template<typename T, typename... Args> requires std::derived_from<T, GameObjectBase>
 	T* CreateRootGameObject(Args&&... args);
@@ -65,11 +66,6 @@ public:
 	void RemoveGameObject(GameObjectBase* gameObject) { m_gameObjectsToRemove.push_back(gameObject); }
 
 protected:
-	// 씬 초기화 // Initialize에서 호출
-	virtual void InitializeScene() = 0;
-	// 씬 종료 // Finalize에서 호출
-	virtual void FinalizeScene() = 0;
-
 	// 메인 카메라 게임 오브젝트 설정
 	virtual GameObjectBase* CreateCameraObject();
 
@@ -89,7 +85,7 @@ inline T* SceneBase::CreateRootGameObject(Args && ...args)
 {
 	auto gameObject = std::make_unique<T>(std::forward<Args>(args)...);
 
-	gameObject->Initialize();
+	gameObject->BaseInitialize();
 	T* gameObjectPtr = gameObject.get();
 	m_gameObjects.push_back(move(gameObject));
 

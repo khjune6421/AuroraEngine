@@ -8,7 +8,7 @@
 using namespace std;
 using namespace DirectX;
 
-void SceneBase::Initialize()
+void SceneBase::BaseInitialize()
 {
 	m_typeName = typeid(*this).name();
 	if (m_typeName.find("class ") == 0) m_typeName = m_typeName.substr(6);
@@ -20,16 +20,16 @@ void SceneBase::Initialize()
 
 	m_mainCamera = CreateCameraObject()->CreateComponent<CameraComponent>();
 
-	InitializeScene();
+	Initialize();
 }
 
-void SceneBase::Update(float deltaTime)
+void SceneBase::BaseUpdate(float deltaTime)
 {
 	RemovePendingGameObjects();
-	for (unique_ptr<GameObjectBase>& gameObject : m_gameObjects) gameObject->Update(deltaTime);
+	for (unique_ptr<GameObjectBase>& gameObject : m_gameObjects) gameObject->BaseUpdate(deltaTime);
 }
 
-void SceneBase::Render()
+void SceneBase::BaseRender()
 {
 	m_renderer->BeginFrame(m_sceneColor);
 
@@ -43,18 +43,18 @@ void SceneBase::Render()
 	m_deviceContext->PSSetShaderResources(static_cast<UINT>(TextureSlots::Environment), 1, m_environmentMapSRV.GetAddressOf());
 
 	// 게임 오브젝트 렌더링
-	for (unique_ptr<GameObjectBase>& gameObject : m_gameObjects) gameObject->Render();
+	for (unique_ptr<GameObjectBase>& gameObject : m_gameObjects) gameObject->BaseRender();
 
 	// 스카이박스 렌더링
 	RenderSkybox();
 
 	// ImGui 렌더링
-	RenderImGui();
+	BaseRenderImGui();
 
 	m_renderer->EndFrame();
 }
 
-void SceneBase::RenderImGui()
+void SceneBase::BaseRenderImGui()
 {
 	ImGui::Begin(m_typeName.c_str());
 
@@ -63,7 +63,7 @@ void SceneBase::RenderImGui()
 
 	ImGui::Separator();
 	ImGui::Text("Game Objects:");
-	for (unique_ptr<GameObjectBase>& gameObject : m_gameObjects) gameObject->RenderImGui();
+	for (unique_ptr<GameObjectBase>& gameObject : m_gameObjects) gameObject->BaseRenderImGui();
 
 	ImGui::End();
 }
@@ -134,7 +134,7 @@ void SceneBase::RemovePendingGameObjects()
 			{
 				if (obj.get() == gameObjectToRemove)
 				{
-					obj->Finalize();
+					obj->BaseFinalize();
 					return true;
 				}
 				return false;

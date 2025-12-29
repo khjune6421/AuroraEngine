@@ -12,8 +12,6 @@ public:
 	TestScene& operator=(TestScene&&) = default;
 
 private:
-	void InitializeScene() override;
+	void Initialize() override;
 	GameObjectBase* CreateCameraObject() override;
-
-	void FinalizeScene() override {}
 };

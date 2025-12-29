@@ -20,7 +20,7 @@ GameObjectBase::~GameObjectBase()
 	for (auto& [typeIndex, component] : m_components) component->Finalize();
 }
 
-void GameObjectBase::Initialize()
+void GameObjectBase::BaseInitialize()
 {
 	m_typeName = typeid(*this).name();
 	if (m_typeName.find("class ") == 0) m_typeName = m_typeName.substr(6);
@@ -28,13 +28,13 @@ void GameObjectBase::Initialize()
 
 	m_worldWVPConstantBuffer = ResourceManager::GetInstance().GetConstantBuffer(sizeof(WorldBuffer));
 
-	InitializeGameObject();
+	Initialize();
 }
 
-void GameObjectBase::Update(float deltaTime)
+void GameObjectBase::BaseUpdate(float deltaTime)
 {
 	// 게임 오브젝트 업데이트 // 파생 클래스에서 오버라이드
-	UpdateGameObject(deltaTime);
+	Update(deltaTime);
 	// 월드 행렬 업데이트
 	UpdateWorldMatrix();
 	// 컴포넌트 업데이트
@@ -43,11 +43,15 @@ void GameObjectBase::Update(float deltaTime)
 	// 제거할 자식 게임 오브젝트 제거
 	RemovePendingChildGameObjects();
 	// 자식 게임 오브젝트 업데이트
-	for (auto& child : m_childrens) child->Update(deltaTime);
+	for (auto& child : m_childrens) child->BaseUpdate(deltaTime);
 }
 
-void GameObjectBase::Render()
+void GameObjectBase::BaseRender()
 {
+	// 게임 오브젝트 렌더링 // 파생 클래스에서 오버라이드
+	Render();
+
+	// 모델 컴포넌트 렌더링
 	ModelComponent* model = GetComponent<ModelComponent>();
 	if (model)
 	{
@@ -64,13 +68,16 @@ void GameObjectBase::Render()
 	}
 
 	// 자식 게임 오브젝트 렌더링
-	for (auto& child : m_childrens) child->Render();
+	for (auto& child : m_childrens) child->BaseRender();
 }
 
-void GameObjectBase::RenderImGui()
+void GameObjectBase::BaseRenderImGui()
 {
 	if (ImGui::TreeNode(m_typeName.c_str()))
 	{
+		// 파생 클래스 ImGui 렌더링
+		RenderImGui();
+
 		// 위치
 		if (ImGui::DragFloat3("Position", &m_position.m128_f32[0], 0.05f))  SetDirty();
 		// 회전
@@ -81,8 +88,6 @@ void GameObjectBase::RenderImGui()
 		};
 		// 크기
 		if (ImGui::DragFloat3("Scale", &m_scale.m128_f32[0], 0.01f)) SetDirty();
-
-		RenderImGuiGameObject();
 
 		// 컴포넌트 ImGui 렌더링
 		if (!m_components.empty())
@@ -97,22 +102,22 @@ void GameObjectBase::RenderImGui()
 		{
 			ImGui::Separator();
 			ImGui::Text("Children:");
-			for (auto& child : m_childrens) child->RenderImGui();
+			for (auto& child : m_childrens) child->BaseRenderImGui();
 		}
 
 		ImGui::TreePop();
 	}
 }
 
-void GameObjectBase::Finalize()
+void GameObjectBase::BaseFinalize()
 {
-	FinalizeGameObject();
+	Finalize();
 
 	// 컴포넌트 종료
 	for (auto& [typeIndex, component] : m_components) component->Finalize();
 
 	// 자식 게임 오브젝트 종료
-	for (auto& child : m_childrens) child->Finalize();
+	for (auto& child : m_childrens) child->BaseFinalize();
 }
 
 void GameObjectBase::MoveDirection(float distance, Direction direction)

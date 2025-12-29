@@ -6,7 +6,7 @@
 using namespace std;
 using namespace DirectX;
 
-void TestObject::InitializeGameObject()
+void TestObject::Initialize()
 {
 	CreateComponent<ModelComponent>(); // 기본 생성
 	SetScale({ 1.0f, 1.0f, 1.0f });
@@ -19,7 +19,7 @@ void TestObject::InitializeGameObject()
 	}
 }
 
-void TestObject::UpdateGameObject(float deltaTime)
+void TestObject::Update(float deltaTime)
 {
 	if (GetAsyncKeyState('W') & 0x8000) Rotate({ -deltaTime * 45.0f, 0.0f, 0.0f });
 	if (GetAsyncKeyState('S') & 0x8000) Rotate({ deltaTime * 45.0f, 0.0f, 0.0f });

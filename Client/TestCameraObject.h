@@ -12,6 +12,6 @@ public:
 	TestCameraObject& operator=(TestCameraObject&&) = default;
 
 private:
-	void InitializeGameObject() override;
-	void UpdateGameObject(float deltaTime) override;
+	void Initialize() override;
+	void Update(float deltaTime) override;
 };

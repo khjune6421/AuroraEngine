@@ -12,7 +12,6 @@ public:
 	CamRotObject& operator=(CamRotObject&&) = default;
 
 private:
-	void InitializeGameObject() override;
-	void UpdateGameObject(float deltaTime) override;
+	void Update(float deltaTime) override;
 };
 

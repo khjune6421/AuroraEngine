@@ -1,4 +1,5 @@
 #pragma once
+#include "IBase.h"
 #include "ComponentBase.h"
 
 enum class Direction // 방향 열거형
@@ -10,7 +11,7 @@ enum class Direction // 방향 열거형
 	Count
 };
 
-class GameObjectBase
+class GameObjectBase : public IBase
 {
 	UINT m_id = 0; // 고유 ID
 	std::string m_typeName = "GameObjectBase"; // 게임 오브젝트 타입 이름
@@ -52,15 +53,15 @@ public:
 	GameObjectBase& operator=(GameObjectBase&&) = default; // 이동 대입
 
 	// 게임 오브젝트 초기화
-	void Initialize();
+	void BaseInitialize() override;
 	// 게임 오브젝트 업데이트
-	void Update(float deltaTime);
+	void BaseUpdate(float deltaTime) override;
 	// 게임 오브젝트 렌더링
-	void Render();
+	void BaseRender() override;
 	// ImGui 렌더링
-	void RenderImGui();
+	void BaseRenderImGui() override;
 	// 게임 오브젝트 종료
-	void Finalize();
+	void BaseFinalize() override;
 
 	UINT GetID() const { return m_id; }
 
@@ -106,16 +107,6 @@ public:
 	template<typename T> requires std::derived_from<T, ComponentBase>
 	void RemoveComponent(); // 컴포넌트 제거
 
-protected:
-	// Initialize에서 호출
-	virtual void InitializeGameObject() {}
-	// Update에서 호출
-	virtual void UpdateGameObject(float deltaTime) {}
-	// RenderImGui에서 호출
-	virtual void RenderImGuiGameObject() {}
-	// Finalize에서 호출
-	virtual void FinalizeGameObject() {}
-
 private:
 	// 위치 갱신 필요로 설정 // 자식 게임 오브젝트도 설정
 	void SetDirty();
@@ -131,7 +122,7 @@ inline T* GameObjectBase::CreateChildGameObject(Args && ...args)
 	auto child = std::make_unique<T>(std::forward<Args>(args)...);
 
 	child->m_parent = this;
-	child->Initialize();
+	child->BaseInitialize();
 	T* childPtr = child.get();
 	m_childrens.push_back(std::move(child));
 
