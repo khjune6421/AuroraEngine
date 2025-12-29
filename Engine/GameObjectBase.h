@@ -38,6 +38,8 @@ class GameObjectBase : public IBase
 	com_ptr<ID3D11Buffer> m_worldWVPConstantBuffer = nullptr; // 월드, WVP 행렬 상수 버퍼
 
 	std::unordered_map<std::type_index, std::unique_ptr<IBase>> m_components = {}; // 컴포넌트 맵
+	std::vector<IBase*> m_updateComponents = {}; // 업데이트할 컴포넌트 배열
+	std::vector<IBase*> m_renderComponents = {}; // 렌더링할 컴포넌트 배열
 
 protected:
 	GameObjectBase* m_parent = nullptr; // 부모 게임 오브젝트 포인터

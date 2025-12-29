@@ -191,7 +191,7 @@ void GameObjectBase::RemovePendingChildGameObjects()
 			{
 				if (obj.get() == childToRemove)
 				{
-					obj->Finalize();
+					obj->BaseFinalize();
 					return true;
 				}
 				return false;
