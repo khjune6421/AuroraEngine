@@ -24,8 +24,7 @@ VSOutput main(uint vertexID : SV_VertexID)
     viewNoTranslation[3] = float4(0, 0, 0, 1);
     
     // 역투영행렬 * 역뷰행렬
-    matrix invVP = mul(viewNoTranslation, ProjectionMatrix);
-    invVP = transpose(invVP);
+    matrix invVP = transpose(mul(viewNoTranslation, ProjectionMatrix));
     
     // 원점에서 멀리 떨어진 위치 계산
     output.ViewDir = mul(output.Position, invVP).xyz;
