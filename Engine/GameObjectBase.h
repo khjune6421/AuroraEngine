@@ -1,4 +1,5 @@
 #pragma once
+#include "IBase.h"
 #include "ComponentBase.h"
 
 enum class Direction // 방향 열거형
@@ -10,7 +11,7 @@ enum class Direction // 방향 열거형
 	Count
 };
 
-class GameObjectBase
+class GameObjectBase : public IBase
 {
 	UINT m_id = 0; // 고유 ID
 	std::string m_typeName = "GameObjectBase"; // 게임 오브젝트 타입 이름
@@ -36,7 +37,9 @@ class GameObjectBase
 	WorldBuffer m_worldData = {}; // 월드 및 WVP 행렬 상수 버퍼 데이터
 	com_ptr<ID3D11Buffer> m_worldWVPConstantBuffer = nullptr; // 월드, WVP 행렬 상수 버퍼
 
-	std::unordered_map<std::type_index, std::unique_ptr<ComponentBase>> m_components = {}; // 컴포넌트 맵
+	std::unordered_map<std::type_index, std::unique_ptr<IBase>> m_components = {}; // 컴포넌트 맵
+	std::vector<IBase*> m_updateComponents = {}; // 업데이트할 컴포넌트 배열
+	std::vector<IBase*> m_renderComponents = {}; // 렌더링할 컴포넌트 배열
 
 protected:
 	GameObjectBase* m_parent = nullptr; // 부모 게임 오브젝트 포인터
@@ -45,22 +48,11 @@ protected:
 
 public:
 	GameObjectBase(); // 무조건 CreateGameObject로 생성
-	virtual ~GameObjectBase(); // 컴포넌트 제거
+	virtual ~GameObjectBase() = default;
 	GameObjectBase(const GameObjectBase&) = default; // 복사
 	GameObjectBase& operator=(const GameObjectBase&) = default; // 복사 대입
 	GameObjectBase(GameObjectBase&&) = default; // 이동
 	GameObjectBase& operator=(GameObjectBase&&) = default; // 이동 대입
-
-	// 게임 오브젝트 초기화
-	void Initialize();
-	// 게임 오브젝트 업데이트
-	void Update(float deltaTime);
-	// 게임 오브젝트 렌더링
-	void Render();
-	// ImGui 렌더링
-	void RenderImGui();
-	// 게임 오브젝트 종료
-	void Finalize();
 
 	UINT GetID() const { return m_id; }
 
@@ -106,17 +98,18 @@ public:
 	template<typename T> requires std::derived_from<T, ComponentBase>
 	void RemoveComponent(); // 컴포넌트 제거
 
-protected:
-	// Initialize에서 호출
-	virtual void InitializeGameObject() {}
-	// Update에서 호출
-	virtual void UpdateGameObject(float deltaTime) {}
-	// RenderImGui에서 호출
-	virtual void RenderImGuiGameObject() {}
-	// Finalize에서 호출
-	virtual void FinalizeGameObject() {}
-
 private:
+	// 게임 오브젝트 초기화
+	void BaseInitialize() override;
+	// 게임 오브젝트 업데이트
+	void BaseUpdate(float deltaTime) override;
+	// 게임 오브젝트 렌더링
+	void BaseRender() override;
+	// ImGui 렌더링
+	void BaseRenderImGui() override;
+	// 게임 오브젝트 종료
+	void BaseFinalize() override;
+
 	// 위치 갱신 필요로 설정 // 자식 게임 오브젝트도 설정
 	void SetDirty();
 	// 제거할 자식 게임 오브젝트 제거
@@ -130,9 +123,9 @@ inline T* GameObjectBase::CreateChildGameObject(Args && ...args)
 {
 	auto child = std::make_unique<T>(std::forward<Args>(args)...);
 
-	child->m_parent = this;
-	child->Initialize();
 	T* childPtr = child.get();
+	child->m_parent = this;
+	child->BaseInitialize();
 	m_childrens.push_back(std::move(child));
 
 	return childPtr;
@@ -141,10 +134,15 @@ inline T* GameObjectBase::CreateChildGameObject(Args && ...args)
 template<typename T, typename ...Args> requires std::derived_from<T, ComponentBase>
 inline T* GameObjectBase::CreateComponent(Args && ...args)
 {
-	auto component = std::make_unique<T>(std::forward<Args>(args)...);
+	std::unique_ptr<IBase> component = std::make_unique<T>(std::forward<Args>(args)...);
 
-	component->Initialize(this);
-	T* componentPtr = component.get();
+	T* componentPtr = static_cast<T*>(component.get());
+	componentPtr->SetOwner(this);
+
+	if (componentPtr->NeedsUpdate()) m_updateComponents.push_back(componentPtr);
+	if (componentPtr->NeedsRender()) m_renderComponents.push_back(componentPtr);
+
+	component->BaseInitialize();
 	m_components[std::type_index(typeid(T))] = std::move(component);
 
 	return componentPtr;
@@ -165,7 +163,12 @@ inline void GameObjectBase::RemoveComponent()
 	auto it = m_components.find(std::type_index(typeid(T)));
 	if (it != m_components.end())
 	{
-		it->second->Finalize();
+		IBase* componentPtr = it->second.get();
+		if (componentPtr->NeedsUpdate()) erase_if(m_updateComponents, [componentPtr](IBase* obj) { return obj == componentPtr; });
+		if (componentPtr->NeedsRender()) erase_if(m_renderComponents, [componentPtr](IBase* obj) { return obj == componentPtr; });
+
+
+		it->second->BaseFinalize();
 		m_components.erase(it);
 	}
 }

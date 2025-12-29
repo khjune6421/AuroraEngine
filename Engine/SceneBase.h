@@ -1,15 +1,16 @@
 #pragma once
+#include "IBase.h"
 #include "GameObjectBase.h"
 
-class SceneBase
+class SceneBase : public IBase
 {
 	std::string m_typeName = "SceneBase"; // 씬 타입 이름
 
 	class Renderer* m_renderer = nullptr; // 렌더러 포인터
 	com_ptr<ID3D11DeviceContext> m_deviceContext = nullptr; // 디바이스 컨텍스트 포인터
 
-	std::vector<std::unique_ptr<GameObjectBase>> m_gameObjects = {}; // 게임 오브젝트 배열
-	std::vector<GameObjectBase*> m_gameObjectsToRemove = {}; // 제거할 게임 오브젝트 배열
+	std::vector<std::unique_ptr<IBase>> m_gameObjects = {}; // 게임 오브젝트 배열
+	std::vector<IBase*> m_gameObjectsToRemove = {}; // 제거할 게임 오브젝트 배열
 
 	struct ViewProjectionBuffer // 뷰-투영 상수 버퍼 구조체
 	{
@@ -48,32 +49,27 @@ public:
 	SceneBase(SceneBase&&) = delete; // 이동 금지
 	SceneBase& operator=(SceneBase&&) = delete; // 이동 대입 금지
 
-	// 씬 초기화 // 씬 사용 전 반드시 호출해야 함
-	void Initialize();
-	// 씬 업데이트 // 씬 매니저가 호출
-	void Update(float deltaTime);
-	// 씬 렌더링 // 씬 매니저가 호출
-	void Render();
-	// ImGui 렌더링
-	void RenderImGui();
-	// 씬 종료 // 씬 매니저가 씬을 교체할 때 호출
-	void Finalize() { FinalizeScene(); }
-
 	template<typename T, typename... Args> requires std::derived_from<T, GameObjectBase>
 	T* CreateRootGameObject(Args&&... args);
 	// 루트 게임 오브젝트 제거 // 제거 배열에 추가
 	void RemoveGameObject(GameObjectBase* gameObject) { m_gameObjectsToRemove.push_back(gameObject); }
 
 protected:
-	// 씬 초기화 // Initialize에서 호출
-	virtual void InitializeScene() = 0;
-	// 씬 종료 // Finalize에서 호출
-	virtual void FinalizeScene() = 0;
-
 	// 메인 카메라 게임 오브젝트 설정
 	virtual GameObjectBase* CreateCameraObject();
 
 private:
+	// 씬 초기화 // 씬 사용 전 반드시 호출해야 함
+	void BaseInitialize() override;
+	// 씬 업데이트 // 씬 매니저가 호출
+	void BaseUpdate(float deltaTime) override;
+	// 씬 렌더링 // 씬 매니저가 호출
+	void BaseRender() override;
+	// ImGui 렌더링
+	void BaseRenderImGui() override;
+	// 씬 종료 // 씬 매니저가 씬을 교체할 때 호출
+	void BaseFinalize() override { Finalize(); }
+
 	// 리소스 매니저에서 필요한 리소스 얻기
 	void GetResources();
 	// 상수 버퍼 업데이트
@@ -87,10 +83,10 @@ private:
 template<typename T, typename ...Args> requires std::derived_from<T, GameObjectBase>
 inline T* SceneBase::CreateRootGameObject(Args && ...args)
 {
-	auto gameObject = std::make_unique<T>(std::forward<Args>(args)...);
+	std::unique_ptr<IBase> gameObject = std::make_unique<T>(std::forward<Args>(args)...);
 
-	gameObject->Initialize();
-	T* gameObjectPtr = gameObject.get();
+	T* gameObjectPtr = static_cast<T*>(gameObject.get()); // 이거 왜 dynamic_cast 가 아니라 static_cast 인거지?
+	gameObject->BaseInitialize();
 	m_gameObjects.push_back(move(gameObject));
 
 	return gameObjectPtr;

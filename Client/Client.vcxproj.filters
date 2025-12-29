@@ -11,6 +11,9 @@
     <ClCompile Include="TestCameraObject.cpp">
       <Filter>GameObject</Filter>
     </ClCompile>
+    <ClCompile Include="CamRotObject.cpp">
+      <Filter>GameObject</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stdafx.h" />
@@ -21,6 +24,9 @@
       <Filter>GameObject</Filter>
     </ClInclude>
     <ClInclude Include="TestCameraObject.h">
+      <Filter>GameObject</Filter>
+    </ClInclude>
+    <ClInclude Include="CamRotObject.h">
       <Filter>GameObject</Filter>
     </ClInclude>
   </ItemGroup>

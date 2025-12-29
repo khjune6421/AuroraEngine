@@ -43,10 +43,13 @@ public:
 	const std::string& GetPixelShaderName() const { return m_psShaderName; }
 	void SetPixelShaderName(const std::string& psShaderName) { m_psShaderName = psShaderName; }
 
+	bool NeedsUpdate() const override { return false; }
+	bool NeedsRender() const override { return true; }
+
 private:
-	void InitializeComponent() override;
-	void RenderComponent() override;
-	void RenderImGuiComponent() override;
+	void Initialize() override;
+	void Render() override;
+	void RenderImGui() override;
 	// ¼ÎÀÌ´õ »ý¼º
 	void CreateShaders();
 };

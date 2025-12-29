@@ -1,11 +1,12 @@
 #pragma once
+#include "SceneBase.h"
 
 class SceneManager : public SingletonBase<SceneManager>
 {
 	friend class SingletonBase<SceneManager>;
 
-	std::unique_ptr<class SceneBase> m_currentScene = nullptr;
-	std::unique_ptr<class SceneBase> m_nextScene = nullptr;
+	std::unique_ptr<class IBase> m_currentScene = nullptr;
+	std::unique_ptr<class IBase> m_nextScene = nullptr;
 
 public:
 	SceneManager() = default;
@@ -15,7 +16,7 @@ public:
 	SceneManager(SceneManager&&) = delete;
 	SceneManager& operator=(SceneManager&&) = delete;
 
-	template<typename T, typename... Args>
+	template<typename T, typename... Args> requires std::derived_from<T, SceneBase>
 	void ChangeScene(Args&&... args) { m_nextScene = std::make_unique<T>(std::forward<Args>(args)...); }
 
 	void Run();

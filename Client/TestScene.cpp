@@ -7,7 +7,7 @@
 
 using namespace std;
 
-void TestScene::InitializeScene()
+void TestScene::Initialize()
 {
 	CreateRootGameObject<TestObject>();
 }

@@ -1,21 +1,19 @@
 #include "stdafx.h"
 #include "SceneManager.h"
 
-#include "SceneBase.h"
-
 using namespace std;
 
 void SceneManager::Run()
 {
 	if (m_nextScene)
 	{
-		if (m_currentScene) m_currentScene->Finalize();
+		if (m_currentScene) m_currentScene->BaseFinalize();
 		m_currentScene = move(m_nextScene);
-		m_currentScene->Initialize();
+		m_currentScene->BaseInitialize();
 	}
 
-	m_currentScene->Update(GetDeltaTime());
-	m_currentScene->Render();
+	m_currentScene->BaseUpdate(GetDeltaTime());
+	m_currentScene->BaseRender();
 }
 
 float SceneManager::GetDeltaTime()
