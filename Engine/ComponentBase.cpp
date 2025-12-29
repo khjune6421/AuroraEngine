@@ -1,21 +1,19 @@
 #include "stdafx.h"
 #include "ComponentBase.h"
 
-void ComponentBase::Initialize(GameObjectBase* owner)
+void ComponentBase::BaseInitialize()
 {
 	m_typeName = typeid(*this).name();
 	if (m_typeName.find("class ") == 0) m_typeName = m_typeName.substr(6);
 
-	m_owner = owner;
-
-	InitializeComponent();
+	Initialize();
 }
 
-void ComponentBase::RenderImGui()
+void ComponentBase::BaseRenderImGui()
 {
 	if (ImGui::TreeNode(m_typeName.c_str()))
 	{
-		RenderImGuiComponent();
+		RenderImGui();
 
 		ImGui::TreePop();
 	}

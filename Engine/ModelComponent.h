@@ -44,9 +44,9 @@ public:
 	void SetPixelShaderName(const std::string& psShaderName) { m_psShaderName = psShaderName; }
 
 private:
-	void InitializeComponent() override;
-	void RenderComponent() override;
-	void RenderImGuiComponent() override;
+	void Initialize() override;
+	void Render() override;
+	void RenderImGui() override;
 	// 셰이더 생성
 	void CreateShaders();
 };

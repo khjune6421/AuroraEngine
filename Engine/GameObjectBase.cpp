@@ -38,7 +38,7 @@ void GameObjectBase::BaseUpdate(float deltaTime)
 	// 월드 행렬 업데이트
 	UpdateWorldMatrix();
 	// 컴포넌트 업데이트
-	for (auto& [typeIndex, component] : m_components) component->Update(deltaTime);
+	for (auto& [typeIndex, component] : m_components) component->BaseUpdate(deltaTime);
 
 	// 제거할 자식 게임 오브젝트 제거
 	RemovePendingChildGameObjects();
@@ -64,7 +64,7 @@ void GameObjectBase::BaseRender()
 		deviceContext->VSSetConstantBuffers(static_cast<UINT>(VSConstBuffers::WorldNormal), 1, m_worldWVPConstantBuffer.GetAddressOf());
 
 		// 모델 렌더링
-		model->Render();
+		model->BaseRender();
 	}
 
 	// 자식 게임 오브젝트 렌더링
@@ -94,7 +94,7 @@ void GameObjectBase::BaseRenderImGui()
 		{
 			ImGui::Separator();
 			ImGui::Text("Components:");
-			for (auto& [typeIndex, component] : m_components) component->RenderImGui();
+			for (auto& [typeIndex, component] : m_components) component->BaseRenderImGui();
 		}
 
 		// 자식 게임 오브젝트 ImGui 렌더링
@@ -114,7 +114,7 @@ void GameObjectBase::BaseFinalize()
 	Finalize();
 
 	// 컴포넌트 종료
-	for (auto& [typeIndex, component] : m_components) component->Finalize();
+	for (auto& [typeIndex, component] : m_components) component->BaseFinalize();
 
 	// 자식 게임 오브젝트 종료
 	for (auto& child : m_childrens) child->BaseFinalize();

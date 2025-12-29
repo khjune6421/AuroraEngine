@@ -11,7 +11,7 @@ enum class Direction // 방향 열거형
 	Count
 };
 
-class GameObjectBase : public IBase
+class GameObjectBase : protected IBase
 {
 	UINT m_id = 0; // 고유 ID
 	std::string m_typeName = "GameObjectBase"; // 게임 오브젝트 타입 이름
@@ -134,7 +134,8 @@ inline T* GameObjectBase::CreateComponent(Args && ...args)
 {
 	auto component = std::make_unique<T>(std::forward<Args>(args)...);
 
-	component->Initialize(this);
+	component->m_owner = this;
+	component->BaseInitialize();
 	T* componentPtr = component.get();
 	m_components[std::type_index(typeid(T))] = std::move(component);
 
@@ -156,7 +157,7 @@ inline void GameObjectBase::RemoveComponent()
 	auto it = m_components.find(std::type_index(typeid(T)));
 	if (it != m_components.end())
 	{
-		it->second->Finalize();
+		it->second->BaseFinalize();
 		m_components.erase(it);
 	}
 }

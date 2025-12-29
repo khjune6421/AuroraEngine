@@ -22,8 +22,6 @@ public:
 	CameraComponent(CameraComponent&&) = default;
 	CameraComponent& operator=(CameraComponent&&) = default;
 
-	void RenderImGuiComponent() override;
-
 	void SetFovY(float fovY) { m_fovY = fovY; UpdateProjectionMatrix(); }
 	void SetScreenSize(UINT width, UINT height) { m_screenWidth = width; m_screenHeight = height; UpdateProjectionMatrix(); }
 	void SetNearZ(float nearZ) { m_nearZ = nearZ; UpdateProjectionMatrix(); }
@@ -34,8 +32,9 @@ public:
 
 
 private:
-	void InitializeComponent() override { UpdateProjectionMatrix(); }
-	void UpdateComponent(float /*deltaTime*/) override { UpdateViewMatrix(); }
+	void Initialize() override { UpdateProjectionMatrix(); }
+	void Update(float /*deltaTime*/) override { UpdateViewMatrix(); }
+	void RenderImGui() override;
 
 	// ºä Çà·Ä °»½Å
 	void UpdateViewMatrix();

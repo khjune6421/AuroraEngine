@@ -5,7 +5,7 @@
 #include "Renderer.h"
 #include "ResourceManager.h"
 
-void ModelComponent::InitializeComponent()
+void ModelComponent::Initialize()
 {
 	m_deviceContext = Renderer::GetInstance().GetDeviceContext();
 
@@ -17,7 +17,7 @@ void ModelComponent::InitializeComponent()
 	CreateShaders();
 }
 
-void ModelComponent::RenderComponent()
+void ModelComponent::Render()
 {
 	constexpr UINT stride = sizeof(Vertex);
 	constexpr UINT offset = 0;
@@ -49,7 +49,7 @@ void ModelComponent::RenderComponent()
 	}
 }
 
-void ModelComponent::RenderImGuiComponent()
+void ModelComponent::RenderImGui()
 {
 	char modelFileNameBuffer[256];
 	strcpy_s(modelFileNameBuffer, m_modelFileName.c_str());
