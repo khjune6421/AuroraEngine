@@ -43,6 +43,9 @@ public:
 	const std::string& GetPixelShaderName() const { return m_psShaderName; }
 	void SetPixelShaderName(const std::string& psShaderName) { m_psShaderName = psShaderName; }
 
+	bool NeedsUpdate() const override { return false; }
+	bool NeedsRender() const override { return true; }
+
 private:
 	void Initialize() override;
 	void Render() override;

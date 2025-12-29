@@ -93,7 +93,7 @@ void GameObjectBase::BaseUpdate(float deltaTime)
 	// 월드 행렬 업데이트
 	UpdateWorldMatrix();
 	// 컴포넌트 업데이트
-	for (auto& [typeIndex, component] : m_components) component->BaseUpdate(deltaTime);
+	for (IBase*& component : m_updateComponents) component->BaseUpdate(deltaTime);
 
 	// 제거할 자식 게임 오브젝트 제거
 	RemovePendingChildGameObjects();
@@ -106,9 +106,8 @@ void GameObjectBase::BaseRender()
 	// 게임 오브젝트 렌더링 // 파생 클래스에서 오버라이드
 	Render();
 
-	// 모델 컴포넌트 렌더링
-	IBase* model = GetComponent<ModelComponent>();
-	if (model)
+	// 컴포넌트 렌더링
+	if (!m_renderComponents.empty())
 	{
 		// 월드 및 WVP 행렬 상수 버퍼 업데이트 및 셰이더에 설정
 		m_worldData.worldMatrix = XMMatrixTranspose(m_worldMatrix);
@@ -118,8 +117,7 @@ void GameObjectBase::BaseRender()
 		deviceContext->UpdateSubresource(m_worldWVPConstantBuffer.Get(), 0, nullptr, &m_worldData, 0, 0);
 		deviceContext->VSSetConstantBuffers(static_cast<UINT>(VSConstBuffers::WorldNormal), 1, m_worldWVPConstantBuffer.GetAddressOf());
 
-		// 모델 렌더링
-		model->BaseRender();
+		for (IBase*& component : m_renderComponents) component->BaseRender();
 	}
 
 	// 자식 게임 오브젝트 렌더링

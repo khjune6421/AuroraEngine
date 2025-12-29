@@ -138,6 +138,10 @@ inline T* GameObjectBase::CreateComponent(Args && ...args)
 
 	T* componentPtr = static_cast<T*>(component.get());
 	componentPtr->SetOwner(this);
+
+	if (componentPtr->NeedsUpdate()) m_updateComponents.push_back(componentPtr);
+	if (componentPtr->NeedsRender()) m_renderComponents.push_back(componentPtr);
+
 	component->BaseInitialize();
 	m_components[std::type_index(typeid(T))] = std::move(component);
 
@@ -159,6 +163,11 @@ inline void GameObjectBase::RemoveComponent()
 	auto it = m_components.find(std::type_index(typeid(T)));
 	if (it != m_components.end())
 	{
+		IBase* componentPtr = it->second.get();
+		if (componentPtr->NeedsUpdate()) erase_if(m_updateComponents, [componentPtr](IBase* obj) { return obj == componentPtr; });
+		if (componentPtr->NeedsRender()) erase_if(m_renderComponents, [componentPtr](IBase* obj) { return obj == componentPtr; });
+
+
 		it->second->BaseFinalize();
 		m_components.erase(it);
 	}

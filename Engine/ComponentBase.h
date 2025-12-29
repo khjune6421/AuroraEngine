@@ -18,6 +18,9 @@ public:
 
 	void SetOwner(GameObjectBase* owner) { m_owner = owner; }
 
+	virtual bool NeedsUpdate() const = 0;
+	virtual bool NeedsRender() const = 0;
+
 private:
 	void BaseInitialize() override;
 	void BaseUpdate(float deltaTime) override { Update(deltaTime); }

@@ -30,6 +30,8 @@ public:
 	DirectX::XMMATRIX GetViewMatrix() const { return m_viewMatrix; }
 	DirectX::XMMATRIX GetProjectionMatrix() const { return m_projectionMatrix; }
 
+	bool NeedsUpdate() const override { return true; }
+	bool NeedsRender() const override { return false; }
 
 private:
 	void Initialize() override { UpdateProjectionMatrix(); }
