@@ -1,6 +1,15 @@
 #pragma once
 #include "ComponentBase.h"
 
+enum class Direction // 방향 열거형
+{
+	Left, Right,
+	Up, Down,
+	Forward, Backward,
+
+	Count
+};
+
 class GameObjectBase
 {
 	UINT m_id = 0; // 고유 ID
@@ -60,12 +69,6 @@ public:
 	void SetPosition(const DirectX::XMVECTOR& position) { m_position = position; SetDirty(); }
 	// 위치 이동
 	void MovePosition(const DirectX::XMVECTOR& deltaPosition) { m_position = DirectX::XMVectorAdd(m_position, deltaPosition); SetDirty(); }
-	enum class Direction // 방향 열거형
-	{
-		Forward, Backward,
-		Left, Right,
-		Up, Down
-	};
 	// 방향 이동
 	void MoveDirection(float distance, Direction direction);
 	// 위치 가져오기
@@ -76,7 +79,7 @@ public:
 	// 회전 이동
 	void Rotate(const DirectX::XMVECTOR& deltaRotation);
 	// 특정 위치 바라보기
-	void LookAt(const DirectX::XMVECTOR& targetPosition);
+	void LookAt(const DirectX::XMVECTOR& targetPosition, const DirectX::XMVECTOR& upDirection = { 0.0f, 1.0f, 0.0f, 0.0f });
 	// 회전 가져오기
 	const DirectX::XMVECTOR& GetRotation() const { return m_euler; }
 	// 정규화된 방향 벡터 가져오기

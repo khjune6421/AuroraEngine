@@ -139,10 +139,10 @@ void GameObjectBase::Rotate(const XMVECTOR& deltaRotation)
 	SetDirty();
 }
 
-void GameObjectBase::LookAt(const XMVECTOR& targetPosition)
+void GameObjectBase::LookAt(const XMVECTOR& targetPosition, const XMVECTOR& upDirection)
 {
 	XMVECTOR direction = XMVector3Normalize(XMVectorSubtract(targetPosition, UpdateWorldMatrix().r[3]));
-	XMVECTOR right = XMVector3Cross(GetDirectionVector(Direction::Up), direction);
+	XMVECTOR right = XMVector3Cross(upDirection, direction);
 	XMVECTOR up = XMVector3Cross(direction, right);
 
 	m_quaternion = XMQuaternionRotationMatrix({ right, up, direction, { 0.0f, 0.0f, 0.0f, 1.0f } });
@@ -155,20 +155,20 @@ XMVECTOR GameObjectBase::GetDirectionVector(Direction direction) const
 {
 	switch (direction)
 	{
-	case Direction::Forward:
-		return XMVector3Rotate(XMVectorSet(0.0f, 0.0f, 1.0f, 0.0f), m_quaternion);
-	case Direction::Backward:
-		return XMVector3Rotate(XMVectorSet(0.0f, 0.0f, -1.0f, 0.0f), m_quaternion);
-
 	case Direction::Left:
-		return XMVector3Rotate(XMVectorSet(-1.0f, 0.0f, 0.0f, 0.0f), m_quaternion);
+		return XMVector3Rotate({ -1.0f, 0.0f, 0.0f, 0.0f }, m_quaternion);
 	case Direction::Right:
-		return XMVector3Rotate(XMVectorSet(1.0f, 0.0f, 0.0f, 0.0f), m_quaternion);
+		return XMVector3Rotate({ 1.0f, 0.0f, 0.0f, 0.0f }, m_quaternion);
 
 	case Direction::Up:
-		return XMVector3Rotate(XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f), m_quaternion);
+		return XMVector3Rotate({ 0.0f, 1.0f, 0.0f, 0.0f }, m_quaternion);
 	case Direction::Down:
-		return XMVector3Rotate(XMVectorSet(0.0f, -1.0f, 0.0f, 0.0f), m_quaternion);
+		return XMVector3Rotate({ 0.0f, -1.0f, 0.0f, 0.0f }, m_quaternion);
+
+	case Direction::Forward:
+		return XMVector3Rotate({ 0.0f, 0.0f, 1.0f, 0.0f }, m_quaternion);
+	case Direction::Backward:
+		return XMVector3Rotate({ 0.0f, 0.0f, -1.0f, 0.0f }, m_quaternion);
 
 	default:
 		return XMVectorZero();

@@ -369,6 +369,8 @@ MaterialFactor ResourceManager::ProcessMaterialFactor(aiMaterial* material)
 	float roughnessFactor = 1.0f;
 	if (AI_SUCCESS == material->Get(AI_MATKEY_ROUGHNESS_FACTOR, roughnessFactor)) resultMaterialFactor.roughnessFactor = roughnessFactor;
 
+	// TODO: PBR È¯°æ±¤ Â÷Æó ÆÑÅÍ
+
 	return resultMaterialFactor;
 }
 

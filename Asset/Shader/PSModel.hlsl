@@ -16,12 +16,13 @@ cbuffer MaterialFactor : register(b1)
 
 SamplerState textureSampler : register(s1);
 
-TextureCube environmentMapTexture : register(t1); // 나중에 사용
+TextureCube environmentMapTexture : register(t1); // 나중에 반사광에 사용?
 
 Texture2D albedoTexture : register(t2);
 Texture2D normalTexture : register(t3);
 Texture2D metallicTexture : register(t4);
 Texture2D roughnessTexture : register(t5);
+Texture2D ambientOcclusionTexture : register(t6);
 
 struct PixelInput
 {
