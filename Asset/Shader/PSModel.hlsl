@@ -1,10 +1,15 @@
-cbuffer DirectionalLight : register(b0)
+cbuffer CameraPosition : register(b0)
+{
+    float4 cameraPosition;
+};
+
+cbuffer DirectionalLight : register(b1)
 {
     float4 lightDirection; // 정규화된 방향 벡터여야 함
     float4 lightColor;
 };
 
-cbuffer MaterialFactor : register(b1)
+cbuffer MaterialFactor : register(b2)
 {
     float4 albedoFactor;
     float metallicFactor;

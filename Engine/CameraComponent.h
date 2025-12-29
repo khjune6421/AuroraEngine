@@ -13,6 +13,7 @@ class CameraComponent : public ComponentBase
 
 	DirectX::XMMATRIX m_viewMatrix = DirectX::XMMatrixIdentity(); // 뷰 행렬
 	DirectX::XMMATRIX m_projectionMatrix = DirectX::XMMatrixIdentity(); // 투영 행렬
+	const DirectX::XMVECTOR* m_position = nullptr; // 카메라 위치
 
 public:
 	CameraComponent() = default;
@@ -27,14 +28,16 @@ public:
 	void SetNearZ(float nearZ) { m_nearZ = nearZ; UpdateProjectionMatrix(); }
 	void SetFarZ(float farZ) { m_farZ = farZ; UpdateProjectionMatrix(); }
 
-	DirectX::XMMATRIX GetViewMatrix() const { return m_viewMatrix; }
-	DirectX::XMMATRIX GetProjectionMatrix() const { return m_projectionMatrix; }
+	const DirectX::XMMATRIX& GetViewMatrix() const { return m_viewMatrix; }
+	const DirectX::XMMATRIX& GetProjectionMatrix() const { return m_projectionMatrix; }
+	const DirectX::XMVECTOR& GetPosition() const { return *m_position; }
 
 	bool NeedsUpdate() const override { return true; }
 	bool NeedsRender() const override { return false; }
 
 private:
-	void Initialize() override { UpdateProjectionMatrix(); }
+	void Initialize() override;
+	// 위치, 뷰 행렬 갱신
 	void Update(float /*deltaTime*/) override { UpdateViewMatrix(); }
 	void RenderImGui() override;
 

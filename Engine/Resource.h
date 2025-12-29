@@ -193,6 +193,7 @@ enum class VSConstBuffers
 };
 enum class PSConstBuffers
 {
+	CameraPosition,
 	DirectionalLight,
 	Material
 };

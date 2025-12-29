@@ -5,12 +5,18 @@
 
 using namespace DirectX;
 
+void CameraComponent::Initialize()
+{
+	m_position = &m_owner->GetWorldMatrix().r[3];
+	UpdateProjectionMatrix();
+}
+
 void CameraComponent::UpdateViewMatrix()
 {
 	m_viewMatrix = XMMatrixLookAtLH
 	(
-		m_owner->GetWorldMatrix().r[3], // 카메라 위치
-		XMVectorAdd(m_owner->GetWorldMatrix().r[3], m_owner->GetDirectionVector(Direction::Forward)), // 카메라 앞 방향
+		*m_position, // 카메라 위치
+		XMVectorAdd(*m_position, m_owner->GetDirectionVector(Direction::Forward)), // 카메라 앞 방향
 		m_owner->GetDirectionVector(Direction::Up) // 카메라 위 방향
 	);
 }
