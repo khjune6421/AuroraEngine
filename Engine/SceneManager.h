@@ -1,9 +1,9 @@
 #pragma once
 #include "SceneBase.h"
 
-class SceneManager : public SingletonBase<SceneManager>
+class SceneManager : public Singleton<SceneManager>
 {
-	friend class SingletonBase<SceneManager>;
+	friend class Singleton<SceneManager>;
 
 	std::unique_ptr<class IBase> m_currentScene = nullptr;
 	std::unique_ptr<class IBase> m_nextScene = nullptr;

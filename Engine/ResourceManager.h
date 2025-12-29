@@ -1,9 +1,9 @@
 #pragma once
 #include "Resource.h"
 
-class ResourceManager : public SingletonBase<ResourceManager>
+class ResourceManager : public Singleton<ResourceManager>
 {
-	friend class SingletonBase<ResourceManager>;
+	friend class Singleton<ResourceManager>;
 
 	com_ptr<ID3D11Device> m_device = nullptr; // 디바이스
 	com_ptr<ID3D11DeviceContext> m_deviceContext = nullptr; // 디바이스 컨텍스트

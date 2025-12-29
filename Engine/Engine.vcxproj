@@ -144,7 +144,7 @@
     <ClInclude Include="Resource.h" />
     <ClInclude Include="SceneBase.h" />
     <ClInclude Include="SceneManager.h" />
-    <ClInclude Include="SingletonBase.h" />
+    <ClInclude Include="Singleton.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="WindowManager.h" />
   </ItemGroup>
@@ -152,7 +152,6 @@
     <ClCompile Include="CameraComponent.cpp" />
     <ClCompile Include="ComponentBase.cpp" />
     <ClCompile Include="GameObjectBase.cpp" />
-    <ClCompile Include="IBase.cpp" />
     <ClCompile Include="ModelComponent.cpp" />
     <ClCompile Include="Renderer.cpp" />
     <ClCompile Include="ResourceManager.cpp" />

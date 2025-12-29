@@ -37,7 +37,7 @@
 #include <imgui_impl_dx11.h>
 
 // 기타 사용자 정의 헤더
-#include "SingletonBase.h"
+#include "Singleton.h"
 
 // 메크로 정의
 #define com_ptr Microsoft::WRL::ComPtr
