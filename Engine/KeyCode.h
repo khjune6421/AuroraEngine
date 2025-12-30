@@ -24,6 +24,12 @@ enum class KeyCode
     Backspace,
     Delete,
 
+    // 방향 키
+    Left,
+    Right,
+    Up,
+    Down,
+
     // 문자
     A = 'A',
     B = 'B',

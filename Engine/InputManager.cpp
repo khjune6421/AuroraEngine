@@ -130,6 +130,10 @@ int InputManager::MapKeyCodeToVKey(KeyCode key) const
     case KeyCode::Tab:          return VK_TAB;
     case KeyCode::Backspace:    return VK_BACK;
     case KeyCode::Delete:       return VK_DELETE;
+    case KeyCode::Left:         return VK_LEFT;
+    case KeyCode::Right:        return VK_RIGHT;
+    case KeyCode::Up:           return VK_UP;
+    case KeyCode::Down:         return VK_DOWN;
     case KeyCode::F1:           return VK_F1;
     case KeyCode::F2:           return VK_F2;
     case KeyCode::F3:           return VK_F3;

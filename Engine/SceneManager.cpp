@@ -1,11 +1,13 @@
 ///SceneManager.cppÀÇ ½ÃÀÛ
 #include "stdafx.h"
 #include "SceneManager.h"
+#include "InputManager.h"
 
 using namespace std;
 
 void SceneManager::Run()
 {
+	InputManager::GetInstance().Update();
 
 	if (m_nextScene)
 	{
@@ -17,6 +19,8 @@ void SceneManager::Run()
 	m_currentScene->BaseUpdate(GetDeltaTime());
 	m_currentScene->BaseRender();
 
+
+	InputManager::GetInstance().EndFrame();
 }
 
 float SceneManager::GetDeltaTime()
