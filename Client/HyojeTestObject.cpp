@@ -3,6 +3,7 @@
 #include "HyojeTestObject.h"
 
 #include "ModelComponent.h"
+#include "TimeManager.h"
 
 using namespace std;
 using namespace DirectX;
@@ -13,8 +14,10 @@ void HyojeTestObject::Initialize()
 	SetScale({ 1.0f, 1.0f, 1.0f });
 }
 
-void HyojeTestObject::Update(float deltaTime)
+void HyojeTestObject::Update()
 {
+	float deltaTime = TimeManager::GetInstance().GetDeltaTime();
+
 	if (GetAsyncKeyState('W') & 0x8000) Rotate({ -deltaTime * 45.0f, 0.0f, 0.0f });
 	if (GetAsyncKeyState('S') & 0x8000) Rotate({ deltaTime * 45.0f, 0.0f, 0.0f });
 	if (GetAsyncKeyState('A') & 0x8000) Rotate({ 0.0f, -deltaTime * 45.0f, 0.0f });
