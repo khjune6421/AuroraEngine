@@ -1,3 +1,4 @@
+///SceneManager.cpp의 시작
 #include "stdafx.h"
 #include "SceneManager.h"
 
@@ -27,3 +28,4 @@ float SceneManager::GetDeltaTime()
 
 	return deltaTime;
 }
+///SceneManager.cpp의 끝

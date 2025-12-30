@@ -1,26 +1,19 @@
-///TestObject.cpp의 시작
+///HyojeTestObject.cpp의 시작
 #include "stdafx.h"
-#include "TestObject.h"
+#include "HyojeTestObject.h"
 
 #include "ModelComponent.h"
 
 using namespace std;
 using namespace DirectX;
 
-void TestObject::InitializeGameObject()
+void HyojeTestObject::InitializeGameObject()
 {
 	CreateComponent<ModelComponent>(); // 기본 생성
 	SetScale({ 1.0f, 1.0f, 1.0f });
-
-	static int count = 0;
-	if (count < 10)
-	{
-		count++;
-		CreateChildGameObject<TestObject>()->SetPosition({ 0.0f, 0.0f, 2.0f });
-	}
 }
 
-void TestObject::UpdateGameObject(float deltaTime)
+void HyojeTestObject::UpdateGameObject(float deltaTime)
 {
 	if (GetAsyncKeyState('W') & 0x8000) Rotate({ -deltaTime * 45.0f, 0.0f, 0.0f });
 	if (GetAsyncKeyState('S') & 0x8000) Rotate({ deltaTime * 45.0f, 0.0f, 0.0f });
@@ -30,4 +23,4 @@ void TestObject::UpdateGameObject(float deltaTime)
 	if (GetAsyncKeyState('E') & 0x8000) Rotate({ 0.0f, 0.0f, deltaTime * 45.0f });
 }
 
-///TestObject.cpp의 끝
+///HyojeTestObject.cpp의 끝

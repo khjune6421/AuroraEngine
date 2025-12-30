@@ -1,3 +1,4 @@
+/// ModelComponent.cpp의 시작
 #include "stdafx.h"
 #include "ModelComponent.h"
 
@@ -76,3 +77,4 @@ void ModelComponent::CreateShaders()
 	m_vertexShaderAndInputLayout = resourceManager.GetVertexShaderAndInputLayout(m_vsShaderName, m_inputElements);
 	m_pixelShader = resourceManager.GetPixelShader(m_psShaderName);
 }
+/// ModelComponent.cpp의 끝

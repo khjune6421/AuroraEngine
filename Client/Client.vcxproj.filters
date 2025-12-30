@@ -8,8 +8,17 @@
     <ClCompile Include="TestObject.cpp">
       <Filter>GameObject</Filter>
     </ClCompile>
-    <ClCompile Include="TestCameraObject.cpp">
+    <ClCompile Include="HyojeTestBRDF.cpp">
+      <Filter>Scene</Filter>
+    </ClCompile>
+    <ClCompile Include="HyojeTestObject.cpp">
       <Filter>GameObject</Filter>
+    </ClCompile>
+    <ClCompile Include="TestCameraObject.cpp">
+      <Filter>GameObject\Camera</Filter>
+    </ClCompile>
+    <ClCompile Include="CamRotObject.cpp">
+      <Filter>GameObject\Camera</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -20,8 +29,17 @@
     <ClInclude Include="TestObject.h">
       <Filter>GameObject</Filter>
     </ClInclude>
-    <ClInclude Include="TestCameraObject.h">
+    <ClInclude Include="HyojeTestBRDF.h">
+      <Filter>Scene</Filter>
+    </ClInclude>
+    <ClInclude Include="HyojeTestObject.h">
       <Filter>GameObject</Filter>
+    </ClInclude>
+    <ClInclude Include="TestCameraObject.h">
+      <Filter>GameObject\Camera</Filter>
+    </ClInclude>
+    <ClInclude Include="CamRotObject.h">
+      <Filter>GameObject\Camera</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -30,6 +48,9 @@
     </Filter>
     <Filter Include="GameObject">
       <UniqueIdentifier>{0c0b1247-c226-43ea-8e17-a5aa2b159cf4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="GameObject\Camera">
+      <UniqueIdentifier>{cbfb4604-31c4-409a-ab7f-a427d2aa44a6}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>

@@ -1,3 +1,4 @@
+/// TestScene.h의 시작
 #pragma once
 #include "SceneBase.h"
 
@@ -17,3 +18,4 @@ private:
 
 	void FinalizeScene() override {}
 };
+/// TestScene.h의 끝

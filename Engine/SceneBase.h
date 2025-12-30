@@ -1,3 +1,4 @@
+///SceneBase.h의 시작
 #pragma once
 #include "GameObjectBase.h"
 
@@ -95,3 +96,4 @@ inline T* SceneBase::CreateRootGameObject(Args && ...args)
 
 	return gameObjectPtr;
 }
+///SceneBase.h의 끝

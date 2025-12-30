@@ -1,3 +1,4 @@
+/// ModelComponent.h의 시작
 #pragma once
 #include "ComponentBase.h"
 #include "Resource.h"
@@ -51,3 +52,4 @@ private:
 	// 셰이더 생성
 	void CreateShaders();
 };
+/// ModelComponent.h의 끝

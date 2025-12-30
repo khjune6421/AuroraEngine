@@ -144,13 +144,17 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="CamRotObject.cpp" />
+    <ClCompile Include="HyojeTestObject.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="HyojeTestBRDF.cpp" />
     <ClCompile Include="TestCameraObject.cpp" />
     <ClCompile Include="TestObject.cpp" />
     <ClCompile Include="TestScene.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="CamRotObject.h" />
+    <ClInclude Include="HyojeTestBRDF.h" />
+    <ClInclude Include="HyojeTestObject.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="TestCameraObject.h" />
     <ClInclude Include="TestObject.h" />

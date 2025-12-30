@@ -1,3 +1,4 @@
+/// GameObjectBase.h의 시작
 #pragma once
 #include "ComponentBase.h"
 
@@ -6,7 +7,7 @@ class GameObjectBase
 	UINT m_id = 0; // 고유 ID
 	std::string m_typeName = "GameObjectBase"; // 게임 오브젝트 타입 이름
 
-	// 변환 관련 멤버 뱐수
+	// 변환 관련 멤버 변수
 	DirectX::XMMATRIX m_worldMatrix = DirectX::XMMatrixIdentity(); // 월드 행렬
 	DirectX::XMMATRIX m_positionMatrix = DirectX::XMMatrixIdentity(); // 위치 행렬
 	DirectX::XMMATRIX m_rotationMatrix = DirectX::XMMatrixIdentity(); // 회전 행렬
@@ -166,3 +167,5 @@ inline void GameObjectBase::RemoveComponent()
 		m_components.erase(it);
 	}
 }
+
+/// GameObjectBase.h의 끝

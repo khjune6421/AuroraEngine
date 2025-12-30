@@ -1,3 +1,4 @@
+/// TestScene.cpp의 시작
 #include "stdafx.h"
 #include "TestScene.h"
 
@@ -16,3 +17,5 @@ GameObjectBase* TestScene::CreateCameraObject()
 {
 	return CreateRootGameObject<CamRotObject>()->CreateChildGameObject<TestCameraObject>();
 }
+
+/// TestScene.cpp의 끝

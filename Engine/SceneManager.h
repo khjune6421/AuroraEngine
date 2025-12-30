@@ -1,3 +1,4 @@
+///SceneManager.h의 시작
 #pragma once
 
 class SceneManager : public SingletonBase<SceneManager>
@@ -23,3 +24,4 @@ public:
 private:
 	float GetDeltaTime();
 };
+///SceneManager.h의 끝

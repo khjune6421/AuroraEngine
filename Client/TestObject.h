@@ -1,3 +1,4 @@
+///TestObject.h의 시작
 #pragma once
 #include "GameObjectBase.h"
 
@@ -15,3 +16,5 @@ private:
 	void InitializeGameObject() override;
 	void UpdateGameObject(float deltaTime) override;
 };
+
+///TestObject.h의 끝

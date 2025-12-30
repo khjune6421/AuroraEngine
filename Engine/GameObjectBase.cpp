@@ -1,3 +1,4 @@
+/// GameObjectBase.cpp의 시작
 #include "stdafx.h"
 #include "GameObjectBase.h"
 
@@ -226,3 +227,4 @@ const XMMATRIX& GameObjectBase::UpdateWorldMatrix()
 
 	return m_worldMatrix;
 }
+/// GameObjectBase.cpp의 끝

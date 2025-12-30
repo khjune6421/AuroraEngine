@@ -1,9 +1,11 @@
+///main.cpp의 시작
 #include "stdafx.h"
 
 #include "WindowManager.h"
 #include "SceneManager.h"
 
 #include "TestScene.h"
+#include "HyojeTestBRDF.h"
 
 int main()
 {
@@ -16,7 +18,8 @@ int main()
 	windowManager.Initialize(L"Window");
 
 	SceneManager& sceneManager = SceneManager::GetInstance();
-	sceneManager.ChangeScene<TestScene>(); // 사실상 Initialize()
+	//sceneManager.ChangeScene<TestScene>(); // 사실상 Initialize()
+	sceneManager.ChangeScene<HyojeTestBRDF>();
 
 	while (windowManager.ProcessMessages()) sceneManager.Run();
 
@@ -24,3 +27,4 @@ int main()
 
 	ImGui::DestroyContext();
 }
+///main.cpp의 끝
