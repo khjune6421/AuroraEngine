@@ -1,3 +1,4 @@
+///ResourceManager.h의 시작
 #pragma once
 #include "Resource.h"
 
@@ -40,6 +41,8 @@ public:
 	com_ptr<ID3D11SamplerState> GetSamplerState(SamplerState state) { return m_samplerStates[static_cast<size_t>(state)]; }
 	// 상수 버퍼 얻기 // 이미 생성된 버퍼가 있으면 재사용 // 없으면 새로 생성
 	com_ptr<ID3D11Buffer> GetConstantBuffer(UINT bufferSize);
+	// 버텍스 버퍼를 만들어서 리턴하는 함수 : 라인을 그리기 위함임
+	com_ptr<ID3D11Buffer> CreateVertexBuffer(const void* data, UINT stride, UINT count, bool isDynamic = false);
 	// 정점 셰이더 및 입력 레이아웃 얻기
 	std::pair<com_ptr<ID3D11VertexShader>, com_ptr<ID3D11InputLayout>> GetVertexShaderAndInputLayout(const std::string& shaderName, const std::vector<InputElement>& inputElements = {});
 	// 픽셀 셰이더 얻기
@@ -72,3 +75,4 @@ private:
 	// 셰이더 컴파일 함수
 	com_ptr<ID3DBlob> CompileShader(const std::string& shaderName, const char* shaderModel);
 };
+///ResourceManager.h의 끝

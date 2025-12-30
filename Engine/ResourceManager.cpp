@@ -1,3 +1,4 @@
+///ResourceManager.cpp의 시작
 #include "stdafx.h"
 #include "ResourceManager.h"
 
@@ -33,6 +34,47 @@ com_ptr<ID3D11Buffer> ResourceManager::GetConstantBuffer(UINT bufferSize)
 	CheckResult(hr, "상수 버퍼 생성 실패.");
 
 	return constantBuffer;
+}
+
+com_ptr<ID3D11Buffer> ResourceManager::CreateVertexBuffer(const void* data, UINT stride, UINT count, bool isDynamic)
+{
+	HRESULT hr = S_OK;
+	com_ptr<ID3D11Buffer> vertexBuffer = nullptr;
+
+	D3D11_BUFFER_DESC bufferDesc = {};
+	bufferDesc.ByteWidth = stride * count;
+	bufferDesc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
+	bufferDesc.MiscFlags = 0;
+	bufferDesc.StructureByteStride = 0;
+
+	if (isDynamic)
+	{
+		bufferDesc.Usage = D3D11_USAGE_DYNAMIC; 
+		bufferDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
+	}
+	else
+	{
+		bufferDesc.Usage = D3D11_USAGE_DEFAULT; 
+		bufferDesc.CPUAccessFlags = 0;
+	}
+
+	if (data != nullptr)
+	{
+		D3D11_SUBRESOURCE_DATA initialData = {};
+		initialData.pSysMem = data;
+		initialData.SysMemPitch = 0;
+		initialData.SysMemSlicePitch = 0;
+
+		hr = m_device->CreateBuffer(&bufferDesc, &initialData, vertexBuffer.GetAddressOf());
+	}
+	else
+	{
+		hr = m_device->CreateBuffer(&bufferDesc, nullptr, vertexBuffer.GetAddressOf());
+	}
+
+	CheckResult(hr, "범용 정점 버퍼 생성 실패.");
+
+	return vertexBuffer;
 }
 
 pair<com_ptr<ID3D11VertexShader>, com_ptr<ID3D11InputLayout>> ResourceManager::GetVertexShaderAndInputLayout(const string& shaderName, const vector<InputElement>& inputElements)
@@ -447,3 +489,4 @@ com_ptr<ID3DBlob> ResourceManager::CompileShader(const string& shaderName, const
 
 	return shaderCode;
 }
+///ResourceManager.cpp의 끝

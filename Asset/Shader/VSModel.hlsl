@@ -1,35 +1,42 @@
-cbuffer ViewProjection : register(b0)
-{
-    matrix ViewMatrix;
-    matrix ProjectionMatrix;
-    matrix VPMatrix;
-}
+/// VSModel.hlsl의 시작
+#include "CommonVS.hlsli"
 
-cbuffer World : register(b1)
-{
-    matrix WorldMatrix;
-    matrix NormalMatrix; // 스케일 역행렬을 적용한 월드 행렬
-}
+//// 모두 CommonVS.hlsli을 보냄
+//
+//cbuffer ViewProjection : register(b0)
+//{
+//    matrix ViewMatrix;
+//    matrix ProjectionMatrix;
+//    matrix VPMatrix;
+//}
 
-struct VertexInput
-{
-    float4 Position : POSITION;
-    float2 UV : TEXCOORD;
-    float3 Normal : NORMAL;
-    float3 Tangent : TANGENT;
-};
+//cbuffer World : register(b1)
+//{
+//    matrix WorldMatrix;
+//    matrix NormalMatrix; // 스케일 역행렬을 적용한 월드 행렬
+//}
 
-struct VertexOutput
-{
-    float4 WorldPosition : POSITION0;
-    float4 Position : SV_POSITION;
-    float2 UV : TEXCOORD0;
-    float3x3 TBN : TBN0;
-};
+//struct VertexInput
+//{
+//    float4 Position : POSITION;
+//    float2 UV : TEXCOORD;
+//    float3 Normal : NORMAL;
+//    float3 Tangent : TANGENT;
+//};
 
-VertexOutput main(VertexInput input)
+//struct VertexOutput
+//{
+//    float4 WorldPosition : POSITION0;
+//    float4 Position : SV_POSITION;
+//    float2 UV : TEXCOORD0;
+//    float3x3 TBN : TBN0;
+//};
+
+//VertexOutput main(VertexInput input)
+VS_OUTPUT_STD main(VS_INPUT_STD input)
 {
-    VertexOutput output;
+    //VertexOutput output;
+    VS_OUTPUT_STD output;
     
     output.WorldPosition = mul(input.Position, WorldMatrix);
     output.Position = mul(output.WorldPosition, VPMatrix);
@@ -43,3 +50,4 @@ VertexOutput main(VertexInput input)
     
     return output;
 }
+/// VSModel.hlsl의 끝

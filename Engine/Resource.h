@@ -1,3 +1,4 @@
+/// Resource.h의 시작
 #pragma once
 
 struct RenderTarget
@@ -133,6 +134,8 @@ enum class InputElement
 	Normal,
 	Tangent,
 
+	Color,
+
 	Count
 };
 constexpr std::array<D3D11_INPUT_ELEMENT_DESC, static_cast<size_t>(InputElement::Count)> INPUT_ELEMENT_DESC_TEMPLATES =
@@ -183,6 +186,18 @@ constexpr std::array<D3D11_INPUT_ELEMENT_DESC, static_cast<size_t>(InputElement:
 		.AlignedByteOffset = D3D11_APPEND_ALIGNED_ELEMENT,
 		.InputSlotClass = D3D11_INPUT_PER_VERTEX_DATA,
 		.InstanceDataStepRate = 0
+	},
+
+	// Color
+	D3D11_INPUT_ELEMENT_DESC
+	{
+		.SemanticName = "COLOR",
+		.SemanticIndex = 0,
+		.Format = DXGI_FORMAT_R32G32B32A32_FLOAT, // float4
+		.InputSlot = 0,
+		.AlignedByteOffset = D3D11_APPEND_ALIGNED_ELEMENT,
+		.InputSlotClass = D3D11_INPUT_PER_VERTEX_DATA,
+		.InstanceDataStepRate = 0
 	}
 };
 
@@ -195,7 +210,8 @@ enum class PSConstBuffers
 {
 	CameraPosition,
 	DirectionalLight,
-	Material
+	Material,
+	MaterialLegacy
 };
 enum class TextureSlots
 {
@@ -218,6 +234,11 @@ struct Vertex
 	DirectX::XMFLOAT3 tangent = {};
 };
 
+struct Vertex_Pos
+{
+	DirectX::XMFLOAT4 position = {};
+};
+
 struct MaterialFactor
 {
 	DirectX::XMFLOAT4 albedoFactor = { 1.0f, 1.0f, 1.0f, 1.0f }; // 텍스처 색상이 얼마나 적용되는지
@@ -227,6 +248,14 @@ struct MaterialFactor
 	float lightFactor = 1.0f; // 조명 영향도 // 일반적으로 1.0f 여야 함
 	DirectX::XMFLOAT4 emissionFactor = { 0.0f, 0.0f, 0.0f, 0.0f }; // 자가 발광 색상 팩터
 };
+
+/// 블린-퐁 했을 때의 그것과 동일함.
+/// 목적: 라인 그릴려고 만듬
+struct MaterialLegacy
+{
+	DirectX::XMFLOAT4 Diffuse;
+};
+
 
 struct MaterialTexture
 {
@@ -256,3 +285,5 @@ struct Model
 {
 	std::vector<Mesh> meshes = {};
 };
+
+/// Resource.h의 끝

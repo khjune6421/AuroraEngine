@@ -8,7 +8,7 @@
     <ClCompile Include="TestObject.cpp">
       <Filter>GameObject</Filter>
     </ClCompile>
-    <ClCompile Include="HyojeTestBRDF.cpp">
+    <ClCompile Include="HyojeTestScene.cpp">
       <Filter>Scene</Filter>
     </ClCompile>
     <ClCompile Include="HyojeTestObject.cpp">
@@ -23,6 +23,12 @@
     <ClCompile Include="BlenderCameraObject.cpp">
       <Filter>GameObject\Camera</Filter>
     </ClCompile>
+    <ClCompile Include="LineObject.cpp">
+      <Filter>GameObject\GIzmo</Filter>
+    </ClCompile>
+    <ClCompile Include="CoordinateSystemObject.cpp">
+      <Filter>GameObject\GIzmo</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stdafx.h" />
@@ -32,7 +38,7 @@
     <ClInclude Include="TestObject.h">
       <Filter>GameObject</Filter>
     </ClInclude>
-    <ClInclude Include="HyojeTestBRDF.h">
+    <ClInclude Include="HyojeTestScene.h">
       <Filter>Scene</Filter>
     </ClInclude>
     <ClInclude Include="HyojeTestObject.h">
@@ -47,6 +53,12 @@
     <ClInclude Include="BlenderCameraObject.h">
       <Filter>GameObject\Camera</Filter>
     </ClInclude>
+    <ClInclude Include="LineObject.h">
+      <Filter>GameObject\GIzmo</Filter>
+    </ClInclude>
+    <ClInclude Include="CoordinateSystemObject.h">
+      <Filter>GameObject\GIzmo</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Scene">
@@ -57,6 +69,9 @@
     </Filter>
     <Filter Include="GameObject\Camera">
       <UniqueIdentifier>{cbfb4604-31c4-409a-ab7f-a427d2aa44a6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="GameObject\GIzmo">
+      <UniqueIdentifier>{39aeff92-df8b-4f66-af9c-92cfc2294e1a}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>

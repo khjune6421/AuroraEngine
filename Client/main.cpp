@@ -4,20 +4,17 @@
 #include "SceneManager.h"
 
 #include "TestScene.h"
-#include "HyojeTestBRDF.h"
+#include "HyojeTestScene.h"
 
 
 
 #ifdef _DEBUG
-int main()
-#else
-int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int)
-#endif
-{
-#ifdef _DEBUG
+int main() {
 	cout << "==================================" << endl;
 	cout << "Welcome to Aurora Engine" << endl;
 	cout << "==================================" << endl;
+#else
+int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 #endif
 
 	IMGUI_CHECKVERSION();
@@ -29,7 +26,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int)
 	windowManager.Initialize(L"Aurora");
 
 	SceneManager& sceneManager = SceneManager::GetInstance();
-	sceneManager.ChangeScene<HyojeTestBRDF>();
+	sceneManager.ChangeScene<HyojeTestScene>();
 
 	while (windowManager.ProcessMessages()) sceneManager.Run();
 

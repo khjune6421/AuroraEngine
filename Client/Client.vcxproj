@@ -143,20 +143,30 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="BlenderCameraObject.cpp" />
+    <ClCompile Include="BlenderCameraObject.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+    </ClCompile>
     <ClCompile Include="CamRotObject.cpp" />
+    <ClCompile Include="CoordinateSystemObject.cpp" />
     <ClCompile Include="HyojeTestObject.cpp" />
+    <ClCompile Include="LineObject.cpp" />
     <ClCompile Include="main.cpp" />
-    <ClCompile Include="HyojeTestBRDF.cpp" />
+    <ClCompile Include="HyojeTestScene.cpp" />
     <ClCompile Include="TestCameraObject.cpp" />
     <ClCompile Include="TestObject.cpp" />
     <ClCompile Include="TestScene.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="BlenderCameraObject.h" />
+    <ClInclude Include="BlenderCameraObject.h">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+    </ClInclude>
     <ClInclude Include="CamRotObject.h" />
-    <ClInclude Include="HyojeTestBRDF.h" />
+    <ClInclude Include="CoordinateSystemObject.h" />
+    <ClInclude Include="HyojeTestScene.h" />
     <ClInclude Include="HyojeTestObject.h" />
+    <ClInclude Include="LineObject.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="TestCameraObject.h" />
     <ClInclude Include="TestObject.h" />

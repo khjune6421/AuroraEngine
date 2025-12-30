@@ -4,7 +4,9 @@
 #include <array>
 #include <filesystem>
 #include <fstream>
+#ifdef _DEBUG
 #include <iostream>
+#endif
 #include <typeindex>
 #include <unordered_map>
 
@@ -43,9 +45,10 @@
 #define com_ptr Microsoft::WRL::ComPtr
 
 // using 정의
+#ifdef _DEBUG
 using std::cout;
 using std::endl;
-
+#endif
 
 // 각도 변환 상수 및 함수
 constexpr float DEG_TO_RAD = DirectX::XM_PI / 180.0f;

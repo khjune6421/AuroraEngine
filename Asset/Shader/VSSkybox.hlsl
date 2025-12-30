@@ -1,10 +1,16 @@
-cbuffer ViewProjection : register(b0)
-{
-    matrix ViewMatrix;
-    matrix ProjectionMatrix;
-    matrix VPMatrix;
-}
+/// VSModel.hlsl의 시작
+#include "CommonVS.hlsli"
 
+//// CommonVS.hlsli을 보냄
+//
+//cbuffer ViewProjection : register(b0)
+//{
+//    matrix ViewMatrix;
+//    matrix ProjectionMatrix;
+//    matrix VPMatrix;
+//}
+
+// 범용적이지 않아도 될것 같음
 struct VSOutput
 {
     float4 Position : SV_POSITION;
@@ -30,4 +36,4 @@ VSOutput main(uint vertexID : SV_VertexID)
     output.ViewDir = mul(output.Position, invVP).xyz;
     
     return output;
-}
+}   

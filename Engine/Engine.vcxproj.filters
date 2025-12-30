@@ -19,7 +19,7 @@
     <Filter Include="Manager">
       <UniqueIdentifier>{b704db7d-9366-450b-908e-d5b7607566e6}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Input">
+    <Filter Include="Manager\Input">
       <UniqueIdentifier>{6751b606-7ad5-4d02-95fa-9b35d5cff09b}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
@@ -55,7 +55,10 @@
       <Filter>Manager</Filter>
     </ClCompile>
     <ClCompile Include="InputManager.cpp">
-      <Filter>Input</Filter>
+      <Filter>Manager\Input</Filter>
+    </ClCompile>
+    <ClCompile Include="LineComponent.cpp">
+      <Filter>Scene\GameObject\Component</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -101,10 +104,13 @@
     </ClInclude>
     <ClInclude Include="IBase.h" />
     <ClInclude Include="InputManager.h">
-      <Filter>Input</Filter>
+      <Filter>Manager\Input</Filter>
     </ClInclude>
     <ClInclude Include="KeyCode.h">
-      <Filter>Input</Filter>
+      <Filter>Manager\Input</Filter>
+    </ClInclude>
+    <ClInclude Include="LineComponent.h">
+      <Filter>Scene\GameObject\Component</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -126,5 +132,22 @@
     <FxCompile Include="..\Asset\Shader\VSSkybox.hlsl">
       <Filter>Shader</Filter>
     </FxCompile>
+    <FxCompile Include="..\Asset\Shader\PSLine.hlsl">
+      <Filter>Shader</Filter>
+    </FxCompile>
+    <FxCompile Include="..\Asset\Shader\VSLine.hlsl">
+      <Filter>Shader</Filter>
+    </FxCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\Asset\Shader\CommonVS.hlsli">
+      <Filter>Shader</Filter>
+    </None>
+    <None Include="..\Asset\Shader\CommonMath.hlsli">
+      <Filter>Shader</Filter>
+    </None>
+    <None Include="..\Asset\Shader\CommonPS.hlsli">
+      <Filter>Shader</Filter>
+    </None>
   </ItemGroup>
 </Project>
