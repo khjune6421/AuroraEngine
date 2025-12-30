@@ -5,7 +5,11 @@
 
 #include "TestScene.h"
 
+#ifdef _DEBUG
 int main()
+#else
+int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int)
+#endif
 {
 	IMGUI_CHECKVERSION();
 	ImGui::CreateContext();

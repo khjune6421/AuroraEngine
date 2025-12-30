@@ -17,6 +17,10 @@ LRESULT CALLBACK WindowManager::WindowProc(HWND hWnd, UINT message, WPARAM wPara
 		PostQuitMessage(0);
 		return 0;
 
+	case WM_SIZE:
+		Renderer::GetInstance().Resize(static_cast<UINT>(LOWORD(lParam)), static_cast<UINT>(HIWORD(lParam)));
+		return 0;
+
 	default:
 		return DefWindowProc(hWnd, message, wParam, lParam);
 	}
@@ -70,12 +74,12 @@ void WindowManager::Initialize(const wchar_t* windowTitle, int width, int height
 		exit(EXIT_FAILURE);
 	}
 
-	ShowWindow(m_hWnd, SW_SHOW);
-
 	// ImGui Win32 초기화
 	ImGui_ImplWin32_Init(m_hWnd);
 	// 렌더러 초기화
 	Renderer::GetInstance().Initialize(width, height);
+
+	ShowWindow(m_hWnd, SW_SHOW);
 }
 
 bool WindowManager::ProcessMessages()
