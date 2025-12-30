@@ -7,8 +7,16 @@
 #include "TestScene.h"
 #include "HyojeTestBRDF.h"
 
+
+
 int main()
 {
+#ifdef _DEBUG
+	cout << "==================================" << endl;
+	cout << "Welcome to Aurora Engine" << endl;
+	cout << "==================================" << endl;
+#endif
+
 	IMGUI_CHECKVERSION();
 	ImGui::CreateContext();
 	ImGuiIO& io = ImGui::GetIO();

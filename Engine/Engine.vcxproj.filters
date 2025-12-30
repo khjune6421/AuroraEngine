@@ -19,6 +19,9 @@
     <Filter Include="Scene">
       <UniqueIdentifier>{cf7d56b7-51bf-4646-a63f-11327a933aec}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Input">
+      <UniqueIdentifier>{6751b606-7ad5-4d02-95fa-9b35d5cff09b}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Renderer.cpp">
@@ -47,6 +50,9 @@
     </ClCompile>
     <ClCompile Include="ResourceManager.cpp">
       <Filter>Render</Filter>
+    </ClCompile>
+    <ClCompile Include="InputManager.cpp">
+      <Filter>Input</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -83,6 +89,12 @@
       <Filter>Render</Filter>
     </ClInclude>
     <ClInclude Include="IBase.h" />
+    <ClInclude Include="InputManager.h">
+      <Filter>Input</Filter>
+    </ClInclude>
+    <ClInclude Include="KeyCode.h">
+      <Filter>Input</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="..\Asset\Shader\PSPostProcessing.hlsl">

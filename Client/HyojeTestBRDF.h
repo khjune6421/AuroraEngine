@@ -14,12 +14,7 @@ public:
 	HyojeTestBRDF& operator=(HyojeTestBRDF&&) = default;
 
 protected:
-	// 씬이 켜질 때 할 일 (오브젝트 배치 등)
-	virtual void InitializeScene() override;
-
+	virtual void Initialize() override;
 	GameObjectBase* CreateCameraObject() override;
-
-	// 씬이 꺼질 때 할 일 (뒷정리)
-	virtual void FinalizeScene() override {};
 };
 /// HyojeTestBRDF.h의 끝

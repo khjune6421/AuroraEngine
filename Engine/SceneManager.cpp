@@ -6,6 +6,7 @@ using namespace std;
 
 void SceneManager::Run()
 {
+
 	if (m_nextScene)
 	{
 		if (m_currentScene) m_currentScene->BaseFinalize();
@@ -15,6 +16,7 @@ void SceneManager::Run()
 
 	m_currentScene->BaseUpdate(GetDeltaTime());
 	m_currentScene->BaseRender();
+
 }
 
 float SceneManager::GetDeltaTime()

@@ -7,13 +7,13 @@
 using namespace std;
 using namespace DirectX;
 
-void HyojeTestObject::InitializeGameObject()
+void HyojeTestObject::Initialize()
 {
 	CreateComponent<ModelComponent>(); // 기본 생성
 	SetScale({ 1.0f, 1.0f, 1.0f });
 }
 
-void HyojeTestObject::UpdateGameObject(float deltaTime)
+void HyojeTestObject::Update(float deltaTime)
 {
 	if (GetAsyncKeyState('W') & 0x8000) Rotate({ -deltaTime * 45.0f, 0.0f, 0.0f });
 	if (GetAsyncKeyState('S') & 0x8000) Rotate({ deltaTime * 45.0f, 0.0f, 0.0f });

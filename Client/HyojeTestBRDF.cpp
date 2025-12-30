@@ -11,7 +11,7 @@ using namespace std;
 using namespace DirectX;
 
 
-void HyojeTestBRDF::InitializeScene()
+void HyojeTestBRDF::Initialize()
 {
 	CreateRootGameObject<HyojeTestObject>();
 }
