@@ -3,6 +3,7 @@
 #include "TestObject.h"
 
 #include "ModelComponent.h"
+#include "TimeManager.h"
 
 using namespace std;
 using namespace DirectX;
@@ -11,17 +12,12 @@ void TestObject::Initialize()
 {
 	CreateComponent<ModelComponent>(); // 기본 생성
 	SetScale({ 1.0f, 1.0f, 1.0f });
-
-	static int count = 0;
-	if (count < 10)
-	{
-		count++;
-		CreateChildGameObject<TestObject>()->SetPosition({ 0.0f, 0.0f, 2.0f });
-	}
 }
 
-void TestObject::Update(float deltaTime)
+void TestObject::Update()
 {
+	float deltaTime = TimeManager::GetInstance().GetDeltaTime();
+
 	if (GetAsyncKeyState('W') & 0x8000) Rotate({ -deltaTime * 45.0f, 0.0f, 0.0f });
 	if (GetAsyncKeyState('S') & 0x8000) Rotate({ deltaTime * 45.0f, 0.0f, 0.0f });
 	if (GetAsyncKeyState('A') & 0x8000) Rotate({ 0.0f, -deltaTime * 45.0f, 0.0f });

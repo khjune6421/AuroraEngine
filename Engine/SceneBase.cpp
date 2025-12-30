@@ -11,8 +11,7 @@ using namespace DirectX;
 
 SceneBase::SceneBase()
 {
-	m_renderer = &Renderer::GetInstance();
-	m_deviceContext = m_renderer->GetDeviceContext();
+	m_deviceContext = Renderer::GetInstance().GetDeviceContext();
 }
 
 GameObjectBase* SceneBase::CreateCameraObject()
@@ -36,16 +35,14 @@ void SceneBase::BaseInitialize()
 	Initialize();
 }
 
-void SceneBase::BaseUpdate(float deltaTime)
+void SceneBase::BaseUpdate()
 {
 	RemovePendingGameObjects();
-	for (unique_ptr<IBase>& gameObject : m_gameObjects) gameObject->BaseUpdate(deltaTime);
+	for (unique_ptr<IBase>& gameObject : m_gameObjects) gameObject->BaseUpdate();
 }
 
 void SceneBase::BaseRender()
 {
-	m_renderer->BeginFrame(m_sceneColor);
-
 	// 상수 버퍼 업데이트 및 셰이더에 설정
 	UpdateConstantBuffers();
 
@@ -60,11 +57,6 @@ void SceneBase::BaseRender()
 
 	// 스카이박스 렌더링
 	RenderSkybox();
-
-	// ImGui 렌더링
-	BaseRenderImGui();
-
-	m_renderer->EndFrame();
 }
 
 void SceneBase::BaseRenderImGui()
@@ -84,13 +76,16 @@ void SceneBase::BaseRenderImGui()
 void SceneBase::GetResources()
 {
 	ResourceManager& resourceManager = ResourceManager::GetInstance();
+
 	m_viewProjectionConstantBuffer = resourceManager.GetConstantBuffer(sizeof(ViewProjectionBuffer)); // 뷰-투영 상수 버퍼 생성
 	m_cameraPositionConstantBuffer = resourceManager.GetConstantBuffer(sizeof(XMVECTOR)); // 카메라 위치 상수 버퍼 생성
 	m_directionalLightConstantBuffer = resourceManager.GetConstantBuffer(sizeof(DirectionalLightBuffer)); // 방향광 상수 버퍼 생성
+
 	m_environmentMapSRV = resourceManager.GetTexture(m_environmentMapFileName); // 환경 맵 로드
 
 	m_skyboxVertexShaderAndInputLayout = resourceManager.GetVertexShaderAndInputLayout("VSSkybox.hlsl"); // 스카이박스 정점 셰이더 얻기
 	m_skyboxPixelShader = resourceManager.GetPixelShader("PSSkybox.hlsl"); // 스카이박스 픽셀 셰이더 얻기
+
 	m_skyboxDepthStencilState = resourceManager.GetDepthStencilState(DepthStencilState::Skybox); // 스카이박스 깊이버퍼 상태 얻기
 }
 

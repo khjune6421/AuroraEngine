@@ -87,19 +87,19 @@ void GameObjectBase::BaseInitialize()
 	Initialize();
 }
 
-void GameObjectBase::BaseUpdate(float deltaTime)
+void GameObjectBase::BaseUpdate()
 {
 	// 게임 오브젝트 업데이트 // 파생 클래스에서 오버라이드
-	Update(deltaTime);
+	Update();
 	// 월드 행렬 업데이트
 	UpdateWorldMatrix();
 	// 컴포넌트 업데이트
-	for (IBase*& component : m_updateComponents) component->BaseUpdate(deltaTime);
+	for (IBase*& component : m_updateComponents) component->BaseUpdate();
 
 	// 제거할 자식 게임 오브젝트 제거
 	RemovePendingChildGameObjects();
 	// 자식 게임 오브젝트 업데이트
-	for (auto& child : m_childrens) child->BaseUpdate(deltaTime);
+	for (auto& child : m_childrens) child->BaseUpdate();
 }
 
 void GameObjectBase::BaseRender()

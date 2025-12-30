@@ -2,6 +2,7 @@
 #include "CameraComponent.h"
 
 #include "GameObjectBase.h"
+#include "Renderer.h"
 
 using namespace DirectX;
 
@@ -23,14 +24,13 @@ void CameraComponent::UpdateViewMatrix()
 
 void CameraComponent::UpdateProjectionMatrix()
 {
-	m_projectionMatrix = XMMatrixPerspectiveFovLH(m_fovY, static_cast<float>(m_screenWidth) / static_cast<float>(m_screenHeight), m_nearZ, m_farZ);
+	m_projectionMatrix = XMMatrixPerspectiveFovLH(m_fovY, Renderer::GetInstance().GetAspectRatio(), m_nearZ, m_farZ);
 }
 
 void CameraComponent::RenderImGui()
 {
-	if (ImGui::DragFloat("FovY (radian)", &m_fovY, 0.01f, 0.1f, XM_2PI)) UpdateProjectionMatrix();
-	if (ImGui::DragInt("Screen Width", reinterpret_cast<int*>(&m_screenWidth), 1.0f, 1, 8192)) UpdateProjectionMatrix();
-	if (ImGui::DragInt("Screen Height", reinterpret_cast<int*>(&m_screenHeight), 1.0f, 1, 8192)) UpdateProjectionMatrix();
-	if (ImGui::DragFloat("NearZ", &m_nearZ, 0.01f, 0.01f, m_farZ - 0.01f)) UpdateProjectionMatrix();
-	if (ImGui::DragFloat("FarZ", &m_farZ, 1.0f, m_nearZ + 0.01f, 10000.0f)) UpdateProjectionMatrix();
+	float fovYInDegrees = XMConvertToDegrees(m_fovY);
+	if (ImGui::DragFloat("FovY", &fovYInDegrees, 0.1f, 1.0f, 179.0f)) m_fovY = XMConvertToRadians(fovYInDegrees);
+	ImGui::DragFloat("NearZ", &m_nearZ, 0.01f, 0.01f, m_farZ - 0.01f);
+	ImGui::DragFloat("FarZ", &m_farZ, 1.0f, m_nearZ + 0.01f, 10000.0f);
 }

@@ -1,4 +1,4 @@
-///main.cpp¿« Ω√¿€
+///main.cpp√Ä√á ¬Ω√É√Ä√õ
 #include "stdafx.h"
 
 #include "WindowManager.h"
@@ -9,7 +9,11 @@
 
 
 
+#ifdef _DEBUG
 int main()
+#else
+int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int)
+#endif
 {
 #ifdef _DEBUG
 	cout << "==================================" << endl;
@@ -20,13 +24,12 @@ int main()
 	IMGUI_CHECKVERSION();
 	ImGui::CreateContext();
 	ImGuiIO& io = ImGui::GetIO();
-	io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard | ImGuiConfigFlags_DockingEnable;
+	io.ConfigFlags |= ImGuiConfigFlags_DockingEnable | ImGuiConfigFlags_ViewportsEnable;
 
-	WindowManager windowManager;
-	windowManager.Initialize(L"Window");
+	WindowManager& windowManager = WindowManager::GetInstance();
+	windowManager.Initialize(L"Aurora");
 
 	SceneManager& sceneManager = SceneManager::GetInstance();
-	//sceneManager.ChangeScene<TestScene>(); // ªÁΩ«ªÛ Initialize()
 	sceneManager.ChangeScene<HyojeTestBRDF>();
 
 	while (windowManager.ProcessMessages()) sceneManager.Run();
@@ -35,4 +38,4 @@ int main()
 
 	ImGui::DestroyContext();
 }
-///main.cpp¿« ≥°
+///main.cpp√Ä√á ¬≥¬°

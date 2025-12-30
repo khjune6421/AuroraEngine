@@ -7,7 +7,6 @@ class SceneBase : public IBase
 {
 	std::string m_typeName = "SceneBase"; // 씬 타입 이름
 
-	class Renderer* m_renderer = nullptr; // 렌더러 포인터
 	com_ptr<ID3D11DeviceContext> m_deviceContext = nullptr; // 디바이스 컨텍스트 포인터
 
 	std::vector<std::unique_ptr<IBase>> m_gameObjects = {}; // 게임 오브젝트 배열
@@ -66,7 +65,7 @@ private:
 	// 씬 초기화 // 씬 사용 전 반드시 호출해야 함
 	void BaseInitialize() override;
 	// 씬 업데이트 // 씬 매니저가 호출
-	void BaseUpdate(float deltaTime) override;
+	void BaseUpdate() override;
 	// 씬 렌더링 // 씬 매니저가 호출
 	void BaseRender() override;
 	// ImGui 렌더링
