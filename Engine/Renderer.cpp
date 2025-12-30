@@ -330,9 +330,8 @@ void Renderer::CreateSceneRenderTarget()
 	hr = m_device->CreateShaderResourceView(m_sceneResultTexture.Get(), &srvDesc, m_sceneShaderResourceView.GetAddressOf());
 	CheckResult(hr, "씬 셰이더 리소스 뷰 생성 실패.");
 
-	ResourceManager& resourceManager = ResourceManager::GetInstance();
 	// 래스터 상태 생성
-	m_sceneRasterState = resourceManager.GetRasterState(RasterState::Solid);
+	m_sceneRasterState = ResourceManager::GetInstance().GetRasterState(RasterState::Solid);
 }
 
 void Renderer::SetViewport()
