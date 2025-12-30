@@ -99,6 +99,8 @@ private:
 	void SetViewport();
 
 	// 랜더링 파이프라인 함수
+	// ImGui 프레임 시작
+	void BeginImGuiFrame();
 	// 셰이더 리소스 해제
 	void UnbindShaderResources();
 	// 렌더 타겟 클리어
@@ -107,4 +109,6 @@ private:
 	void ResolveSceneMSAA();
 	// 백 버퍼 랜더링
 	void RenderSceneToBackBuffer();
+	// ImGui 프레임 종료
+	void EndImGuiFrame();
 };
