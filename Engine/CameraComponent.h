@@ -23,10 +23,9 @@ public:
 	CameraComponent(CameraComponent&&) = default;
 	CameraComponent& operator=(CameraComponent&&) = default;
 
-	void SetFovY(float fovY) { m_fovY = fovY; UpdateProjectionMatrix(); }
-	void SetScreenSize(UINT width, UINT height) { m_screenWidth = width; m_screenHeight = height; UpdateProjectionMatrix(); }
-	void SetNearZ(float nearZ) { m_nearZ = nearZ; UpdateProjectionMatrix(); }
-	void SetFarZ(float farZ) { m_farZ = farZ; UpdateProjectionMatrix(); }
+	void SetFovY(float fovY) { m_fovY = fovY; }
+	void SetNearZ(float nearZ) { m_nearZ = nearZ; }
+	void SetFarZ(float farZ) { m_farZ = farZ; }
 
 	const DirectX::XMMATRIX& GetViewMatrix() const { return m_viewMatrix; }
 	const DirectX::XMMATRIX& GetProjectionMatrix() const { return m_projectionMatrix; }
@@ -38,7 +37,7 @@ public:
 private:
 	void Initialize() override;
 	// 위치, 뷰 행렬 갱신
-	void Update(float /*deltaTime*/) override { UpdateViewMatrix(); }
+	void Update() override { UpdateViewMatrix(); UpdateProjectionMatrix(); }
 	void RenderImGui() override;
 
 	// 뷰 행렬 갱신

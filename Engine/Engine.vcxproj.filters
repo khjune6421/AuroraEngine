@@ -7,17 +7,17 @@
     <Filter Include="Shader">
       <UniqueIdentifier>{ed1a30db-b46d-4a43-bd79-ed355a225eda}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Window">
-      <UniqueIdentifier>{aea7a7e4-1fd7-46b8-8b97-7a8a7549a7d8}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="GameObject">
-      <UniqueIdentifier>{f03bcef5-616c-4bf6-897d-ed1300e98a76}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="GameObject\Component">
-      <UniqueIdentifier>{8a46f177-3617-43fa-ab1a-28387589cd92}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Scene">
       <UniqueIdentifier>{cf7d56b7-51bf-4646-a63f-11327a933aec}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Scene\GameObject">
+      <UniqueIdentifier>{f03bcef5-616c-4bf6-897d-ed1300e98a76}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Scene\GameObject\Component">
+      <UniqueIdentifier>{8a46f177-3617-43fa-ab1a-28387589cd92}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Manager">
+      <UniqueIdentifier>{b704db7d-9366-450b-908e-d5b7607566e6}</UniqueIdentifier>
     </Filter>
     <Filter Include="Input">
       <UniqueIdentifier>{6751b606-7ad5-4d02-95fa-9b35d5cff09b}</UniqueIdentifier>
@@ -27,29 +27,32 @@
     <ClCompile Include="Renderer.cpp">
       <Filter>Render</Filter>
     </ClCompile>
-    <ClCompile Include="WindowManager.cpp">
-      <Filter>Window</Filter>
-    </ClCompile>
     <ClCompile Include="GameObjectBase.cpp">
-      <Filter>GameObject</Filter>
+      <Filter>Scene\GameObject</Filter>
     </ClCompile>
     <ClCompile Include="SceneBase.cpp">
       <Filter>Scene</Filter>
     </ClCompile>
     <ClCompile Include="ComponentBase.cpp">
-      <Filter>GameObject\Component</Filter>
+      <Filter>Scene\GameObject\Component</Filter>
     </ClCompile>
     <ClCompile Include="ModelComponent.cpp">
-      <Filter>GameObject\Component</Filter>
+      <Filter>Scene\GameObject\Component</Filter>
     </ClCompile>
     <ClCompile Include="CameraComponent.cpp">
-      <Filter>GameObject\Component</Filter>
+      <Filter>Scene\GameObject\Component</Filter>
+    </ClCompile>
+    <ClCompile Include="TimeManager.cpp">
+      <Filter>Manager</Filter>
+    </ClCompile>
+    <ClCompile Include="WindowManager.cpp">
+      <Filter>Manager</Filter>
     </ClCompile>
     <ClCompile Include="SceneManager.cpp">
-      <Filter>Scene</Filter>
+      <Filter>Manager</Filter>
     </ClCompile>
     <ClCompile Include="ResourceManager.cpp">
-      <Filter>Render</Filter>
+      <Filter>Manager</Filter>
     </ClCompile>
     <ClCompile Include="InputManager.cpp">
       <Filter>Input</Filter>
@@ -60,33 +63,41 @@
       <Filter>Render</Filter>
     </ClInclude>
     <ClInclude Include="stdafx.h" />
-    <ClInclude Include="WindowManager.h">
-      <Filter>Window</Filter>
-    </ClInclude>
     <ClInclude Include="GameObjectBase.h">
-      <Filter>GameObject</Filter>
+      <Filter>Scene\GameObject</Filter>
     </ClInclude>
     <ClInclude Include="SceneBase.h">
       <Filter>Scene</Filter>
     </ClInclude>
     <ClInclude Include="ComponentBase.h">
-      <Filter>GameObject\Component</Filter>
+      <Filter>Scene\GameObject\Component</Filter>
     </ClInclude>
     <ClInclude Include="ModelComponent.h">
-      <Filter>GameObject\Component</Filter>
+      <Filter>Scene\GameObject\Component</Filter>
     </ClInclude>
-    <ClInclude Include="Singleton.h" />
     <ClInclude Include="CameraComponent.h">
-      <Filter>GameObject\Component</Filter>
-    </ClInclude>
-    <ClInclude Include="SceneManager.h">
-      <Filter>Scene</Filter>
-    </ClInclude>
-    <ClInclude Include="ResourceManager.h">
-      <Filter>Render</Filter>
+      <Filter>Scene\GameObject\Component</Filter>
     </ClInclude>
     <ClInclude Include="Resource.h">
       <Filter>Render</Filter>
+    </ClInclude>
+    <ClInclude Include="TimeManager.h">
+      <Filter>Manager</Filter>
+    </ClInclude>
+    <ClInclude Include="WindowManager.h">
+      <Filter>Manager</Filter>
+    </ClInclude>
+    <ClInclude Include="SceneManager.h">
+      <Filter>Manager</Filter>
+    </ClInclude>
+    <ClInclude Include="ResourceManager.h">
+      <Filter>Manager</Filter>
+    </ClInclude>
+    <ClInclude Include="IBase.h">
+      <Filter>Scene</Filter>
+    </ClInclude>
+    <ClInclude Include="Singleton.h">
+      <Filter>Manager</Filter>
     </ClInclude>
     <ClInclude Include="IBase.h" />
     <ClInclude Include="InputManager.h">

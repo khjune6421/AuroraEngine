@@ -8,7 +8,7 @@ void BlenderCameraObject::Initialize()
 	LookAt({ 0.0f, 0.0f, 0.0f });
 }
 
-void BlenderCameraObject::Update(float deltaTime)
+void BlenderCameraObject::Update()
 {
 	//using enum KeyCode;
 	//auto& input = InputManager::GetInstance();

@@ -7,7 +7,6 @@ void TestCameraObject::Initialize()
 	LookAt({ 0.0f, 0.0f, 0.0f });
 }
 
-void TestCameraObject::Update(float deltaTime)
+void TestCameraObject::Update()
 {
-	LookAt({ 0.0f, 0.0f, 0.0f });
 }

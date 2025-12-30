@@ -76,6 +76,32 @@ XMVECTOR GameObjectBase::GetDirectionVector(Direction direction) const
 	}
 }
 
+XMVECTOR GameObjectBase::GetWorldDirectionVector(Direction direction)
+{
+	XMMATRIX worldMatrix = UpdateWorldMatrix();
+
+	switch (direction)
+	{
+	case Direction::Left:
+		return XMVector3Normalize(worldMatrix.r[0] * -1.0f);
+	case Direction::Right:
+		return XMVector3Normalize(worldMatrix.r[0]);
+
+	case Direction::Up:
+		return XMVector3Normalize(worldMatrix.r[1]);
+	case Direction::Down:
+		return XMVector3Normalize(worldMatrix.r[1] * -1.0f);
+
+	case Direction::Forward:
+		return XMVector3Normalize(worldMatrix.r[2]);
+	case Direction::Backward:
+		return XMVector3Normalize(worldMatrix.r[2] * -1.0f);
+
+	default:
+		return XMVectorZero();
+	}
+}
+
 void GameObjectBase::BaseInitialize()
 {
 	m_typeName = typeid(*this).name();
@@ -87,19 +113,19 @@ void GameObjectBase::BaseInitialize()
 	Initialize();
 }
 
-void GameObjectBase::BaseUpdate(float deltaTime)
+void GameObjectBase::BaseUpdate()
 {
 	// 게임 오브젝트 업데이트 // 파생 클래스에서 오버라이드
-	Update(deltaTime);
+	Update();
 	// 월드 행렬 업데이트
 	UpdateWorldMatrix();
 	// 컴포넌트 업데이트
-	for (IBase*& component : m_updateComponents) component->BaseUpdate(deltaTime);
+	for (IBase*& component : m_updateComponents) component->BaseUpdate();
 
 	// 제거할 자식 게임 오브젝트 제거
 	RemovePendingChildGameObjects();
 	// 자식 게임 오브젝트 업데이트
-	for (auto& child : m_childrens) child->BaseUpdate(deltaTime);
+	for (auto& child : m_childrens) child->BaseUpdate();
 }
 
 void GameObjectBase::BaseRender()

@@ -1,4 +1,3 @@
-///SceneManager.h의 시작
 #pragma once
 #include "SceneBase.h"
 
@@ -17,12 +16,12 @@ public:
 	SceneManager(SceneManager&&) = delete;
 	SceneManager& operator=(SceneManager&&) = delete;
 
+	void Initialize();
+
 	template<typename T, typename... Args> requires std::derived_from<T, SceneBase>
 	void ChangeScene(Args&&... args) { m_nextScene = std::make_unique<T>(std::forward<Args>(args)...); }
 
 	void Run();
 
-private:
-	float GetDeltaTime();
+	void Finalize();
 };
-///SceneManager.h의 끝

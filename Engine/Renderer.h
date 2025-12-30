@@ -12,6 +12,7 @@ class Renderer : public Singleton<Renderer>
 		D3D_FEATURE_LEVEL_10_0
 	};
 
+	float m_aspectRatio = 16.0f / 9.0f; // 화면 종횡비
 	DXGI_SWAP_CHAIN_DESC1 m_swapChainDesc = // 스왑 체인 설정
 	{
 		.Width = 1280,
@@ -59,10 +60,10 @@ public:
 	Renderer& operator=(Renderer&&) = delete;
 
 	// 렌더러 초기화 // WindowManager에서 윈도우 생성 후 호출
-	void Initialize(HWND hWnd, UINT width, UINT height);
+	void Initialize();
 
 	// 프레임 시작
-	void BeginFrame(const DirectX::XMFLOAT4& clearColor);
+	void BeginFrame();
 	// 프레임 종료 // 화면에 내용 출력
 	void EndFrame();
 
@@ -74,6 +75,8 @@ public:
 
 	// 화면 크기 조정
 	HRESULT Resize(UINT width, UINT height);
+	// 화면 종횡비 조회
+	float GetAspectRatio() const { return m_aspectRatio; }
 
 	// 스왑 체인 설정 변경
 	void SetSwapChainDesc(const DXGI_SWAP_CHAIN_DESC1& desc) { m_swapChainDesc = desc; }
@@ -85,7 +88,7 @@ private:
 	// 디바이스 및 디바이스 컨텍스트 생성
 	void CreateDeviceAndContext();
 	// 스왑 체인 생성
-	void CreateSwapChain(HWND hWnd);
+	void CreateSwapChain();
 	// 백 버퍼 렌더 타겟 생성
 	void CreateBackBufferRenderTarget();
 	// 백 버퍼 셰이더 및 상수 버퍼 생성
@@ -96,10 +99,16 @@ private:
 	void SetViewport();
 
 	// 랜더링 파이프라인 함수
+	// ImGui 프레임 시작
+	void BeginImGuiFrame();
+	// 셰이더 리소스 해제
+	void UnbindShaderResources();
 	// 렌더 타겟 클리어
-	void ClearRenderTarget(RenderTarget& target, const DirectX::XMFLOAT4& clearColor);
+	void ClearRenderTarget(RenderTarget& target);
 	// 씬 렌더 타겟 MSAA 다운샘플링 // MSAA 미적용시 그냥 복사
 	void ResolveSceneMSAA();
 	// 백 버퍼 랜더링
 	void RenderSceneToBackBuffer();
+	// ImGui 프레임 종료
+	void EndImGuiFrame();
 };

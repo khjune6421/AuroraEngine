@@ -205,7 +205,9 @@ enum class TextureSlots
 	Normal,
 	Metallic,
 	Roughness,
-	AmbientOcclusion
+	AmbientOcclusion,
+
+	Count
 };
 
 struct Vertex

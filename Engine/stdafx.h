@@ -37,6 +37,7 @@
 #include <imgui_impl_dx11.h>
 
 // 기타 사용자 정의 헤더
+#include "IBase.h"
 #include "Singleton.h"
 
 // 메크로 정의
