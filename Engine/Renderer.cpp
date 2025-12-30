@@ -360,10 +360,8 @@ void Renderer::BeginImGuiFrame()
 	// 비율 유지하며 창 크기에 맞게 이미지 크기 조정
 	ImVec2 windowSize = ImGui::GetContentRegionAvail();
 
-	float windowAspectRatio = windowSize.x / windowSize.y;
-
 	ImVec2 imageSize;
-	if (windowAspectRatio > m_aspectRatio)
+	if (windowSize.x / windowSize.y > m_aspectRatio)
 	{
 		// 창이 더 넓음 - 높이에 맞추고 좌우 여백
 		imageSize.y = windowSize.y;
