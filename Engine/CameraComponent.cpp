@@ -17,8 +17,8 @@ void CameraComponent::UpdateViewMatrix()
 	m_viewMatrix = XMMatrixLookAtLH
 	(
 		*m_position, // 카메라 위치
-		XMVectorAdd(*m_position, m_owner->GetDirectionVector(Direction::Forward)), // 카메라 앞 방향
-		m_owner->GetDirectionVector(Direction::Up) // 카메라 위 방향
+		XMVectorAdd(*m_position, m_owner->GetWorldDirectionVector(Direction::Forward)), // 카메라 앞 방향
+		m_owner->GetWorldDirectionVector(Direction::Up) // 카메라 위 방향
 	);
 }
 

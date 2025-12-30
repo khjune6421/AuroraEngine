@@ -79,6 +79,8 @@ public:
 	const DirectX::XMVECTOR& GetRotation() const { return m_euler; }
 	// 정규화된 방향 벡터 가져오기
 	DirectX::XMVECTOR GetDirectionVector(Direction direction) const;
+	// 월드 기준 정규화된 방향 벡터 가져오기
+	DirectX::XMVECTOR GetWorldDirectionVector(Direction direction);
 
 	// 크기 지정
 	void SetScale(const DirectX::XMVECTOR& scale) { m_scale = scale; SetDirty(); }

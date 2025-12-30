@@ -9,5 +9,4 @@ void TestCameraObject::Initialize()
 
 void TestCameraObject::Update()
 {
-	LookAt({ 0.0f, 0.0f, 0.0f });
 }

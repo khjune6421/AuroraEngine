@@ -76,6 +76,32 @@ XMVECTOR GameObjectBase::GetDirectionVector(Direction direction) const
 	}
 }
 
+XMVECTOR GameObjectBase::GetWorldDirectionVector(Direction direction)
+{
+	XMMATRIX worldMatrix = UpdateWorldMatrix();
+
+	switch (direction)
+	{
+	case Direction::Left:
+		return XMVector3Normalize(worldMatrix.r[0] * -1.0f);
+	case Direction::Right:
+		return XMVector3Normalize(worldMatrix.r[0]);
+
+	case Direction::Up:
+		return XMVector3Normalize(worldMatrix.r[1]);
+	case Direction::Down:
+		return XMVector3Normalize(worldMatrix.r[1] * -1.0f);
+
+	case Direction::Forward:
+		return XMVector3Normalize(worldMatrix.r[2]);
+	case Direction::Backward:
+		return XMVector3Normalize(worldMatrix.r[2] * -1.0f);
+
+	default:
+		return XMVectorZero();
+	}
+}
+
 void GameObjectBase::BaseInitialize()
 {
 	m_typeName = typeid(*this).name();
