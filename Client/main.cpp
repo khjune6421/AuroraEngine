@@ -9,12 +9,14 @@
 
 
 #ifdef _DEBUG
-int main() {
+int main()
+{
 	cout << "==================================" << endl;
 	cout << "Welcome to Aurora Engine" << endl;
 	cout << "==================================" << endl;
 #else
-int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
+int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int)
+{
 #endif
 
 	IMGUI_CHECKVERSION();
