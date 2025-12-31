@@ -1,14 +1,15 @@
 {
   "dependencies": [
-    "directxtk",
     "assimp",
+    "directxtk",
     {
       "name": "imgui",
       "features": [
-        "win32-binding",
+        "docking-experimental",
         "dx11-binding",
-        "docking-experimental"
+        "win32-binding"
       ]
-    }
+    },
+    "nlohmann-json"
   ]
 }
