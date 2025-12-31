@@ -1,10 +1,7 @@
 #pragma once
-#include "IBase.h"
 
-class ComponentBase : public IBase
+class ComponentBase : public Base
 {
-	std::string m_typeName = "ComponentBase"; // 컴포넌트 타입 이름
-
 protected:
 	class GameObjectBase* m_owner = nullptr; // 소유 게임 오브젝트 포인터
 

@@ -1,6 +1,5 @@
 /// GameObjectBase.h의 시작
 #pragma once
-#include "IBase.h"
 #include "ComponentBase.h"
 
 enum class Direction // 방향 열거형
@@ -12,10 +11,10 @@ enum class Direction // 방향 열거형
 	Count
 };
 
-class GameObjectBase : public IBase
+class GameObjectBase : public Base
 {
 	UINT m_id = 0; // 고유 ID
-	std::string m_typeName = "GameObjectBase"; // 게임 오브젝트 타입 이름
+	std::string m_name = "";
 
 	// 변환 관련 멤버 변수
 	DirectX::XMMATRIX m_worldMatrix = DirectX::XMMatrixIdentity(); // 월드 행렬
@@ -40,9 +39,9 @@ class GameObjectBase : public IBase
 	WorldBuffer m_worldData = {}; // 월드 및 WVP 행렬 상수 버퍼 데이터
 	com_ptr<ID3D11Buffer> m_worldWVPConstantBuffer = nullptr; // 월드, WVP 행렬 상수 버퍼
 
-	std::unordered_map<std::type_index, std::unique_ptr<IBase>> m_components = {}; // 컴포넌트 맵
-	std::vector<IBase*> m_updateComponents = {}; // 업데이트할 컴포넌트 배열
-	std::vector<IBase*> m_renderComponents = {}; // 렌더링할 컴포넌트 배열
+	std::unordered_map<std::type_index, std::unique_ptr<Base>> m_components = {}; // 컴포넌트 맵
+	std::vector<Base*> m_updateComponents = {}; // 업데이트할 컴포넌트 배열
+	std::vector<Base*> m_renderComponents = {}; // 렌더링할 컴포넌트 배열
 
 protected:
 	GameObjectBase* m_parent = nullptr; // 부모 게임 오브젝트 포인터
@@ -139,7 +138,7 @@ inline T* GameObjectBase::CreateChildGameObject(Args && ...args)
 template<typename T, typename ...Args> requires std::derived_from<T, ComponentBase>
 inline T* GameObjectBase::CreateComponent(Args && ...args)
 {
-	std::unique_ptr<IBase> component = std::make_unique<T>(std::forward<Args>(args)...);
+	std::unique_ptr<Base> component = std::make_unique<T>(std::forward<Args>(args)...);
 
 	T* componentPtr = static_cast<T*>(component.get());
 	componentPtr->SetOwner(this);
@@ -168,9 +167,9 @@ inline void GameObjectBase::RemoveComponent()
 	auto it = m_components.find(std::type_index(typeid(T)));
 	if (it != m_components.end())
 	{
-		IBase* componentPtr = it->second.get();
-		if (componentPtr->NeedsUpdate()) erase_if(m_updateComponents, [componentPtr](IBase* obj) { return obj == componentPtr; });
-		if (componentPtr->NeedsRender()) erase_if(m_renderComponents, [componentPtr](IBase* obj) { return obj == componentPtr; });
+		Base* componentPtr = it->second.get();
+		if (componentPtr->NeedsUpdate()) erase_if(m_updateComponents, [componentPtr](Base* obj) { return obj == componentPtr; });
+		if (componentPtr->NeedsRender()) erase_if(m_renderComponents, [componentPtr](Base* obj) { return obj == componentPtr; });
 
 
 		it->second->BaseFinalize();

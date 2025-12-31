@@ -138,7 +138,7 @@
     <ClInclude Include="CameraComponent.h" />
     <ClInclude Include="ComponentBase.h" />
     <ClInclude Include="GameObjectBase.h" />
-    <ClInclude Include="IBase.h" />
+    <ClInclude Include="Base.h" />
     <ClInclude Include="InputManager.h" />
     <ClInclude Include="KeyCode.h" />
     <ClInclude Include="LineComponent.h" />
@@ -157,6 +157,7 @@
     <ClCompile Include="CameraComponent.cpp" />
     <ClCompile Include="ComponentBase.cpp" />
     <ClCompile Include="GameObjectBase.cpp" />
+    <ClCompile Include="Base.cpp" />
     <ClCompile Include="InputManager.cpp" />
     <ClCompile Include="LineComponent.cpp" />
     <ClCompile Include="ModelComponent.cpp" />

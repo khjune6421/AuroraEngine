@@ -5,8 +5,8 @@ class SceneManager : public Singleton<SceneManager>
 {
 	friend class Singleton<SceneManager>;
 
-	std::unique_ptr<class IBase> m_currentScene = nullptr;
-	std::unique_ptr<class IBase> m_nextScene = nullptr;
+	std::unique_ptr<class Base> m_currentScene = nullptr;
+	std::unique_ptr<class Base> m_nextScene = nullptr;
 
 public:
 	SceneManager() = default;
@@ -23,5 +23,5 @@ public:
 
 	void Run();
 
-	void Finalize();
+	void Finalize() { if (m_currentScene) m_currentScene->BaseFinalize(); }
 };

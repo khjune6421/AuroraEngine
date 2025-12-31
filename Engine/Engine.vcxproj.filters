@@ -60,6 +60,7 @@
     <ClCompile Include="LineComponent.cpp">
       <Filter>Scene\GameObject\Component</Filter>
     </ClCompile>
+    <ClCompile Include="Base.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Renderer.h">
@@ -96,7 +97,7 @@
     <ClInclude Include="ResourceManager.h">
       <Filter>Manager</Filter>
     </ClInclude>
-    <ClInclude Include="IBase.h">
+    <ClInclude Include="Base.h">
       <Filter>Scene</Filter>
     </ClInclude>
     <ClInclude Include="Singleton.h">

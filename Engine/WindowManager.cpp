@@ -1,4 +1,4 @@
-/// WindowManager.h의 시작
+// WindowManager.h의 시작
 #include "stdafx.h"
 #include "WindowManager.h"
 

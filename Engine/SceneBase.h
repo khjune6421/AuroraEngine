@@ -1,16 +1,13 @@
 ///SceneBase.h의 시작
 #pragma once
-#include "IBase.h"
 #include "GameObjectBase.h"
 
-class SceneBase : public IBase
+class SceneBase : public Base
 {
-	std::string m_typeName = "SceneBase"; // 씬 타입 이름
-
 	com_ptr<ID3D11DeviceContext> m_deviceContext = nullptr; // 디바이스 컨텍스트 포인터
 
-	std::vector<std::unique_ptr<IBase>> m_gameObjects = {}; // 게임 오브젝트 배열
-	std::vector<IBase*> m_gameObjectsToRemove = {}; // 제거할 게임 오브젝트 배열
+	std::vector<std::unique_ptr<Base>> m_gameObjects = {}; // 게임 오브젝트 배열
+	std::vector<Base*> m_gameObjectsToRemove = {}; // 제거할 게임 오브젝트 배열
 
 	struct ViewProjectionBuffer // 뷰-투영 상수 버퍼 구조체
 	{
@@ -42,7 +39,7 @@ class SceneBase : public IBase
 protected:
 	class CameraComponent* m_mainCamera = nullptr; // 메인 카메라 컴포넌트 포인터
 	DirectX::XMVECTOR m_directionalLightDirection = DirectX::XMVectorSet(-0.5f, -1.0f, -0.5f, 0.0f); // 방향광 방향
-	DirectX::XMFLOAT4 m_sceneColor = { 1.0f, 1.0f, 1.0f, 1.0f }; // 환경광, 방향광, 클리어 색장
+	DirectX::XMFLOAT4 m_lightColor = { 1.0f, 1.0f, 1.0f, 1.0f }; // 환경광, 방향광
 
 public:
 	SceneBase();
@@ -73,6 +70,11 @@ private:
 	// 씬 종료 // 씬 매니저가 씬을 교체할 때 호출
 	void BaseFinalize() override { Finalize(); }
 
+	// 씬 직렬화
+	nlohmann::json BaseSerialize() override;
+	// 씬 역직렬화
+	void BaseDeserialize(const nlohmann::json& jsonData) override;
+
 	// 리소스 매니저에서 필요한 리소스 얻기
 	void GetResources();
 	// 상수 버퍼 업데이트
@@ -86,7 +88,7 @@ private:
 template<typename T, typename ...Args> requires std::derived_from<T, GameObjectBase>
 inline T* SceneBase::CreateRootGameObject(Args && ...args)
 {
-	std::unique_ptr<IBase> gameObject = std::make_unique<T>(std::forward<Args>(args)...);
+	std::unique_ptr<Base> gameObject = std::make_unique<T>(std::forward<Args>(args)...);
 
 	T* gameObjectPtr = static_cast<T*>(gameObject.get()); // 이거 왜 dynamic_cast 가 아니라 static_cast 인거지?
 	gameObject->BaseInitialize();
