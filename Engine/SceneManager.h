@@ -23,5 +23,5 @@ public:
 
 	void Run();
 
-	void Finalize();
+	void Finalize() { if (m_currentScene) m_currentScene->BaseFinalize(); }
 };

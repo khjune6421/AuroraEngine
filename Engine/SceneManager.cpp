@@ -23,7 +23,10 @@ void SceneManager::Run()
 		m_currentScene->BaseInitialize();
 	}
 
+	#ifdef NDEBUG
 	TimeManager::GetInstance().UpdateTime();
+	#endif
+
 	m_currentScene->BaseUpdate();
 
 	Renderer& m_renderer = Renderer::GetInstance();
@@ -38,10 +41,5 @@ void SceneManager::Run()
 	m_renderer.EndFrame();
 
 	InputManager::GetInstance().EndFrame();
-}
-
-void SceneManager::Finalize()
-{
-	if (m_currentScene) m_currentScene->BaseFinalize();
 }
 ///SceneManager.cppÀÇ ³¡
