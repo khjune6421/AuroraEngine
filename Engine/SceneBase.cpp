@@ -25,7 +25,7 @@ GameObjectBase* SceneBase::CreateCameraObject()
 
 void SceneBase::BaseInitialize()
 {
-	m_name = GetTypeName();
+	m_type = GetTypeName();
 
 	GetResources();
 
@@ -60,7 +60,7 @@ void SceneBase::BaseRender()
 
 void SceneBase::BaseRenderImGui()
 {
-	ImGui::Begin(m_name.c_str());
+	ImGui::Begin(m_type.c_str());
 
 	if (ImGui::DragFloat3("Directional Light Direction", &m_directionalLightDirection.m128_f32[0], 0.001f, -1.0f, 1.0f)) {}
 	if (ImGui::ColorEdit3("Scene Color", &m_sceneColor.x)) {}

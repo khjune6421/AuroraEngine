@@ -353,35 +353,6 @@ void Renderer::BeginImGuiFrame()
 	ImGui_ImplDX11_NewFrame();
 	ImGui::NewFrame();
 	ImGui::DockSpaceOverViewport(0, ImGui::GetMainViewport(), ImGuiDockNodeFlags_PassthruCentralNode);
-
-	ImGui::Begin("Editor");
-
-	// 비율 유지하며 창 크기에 맞게 이미지 크기 조정
-	ImVec2 windowSize = ImGui::GetContentRegionAvail();
-
-	ImVec2 imageSize;
-	if (windowSize.x / windowSize.y > m_aspectRatio)
-	{
-		// 창이 더 넓음 - 높이에 맞추고 좌우 여백
-		imageSize.y = windowSize.y;
-		imageSize.x = windowSize.y * m_aspectRatio;
-	}
-	else
-	{
-		// 창이 더 좁음 - 너비에 맞추고 상하 여백
-		imageSize.x = windowSize.x;
-		imageSize.y = windowSize.x / m_aspectRatio;
-	}
-
-	// 이미지를 중앙에 배치
-	ImVec2 cursorPos = ImGui::GetCursorPos();
-	cursorPos.x += (windowSize.x - imageSize.x) * 0.5f;
-	cursorPos.y += (windowSize.y - imageSize.y) * 0.5f;
-	ImGui::SetCursorPos(cursorPos);
-
-	ImGui::Image(reinterpret_cast<ImTextureID>(m_sceneShaderResourceView.Get()), imageSize);
-
-	ImGui::End();
 }
 
 void Renderer::UnbindShaderResources()
@@ -427,8 +398,4 @@ void Renderer::EndImGuiFrame()
 {
 	ImGui::Render();
 	ImGui_ImplDX11_RenderDrawData(ImGui::GetDrawData());
-
-	// 복수의 뷰포트 지원을 위한 플랫폼 윈도우 렌더링
-	ImGui::UpdatePlatformWindows();
-	ImGui::RenderPlatformWindowsDefault();
 }

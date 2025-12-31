@@ -3,14 +3,14 @@
 
 void ComponentBase::BaseInitialize()
 {
-	m_name = GetTypeName();
+	m_type = GetTypeName();
 
 	Initialize();
 }
 
 void ComponentBase::BaseRenderImGui()
 {
-	if (ImGui::TreeNode(m_name.c_str()))
+	if (ImGui::TreeNode(m_type.c_str()))
 	{
 		RenderImGui();
 
