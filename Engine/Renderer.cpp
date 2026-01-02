@@ -141,11 +141,11 @@ void Renderer::CreateDeviceAndContext()
 		nullptr,
 		D3D_DRIVER_TYPE_HARDWARE,
 		nullptr,
-#ifdef _DEBUG
+		#ifdef _DEBUG
 		D3D11_CREATE_DEVICE_DEBUG,
-#else
+		#else
 		0,
-#endif
+		#endif
 		m_featureLevels.data(),
 		static_cast<UINT>(m_featureLevels.size()),
 		D3D11_SDK_VERSION,
