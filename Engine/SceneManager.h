@@ -19,7 +19,7 @@ public:
 	void Run();
 	void Finalize() { if (m_currentScene) m_currentScene->BaseFinalize(); }
 
-	void ChangeScene(std::string sceneTypeName) { m_nextScene = TypeRegistry::GetInstance().Create(sceneTypeName); }
+	void ChangeScene(std::string sceneTypeName) { m_nextScene = TypeRegistry::GetInstance().Create<Base>(sceneTypeName); }
 
 	void SaveCurrentScene();
 
