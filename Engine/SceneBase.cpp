@@ -16,7 +16,7 @@ SceneBase::SceneBase()
 
 GameObjectBase* SceneBase::CreateCameraObject()
 {
-	GameObjectBase* cameraGameObject = CreateRootGameObject<GameObjectBase>();
+	GameObjectBase* cameraGameObject = CreateRootGameObject<GameObjectBase>("GameObjectBase");
 	cameraGameObject->SetPosition({ 0.0f, 5.0f, -10.0f });
 	cameraGameObject->LookAt({ 0.0f, 0.0f, 0.0f });
 

@@ -5,6 +5,8 @@
 #include "Renderer.h"
 #include "ResourceManager.h"
 
+REGISTER_TYPE(GameObjectBase)
+
 using namespace std;
 using namespace DirectX;
 

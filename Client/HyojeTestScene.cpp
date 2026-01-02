@@ -16,11 +16,11 @@ REGISTER_TYPE(HyojeTestScene)
 
 void HyojeTestScene::Initialize()
 {
-	CreateRootGameObject<HyojeTestObject>();
-	CreateRootGameObject<CoordinateSystemObject>();
+	CreateRootGameObject<HyojeTestObject>("HyojeTestObject");
+	CreateRootGameObject<CoordinateSystemObject>("CoordinateSystemObject");
 }
 
 GameObjectBase* HyojeTestScene::CreateCameraObject()
 {
-	return CreateRootGameObject<CamRotObject>()->CreateChildGameObject<TestCameraObject>();
+	return CreateRootGameObject<CamRotObject>("CamRotObject")->CreateChildGameObject<TestCameraObject>();
 }

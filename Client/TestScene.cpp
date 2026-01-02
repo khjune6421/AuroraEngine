@@ -12,12 +12,12 @@ REGISTER_TYPE(TestScene)
 
 void TestScene::Initialize()
 {
-	CreateRootGameObject<TestObject>();
+	CreateRootGameObject<TestObject>("TestObject");
 }
 
 GameObjectBase* TestScene::CreateCameraObject()
 {
-	return CreateRootGameObject<CamRotObject>()->CreateChildGameObject<TestCameraObject>();
+	return CreateRootGameObject<CamRotObject>("CamRotObject")->CreateChildGameObject<TestCameraObject>();
 }
 
 /// TestScene.cpp¿« ≥°

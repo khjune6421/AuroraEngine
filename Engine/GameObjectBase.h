@@ -14,7 +14,7 @@ enum class Direction // 방향 열거형
 class GameObjectBase : public Base
 {
 	UINT m_id = 0; // 고유 ID
-	std::string m_name = "";
+	std::string m_name = ""; // 이름
 
 	// 변환 관련 멤버 변수
 	DirectX::XMMATRIX m_worldMatrix = DirectX::XMMatrixIdentity(); // 월드 행렬
