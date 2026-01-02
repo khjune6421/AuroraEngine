@@ -11,7 +11,6 @@ class TimeManager : public Singleton<TimeManager>
 	float m_deltaTime = 0.0f; // 델타 타임 // 초 단위
 
 public:
-	TimeManager() = default;
 	~TimeManager() = default;
 	TimeManager(const TimeManager&) = delete;
 	TimeManager& operator=(const TimeManager&) = delete;
@@ -26,4 +25,7 @@ public:
 	void SetTimeScale(float timeScale) { m_timeScale = timeScale; }
 	// 델타 타임 얻기
 	float GetDeltaTime() const { return m_deltaTime; }
+
+private:
+	TimeManager() = default;
 };

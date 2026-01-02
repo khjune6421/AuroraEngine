@@ -10,7 +10,6 @@ class WindowManager : public Singleton<WindowManager>
 	static LRESULT CALLBACK WindowProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
 
 public:
-	WindowManager() = default;
 	~WindowManager() = default;
 	WindowManager(const WindowManager&) = delete;
 	WindowManager& operator=(const WindowManager&) = delete;
@@ -26,4 +25,7 @@ public:
 
 	// 윈도우 핸들 얻기
 	HWND GetHWnd() const { return m_hWnd; }
+
+private:
+	WindowManager() = default;
 };

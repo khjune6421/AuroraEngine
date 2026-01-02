@@ -33,23 +33,20 @@ public:
 	Base(Base&&) = default;
 	Base& operator=(Base&&) = default;
 
-	// 타입 이름 가져오기
-	std::string GetTypeName() const;
+	std::string GetType() const { return m_type; }
 
 protected:
+	// 파생 클래스의 초기화
 	virtual void Initialize() {}
+	// 파생 클래스의 업데이트
 	virtual void Update() {}
+	// 파생 클래스의 렌더링
 	virtual void Render() {}
+	// 파생 클래스의 ImGui 렌더링
 	virtual void RenderImGui() {}
+	// 파생 클래스의 종료
 	virtual void Finalize() {}
-
-	template<typename T> requires std::derived_from<T, Base>
-	static void Register(const std::string& typeName) { s_registry[typeName] = []() -> std::unique_ptr<Base> { return std::make_unique<T>(); }; }
-	static std::unique_ptr<Base> Create(const std::string& typeName);
 
 	virtual nlohmann::json Serialize() { return nlohmann::json(); }
 	virtual void Deserialize(const nlohmann::json& jsonData) {}
-
-private:
-	static std::unordered_map<std::string, std::function<std::unique_ptr<Base>()>> s_registry;
 };

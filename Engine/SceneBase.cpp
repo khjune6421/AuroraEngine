@@ -23,20 +23,34 @@ GameObjectBase* SceneBase::CreateCameraObject()
 	return cameraGameObject;
 }
 
+void SceneBase::CreateRootGameObject(std::string typeName)
+{
+	unique_ptr<Base> gameObjectPtr = TypeRegistry::GetInstance().CreateGameObject(typeName);
+	gameObjectPtr->BaseInitialize();
+	m_gameObjects.push_back(move(gameObjectPtr));
+}
+
 void SceneBase::BaseInitialize()
 {
-	m_type = GetTypeName();
+	m_type = GetTypeName(*this);
 
 	GetResources();
 
 	m_mainCamera = CreateCameraObject()->CreateComponent<CameraComponent>();
 
+	#ifdef NDEBUG
 	Initialize();
+	#endif
 }
 
 void SceneBase::BaseUpdate()
 {
+	#ifdef NDEBUG
+	Update();
+	#endif
+
 	RemovePendingGameObjects();
+	// 게임 오브젝트 업데이트
 	for (unique_ptr<Base>& gameObject : m_gameObjects) gameObject->BaseUpdate();
 }
 
@@ -51,11 +65,15 @@ void SceneBase::BaseRender()
 	// 환경 맵 설정
 	m_deviceContext->PSSetShaderResources(static_cast<UINT>(TextureSlots::Environment), 1, m_environmentMapSRV.GetAddressOf());
 
-	// 게임 오브젝트 렌더링
-	for (unique_ptr<Base>& gameObject : m_gameObjects) gameObject->BaseRender();
-
 	// 스카이박스 렌더링
 	RenderSkybox();
+
+	#ifdef NDEBUG
+	Render();
+	#endif
+
+	// 게임 오브젝트 렌더링
+	for (unique_ptr<Base>& gameObject : m_gameObjects) gameObject->BaseRender();
 }
 
 void SceneBase::BaseRenderImGui()
@@ -65,11 +83,23 @@ void SceneBase::BaseRenderImGui()
 	if (ImGui::DragFloat3("Directional Light Direction", &m_directionalLightDirection.m128_f32[0], 0.001f, -1.0f, 1.0f)) {}
 	if (ImGui::ColorEdit3("Scene Color", &m_lightColor.x)) {}
 
+	RenderImGui();
+
 	ImGui::Separator();
 	ImGui::Text("Game Objects:");
 	for (unique_ptr<Base>& gameObject : m_gameObjects) gameObject->BaseRenderImGui();
 
 	ImGui::End();
+}
+
+void SceneBase::BaseFinalize()
+{
+	#ifdef NDEBUG
+	Finalize();
+	#endif
+
+	// 게임 오브젝트 종료
+	for (unique_ptr<Base>& gameObject : m_gameObjects) gameObject->BaseFinalize();
 }
 
 nlohmann::json SceneBase::BaseSerialize()

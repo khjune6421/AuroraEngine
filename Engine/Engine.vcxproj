@@ -151,6 +151,7 @@
     <ClInclude Include="Singleton.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="TimeManager.h" />
+    <ClInclude Include="TypeRegistry.h" />
     <ClInclude Include="WindowManager.h" />
   </ItemGroup>
   <ItemGroup>
@@ -166,6 +167,7 @@
     <ClCompile Include="SceneBase.cpp" />
     <ClCompile Include="SceneManager.cpp" />
     <ClCompile Include="TimeManager.cpp" />
+    <ClCompile Include="TypeRegistry.cpp" />
     <ClCompile Include="WindowManager.cpp" />
   </ItemGroup>
   <ItemGroup>

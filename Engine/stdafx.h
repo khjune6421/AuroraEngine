@@ -43,6 +43,7 @@
 // 기타 사용자 정의 헤더
 #include "Base.h"
 #include "Singleton.h"
+#include "TypeRegistry.h"
 
 // 메크로 정의
 #define com_ptr Microsoft::WRL::ComPtr
@@ -52,6 +53,15 @@ constexpr float DEG_TO_RAD = DirectX::XM_PI / 180.0f;
 constexpr float RAD_TO_DEG = 180.0f / DirectX::XM_PI;
 inline DirectX::XMVECTOR ToRadians(const DirectX::XMVECTOR& degrees) { return DirectX::XMVectorScale(degrees, DEG_TO_RAD); }
 inline DirectX::XMVECTOR ToDegrees(const DirectX::XMVECTOR& radians) { return DirectX::XMVectorScale(radians, RAD_TO_DEG); }
+
+template<typename T>
+constexpr std::string GetTypeName(T&&)
+{
+	std::string typeName = typeid(T).name();
+	if (typeName.find("class ") == 0) typeName = typeName.substr(6);
+
+	return typeName;
+}
 
 // HRESULT 결과 확인
 constexpr void CheckResult(HRESULT hr, const char* msg)

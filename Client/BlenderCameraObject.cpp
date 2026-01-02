@@ -2,6 +2,8 @@
 #include "BlenderCameraObject.h"
 #include "InputManager.h"
 
+REGISTER_TYPE(BlenderCameraObject)
+
 void BlenderCameraObject::Initialize()
 {
 	SetPosition({ 0.0f, 10.0f, -20.0f });

@@ -4,6 +4,8 @@
 #include "GameObjectBase.h"
 #include "Renderer.h"
 
+REGISTER_TYPE(CameraComponent)
+
 using namespace DirectX;
 
 void CameraComponent::Initialize()

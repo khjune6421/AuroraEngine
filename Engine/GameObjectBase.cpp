@@ -102,20 +102,48 @@ XMVECTOR GameObjectBase::GetWorldDirectionVector(Direction direction)
 	}
 }
 
+void GameObjectBase::CreateChildGameObject(string typeName)
+{
+	// 뭔가 이상함 // 기분이 더러움
+	unique_ptr<GameObjectBase> childGameObjectPtr = TypeRegistry::GetInstance().CreateGameObject(typeName);
+	childGameObjectPtr->m_parent = this;
+	childGameObjectPtr->BaseInitialize();
+
+	m_childrens.push_back(move(childGameObjectPtr));
+}
+
+void GameObjectBase::CreateComponent(string typeName)
+{
+	unique_ptr<ComponentBase> component = TypeRegistry::GetInstance().CreateComponent(typeName);
+
+	component->SetOwner(this);
+
+	if (component->NeedsUpdate()) m_updateComponents.push_back(component.get());
+	if (component->NeedsRender()) m_renderComponents.push_back(component.get());
+
+	static_cast<Base*>(component.get())->BaseInitialize();
+
+	m_components[type_index(typeid(*component))] = move(component);
+}
+
 void GameObjectBase::BaseInitialize()
 {
-	m_type = GetTypeName();
+	m_type = GetTypeName(*this);
 	m_name = m_type + "_" + to_string(m_id);
 
 	m_worldWVPConstantBuffer = ResourceManager::GetInstance().GetConstantBuffer(sizeof(WorldBuffer));
 
+	#ifdef NDEBUG
 	Initialize();
+	#endif
 }
 
 void GameObjectBase::BaseUpdate()
 {
-	// 게임 오브젝트 업데이트 // 파생 클래스에서 오버라이드
+	#ifdef NDEBUG
 	Update();
+	#endif
+
 	// 월드 행렬 업데이트
 	UpdateWorldMatrix();
 	// 컴포넌트 업데이트
@@ -129,8 +157,9 @@ void GameObjectBase::BaseUpdate()
 
 void GameObjectBase::BaseRender()
 {
-	// 게임 오브젝트 렌더링 // 파생 클래스에서 오버라이드
+	#ifdef NDEBUG
 	Render();
+	#endif
 
 	// 컴포넌트 렌더링
 	if (!m_renderComponents.empty())
@@ -153,9 +182,6 @@ void GameObjectBase::BaseRenderImGui()
 {
 	if (ImGui::TreeNode(m_name.c_str()))
 	{
-		// 파생 클래스 ImGui 렌더링
-		RenderImGui();
-
 		// 위치
 		if (ImGui::DragFloat3("Position", &m_position.m128_f32[0], 0.05f))  SetDirty();
 		// 회전
@@ -166,6 +192,8 @@ void GameObjectBase::BaseRenderImGui()
 		};
 		// 크기
 		if (ImGui::DragFloat3("Scale", &m_scale.m128_f32[0], 0.01f)) SetDirty();
+
+		RenderImGui();
 
 		// 컴포넌트 ImGui 렌더링
 		if (!m_components.empty())
@@ -189,7 +217,9 @@ void GameObjectBase::BaseRenderImGui()
 
 void GameObjectBase::BaseFinalize()
 {
+	#ifdef NDEBUG
 	Finalize();
+	#endif
 
 	// 컴포넌트 종료
 	for (auto& [typeIndex, component] : m_components) component->BaseFinalize();

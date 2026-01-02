@@ -49,8 +49,15 @@ public:
 	SceneBase(SceneBase&&) = delete; // 이동 금지
 	SceneBase& operator=(SceneBase&&) = delete; // 이동 대입 금지
 
-	template<typename T, typename... Args> requires std::derived_from<T, GameObjectBase>
-	T* CreateRootGameObject(Args&&... args);
+	// 루트 게임 오브젝트 생성 // 포인터 반환 안함
+	void CreateRootGameObject(std::string typeName);
+
+	template<typename T> requires std::derived_from<T, GameObjectBase>
+	T* CreateRootGameObject(); // 루트 게임 오브젝트 생성 // 포인터 반환
+
+	template<typename T> requires std::derived_from<T, GameObjectBase>
+	T* CreateRootGameObject(std::string typeName); // 루트 게임 오브젝트 생성 // 포인터 반환
+
 	// 루트 게임 오브젝트 제거 // 제거 배열에 추가
 	void RemoveGameObject(GameObjectBase* gameObject) { m_gameObjectsToRemove.push_back(gameObject); }
 
@@ -68,7 +75,7 @@ private:
 	// ImGui 렌더링
 	void BaseRenderImGui() override;
 	// 씬 종료 // 씬 매니저가 씬을 교체할 때 호출
-	void BaseFinalize() override { Finalize(); }
+	void BaseFinalize() override;
 
 	// 씬 직렬화
 	nlohmann::json BaseSerialize() override;
@@ -85,14 +92,26 @@ private:
 	void RemovePendingGameObjects();
 };
 
-template<typename T, typename ...Args> requires std::derived_from<T, GameObjectBase>
-inline T* SceneBase::CreateRootGameObject(Args && ...args)
+template<typename T> requires std::derived_from<T, GameObjectBase>
+inline T* SceneBase::CreateRootGameObject()
 {
-	std::unique_ptr<Base> gameObject = std::make_unique<T>(std::forward<Args>(args)...);
+	std::unique_ptr<Base> gameObject = std::make_unique<T>();
 
-	T* gameObjectPtr = static_cast<T*>(gameObject.get()); // 이거 왜 dynamic_cast 가 아니라 static_cast 인거지?
 	gameObject->BaseInitialize();
-	m_gameObjects.push_back(move(gameObject));
+	T* gameObjectPtr = static_cast<T*>(gameObject.get());
+	m_gameObjects.push_back(std::move(gameObject));
+
+	return gameObjectPtr;
+}
+
+template<typename T> requires std::derived_from<T, GameObjectBase>
+inline T* SceneBase::CreateRootGameObject(std::string typeName)
+{
+	std::unique_ptr<Base> gameObject = TypeRegistry::GetInstance().CreateGameObject(typeName);
+
+	gameObject->BaseInitialize();
+	T* gameObjectPtr = static_cast<T*>(gameObject.get());
+	m_gameObjects.push_back(std::move(gameObject));
 
 	return gameObjectPtr;
 }

@@ -4,6 +4,8 @@
 
 #include "TimeManager.h"
 
+REGISTER_TYPE(CamRotObject)
+
 void CamRotObject::Update()
 {
 	float deltaTime = TimeManager::GetInstance().GetDeltaTime();

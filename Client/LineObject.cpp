@@ -7,6 +7,8 @@
 using namespace std;
 using namespace DirectX;
 
+REGISTER_TYPE(LineObject)
+
 void LineObject::Initialize()
 {
 	CreateComponent<LineComponent>(); // 기본 생성

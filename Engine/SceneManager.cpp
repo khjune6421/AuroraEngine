@@ -24,11 +24,14 @@ void SceneManager::Run()
 		m_currentScene->BaseInitialize();
 	}
 
-	#ifdef NDEBUG
 	TimeManager::GetInstance().UpdateTime();
-	#endif
 
 	m_currentScene->BaseUpdate();
+
+	#ifdef _DEBUG
+	// Ctrl + S 입력 시 씬 저장
+	if (inputManager.GetKey(KeyCode::Control) && inputManager.GetKeyDown(KeyCode::S)) SaveCurrentScene();
+	#endif
 
 	Renderer& m_renderer = Renderer::GetInstance();
 	m_renderer.BeginFrame();
@@ -40,22 +43,18 @@ void SceneManager::Run()
 	#endif
 
 	m_renderer.EndFrame();
-
-	// Ctrl + S 입력 시 씬 저장
-	#ifdef _DEBUG
-	if (inputManager.GetKeyDown(KeyCode::S))
-	{
-		cout << "저장 중..." << endl;
-
-		filesystem::path sceneFilePath = "../Asset/Scene/" + m_currentScene->GetTypeName() + ".json";
-		ofstream file(sceneFilePath);
-		file << m_currentScene->BaseSerialize().dump(4);
-		file.close();
-
-		cout << "저장 완료!" << endl;
-	}
-	#endif
-
 	inputManager.EndFrame();
+}
+
+void SceneManager::SaveCurrentScene()
+{
+	cout << "저장 중..." << endl;
+
+	filesystem::path sceneFilePath = "../Asset/Scene/" + m_currentScene->GetType() + ".json";
+	ofstream file(sceneFilePath);
+	file << m_currentScene->BaseSerialize().dump(4);
+	file.close();
+
+	cout << "저장 완료!" << endl;
 }
 ///SceneManager.cpp의 끝

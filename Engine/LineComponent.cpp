@@ -5,6 +5,8 @@
 #include "Renderer.h"
 #include "ResourceManager.h"
 
+REGISTER_TYPE(LineComponent)
+
 Vertex_Pos g_line_vertices[] =
 {
 	{{-0.5f, 0.0f, 0.0f, 1.0f}}, 

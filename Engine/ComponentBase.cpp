@@ -3,7 +3,7 @@
 
 void ComponentBase::BaseInitialize()
 {
-	m_type = GetTypeName();
+	m_type = GetTypeName(*this);
 
 	Initialize();
 }

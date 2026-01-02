@@ -12,14 +12,15 @@
 using namespace std;
 using namespace DirectX;
 
+REGISTER_TYPE(HyojeTestScene)
 
 void HyojeTestScene::Initialize()
 {
-	CreateRootGameObject<HyojeTestObject>();
-	CreateRootGameObject<CoordinateSystemObject>();
+	CreateRootGameObject("HyojeTestObject");
+	CreateRootGameObject("CoordinateSystemObject");
 }
 
 GameObjectBase* HyojeTestScene::CreateCameraObject()
 {
-	return CreateRootGameObject<CamRotObject>()->CreateChildGameObject<TestCameraObject>();
+	return CreateRootGameObject<CamRotObject>("CamRotObject")->CreateChildGameObject<TestCameraObject>();
 }

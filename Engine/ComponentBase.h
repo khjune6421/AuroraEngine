@@ -22,7 +22,6 @@ private:
 	void BaseInitialize() override;
 	void BaseUpdate() override { Update(); }
 	void BaseRender() override { Render(); }
-	// ImGui 렌더링 // GameObjectBase의 RenderImGui에서 호출
 	void BaseRenderImGui() override;
 	void BaseFinalize() override { Finalize(); }
 };

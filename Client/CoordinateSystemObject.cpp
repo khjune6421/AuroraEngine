@@ -8,6 +8,8 @@
 using namespace std;
 using namespace DirectX;
 
+REGISTER_TYPE(CoordinateSystemObject)
+
 void CoordinateSystemObject::Initialize()
 {
 

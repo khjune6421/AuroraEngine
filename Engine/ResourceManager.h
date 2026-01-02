@@ -22,7 +22,6 @@ class ResourceManager : public Singleton<ResourceManager>
 	std::unordered_map<std::string, Model> m_models = {}; // 모델 맵 // 키: 모델 파일 경로
 
 public:
-	ResourceManager() = default;
 	~ResourceManager() = default;
 	ResourceManager(const ResourceManager&) = delete;
 	ResourceManager& operator=(const ResourceManager&) = delete;
@@ -53,6 +52,8 @@ public:
 	const Model* LoadModel(const std::string& fileName);
 
 private:
+	ResourceManager() = default;
+
 	// 깊이버퍼 상태 생성 함수
 	void CreateDepthStencilStates();
 	// 래스터 상태 생성 함수

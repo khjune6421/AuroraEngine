@@ -5,6 +5,8 @@
 #include "Renderer.h"
 #include "ResourceManager.h"
 
+REGISTER_TYPE(ModelComponent)
+
 void ModelComponent::Initialize()
 {
 	m_deviceContext = Renderer::GetInstance().GetDeviceContext();
