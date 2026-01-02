@@ -55,9 +55,9 @@ inline DirectX::XMVECTOR ToRadians(const DirectX::XMVECTOR& degrees) { return Di
 inline DirectX::XMVECTOR ToDegrees(const DirectX::XMVECTOR& radians) { return DirectX::XMVectorScale(radians, RAD_TO_DEG); }
 
 template<typename T>
-constexpr std::string GetTypeName(T&&)
+constexpr std::string GetTypeName(T& obj)
 {
-	std::string typeName = typeid(T).name();
+	std::string typeName = typeid(obj).name();
 	if (typeName.find("class ") == 0) typeName = typeName.substr(6);
 
 	return typeName;
