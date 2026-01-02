@@ -23,10 +23,12 @@ GameObjectBase* SceneBase::CreateCameraObject()
 	return cameraGameObject;
 }
 
-void SceneBase::CreateRootGameObject(std::string typeName)
+void SceneBase::CreateRootGameObject(string typeName)
 {
 	unique_ptr<Base> gameObjectPtr = TypeRegistry::GetInstance().CreateGameObject(typeName);
+
 	gameObjectPtr->BaseInitialize();
+
 	m_gameObjects.push_back(move(gameObjectPtr));
 }
 
@@ -36,16 +38,22 @@ void SceneBase::BaseInitialize()
 
 	GetResources();
 
+	#ifdef _DEBUG
+	m_debugCamera = make_unique<DebugCamera>();
+	m_debugCamera->Initialize();
+	m_mainCamera = static_cast<GameObjectBase*>(m_debugCamera.get())->CreateComponent<CameraComponent>();
+	#else
 	m_mainCamera = CreateCameraObject()->CreateComponent<CameraComponent>();
-
-	#ifdef NDEBUG
 	Initialize();
 	#endif
 }
 
 void SceneBase::BaseUpdate()
 {
-	#ifdef NDEBUG
+	#ifdef _DEBUG
+	m_debugCamera->Update();
+	static_cast<Base*>(m_debugCamera.get())->BaseUpdate();
+	#else
 	Update();
 	#endif
 
@@ -114,15 +122,10 @@ nlohmann::json SceneBase::BaseSerialize()
 	{
 		m_directionalLightDirection.m128_f32[0],
 		m_directionalLightDirection.m128_f32[1],
-		m_directionalLightDirection.m128_f32[2]
+		m_directionalLightDirection.m128_f32[2],
+		m_directionalLightDirection.m128_f32[3]
 	};
-	sceneData["lightColor"] =
-	{
-		m_lightColor.x,
-		m_lightColor.y,
-		m_lightColor.z,
-		m_lightColor.w
-	};
+	sceneData["lightColor"] = { m_lightColor.x, m_lightColor.y, m_lightColor.z, m_lightColor.w };
 	sceneData["environmentMapFileName"] = m_environmentMapFileName;
 
 	return sceneData;

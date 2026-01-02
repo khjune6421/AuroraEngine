@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "CamRotObject.h"
-#include "InputManager.h"
 
+#include "InputManager.h"
 #include "TimeManager.h"
 
 REGISTER_TYPE(CamRotObject)

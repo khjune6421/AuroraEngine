@@ -43,7 +43,6 @@
 #include <nlohmann/json.hpp>
 
 // 기타 사용자 정의 헤더
-#include "Base.h"
 #include "Singleton.h"
 #include "TypeRegistry.h"
 
