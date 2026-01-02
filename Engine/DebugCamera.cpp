@@ -21,7 +21,7 @@ void DebugCamera::Update()
 	if (input.GetKey(Up)) MoveDirection(deltaTime * m_moveSpeed, Direction::Up);
 	if (input.GetKey(Down)) MoveDirection(deltaTime * m_moveSpeed, Direction::Down);
 	if (input.GetKey(Shift)) MoveDirection(deltaTime * m_moveSpeed, Direction::Backward);
-	if (input.GetKey(Control)) MoveDirection(deltaTime * m_moveSpeed, Direction::Forward);
+	if (input.GetKey(Space)) MoveDirection(deltaTime * m_moveSpeed, Direction::Forward);
 
 	LookAt({ 0.0f, 0.0f, 0.0f }, GetWorldDirectionVector(Direction::Up));
 }

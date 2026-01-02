@@ -202,6 +202,20 @@ void GameObjectBase::BaseRenderImGui()
 			ImGui::Text("Components:");
 			for (auto& [typeIndex, component] : m_components) component->BaseRenderImGui();
 		}
+		ImGui::Separator();
+		if (ImGui::Button("Add Component")) ImGui::OpenPopup("Select Component Type");
+		if (ImGui::BeginPopup("Select Component Type"))
+		{
+			for (const auto& [typeName, factory] : TypeRegistry::GetInstance().m_componentRegistry)
+			{
+				if (ImGui::Selectable(typeName.c_str()))
+				{
+					CreateComponent(typeName);
+					ImGui::CloseCurrentPopup();
+				}
+			}
+			ImGui::EndPopup();
+		}
 
 		// 자식 게임 오브젝트 ImGui 렌더링
 		if (!m_childrens.empty())
@@ -209,6 +223,21 @@ void GameObjectBase::BaseRenderImGui()
 			ImGui::Separator();
 			ImGui::Text("Children:");
 			for (auto& child : m_childrens) child->BaseRenderImGui();
+		}
+		ImGui::Separator();
+		if (ImGui::Button("Add GameObject")) ImGui::OpenPopup("Select GameObject Type");
+		if (ImGui::BeginPopup("Select GameObject Type"))
+		{
+			for (const auto& [typeName, factory] : TypeRegistry::GetInstance().m_gameObjectRegistry)
+			{
+				if (ImGui::Selectable(typeName.c_str()))
+				{
+					CreateChildGameObject(typeName);
+					ImGui::CloseCurrentPopup();
+				}
+			}
+
+			ImGui::EndPopup();
 		}
 
 		ImGui::TreePop();

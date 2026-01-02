@@ -97,6 +97,22 @@ void SceneBase::BaseRenderImGui()
 	ImGui::Text("Game Objects:");
 	for (unique_ptr<Base>& gameObject : m_gameObjects) gameObject->BaseRenderImGui();
 
+	ImGui::Separator();
+	if (ImGui::Button("Add GameObject")) ImGui::OpenPopup("Select GameObject Type");
+	if (ImGui::BeginPopup("Select GameObject Type"))
+	{
+		for (const auto& [typeName, factory] : TypeRegistry::GetInstance().m_gameObjectRegistry)
+		{
+			if (ImGui::Selectable(typeName.c_str()))
+			{
+				CreateRootGameObject(typeName);
+				ImGui::CloseCurrentPopup();
+			}
+		}
+
+		ImGui::EndPopup();
+	}
+
 	ImGui::End();
 }
 
