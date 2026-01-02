@@ -17,11 +17,11 @@ public:
 	SceneManager& operator=(SceneManager&&) = delete;
 
 	void Initialize();
+	void Run();
+	void Finalize() { if (m_currentScene) m_currentScene->BaseFinalize(); }
 
 	template<typename T, typename... Args> requires std::derived_from<T, SceneBase>
 	void ChangeScene(Args&&... args) { m_nextScene = std::make_unique<T>(std::forward<Args>(args)...); }
 
-	void Run();
-
-	void Finalize() { if (m_currentScene) m_currentScene->BaseFinalize(); }
+	void SaveCurrentScene();
 };

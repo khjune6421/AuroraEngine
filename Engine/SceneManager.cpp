@@ -43,19 +43,21 @@ void SceneManager::Run()
 
 	// Ctrl + S 입력 시 씬 저장
 	#ifdef _DEBUG
-	if (inputManager.GetKeyDown(KeyCode::S))
-	{
-		cout << "저장 중..." << endl;
-
-		filesystem::path sceneFilePath = "../Asset/Scene/" + m_currentScene->GetTypeName() + ".json";
-		ofstream file(sceneFilePath);
-		file << m_currentScene->BaseSerialize().dump(4);
-		file.close();
-
-		cout << "저장 완료!" << endl;
-	}
+	if (inputManager.GetKey(KeyCode::Control) && inputManager.GetKeyDown(KeyCode::S)) SaveCurrentScene();
 	#endif
 
 	inputManager.EndFrame();
+}
+
+void SceneManager::SaveCurrentScene()
+{
+	cout << "저장 중..." << endl;
+
+	filesystem::path sceneFilePath = "../Asset/Scene/" + m_currentScene->GetTypeName() + ".json";
+	ofstream file(sceneFilePath);
+	file << m_currentScene->BaseSerialize().dump(4);
+	file.close();
+
+	cout << "저장 완료!" << endl;
 }
 ///SceneManager.cpp의 끝
