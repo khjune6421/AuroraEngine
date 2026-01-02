@@ -107,7 +107,7 @@ inline T* SceneBase::CreateRootGameObject()
 template<typename T> requires std::derived_from<T, GameObjectBase>
 inline T* SceneBase::CreateRootGameObject(std::string typeName)
 {
-	std::unique_ptr<Base> gameObject = TypeRegistry::GetInstance().Create(typeName);
+	std::unique_ptr<Base> gameObject = TypeRegistry::GetInstance().CreateGameObject(typeName);
 
 	gameObject->BaseInitialize();
 	T* gameObjectPtr = static_cast<T*>(gameObject.get());

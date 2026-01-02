@@ -25,7 +25,7 @@ GameObjectBase* SceneBase::CreateCameraObject()
 
 void SceneBase::CreateRootGameObject(std::string typeName)
 {
-	unique_ptr<Base> gameObjectPtr = unique_ptr<Base>(TypeRegistry::GetInstance().Create(typeName).release());
+	unique_ptr<Base> gameObjectPtr = TypeRegistry::GetInstance().CreateGameObject(typeName);
 	gameObjectPtr->BaseInitialize();
 	m_gameObjects.push_back(move(gameObjectPtr));
 }

@@ -105,9 +105,16 @@ XMVECTOR GameObjectBase::GetWorldDirectionVector(Direction direction)
 void GameObjectBase::CreateChildGameObject(string typeName)
 {
 	// 뭔가 이상함 // 기분이 더러움
-	unique_ptr<GameObjectBase> childGameObjectPtr = unique_ptr<GameObjectBase>(dynamic_cast<GameObjectBase*>(TypeRegistry::GetInstance().Create(typeName).release()));
+	unique_ptr<GameObjectBase> childGameObjectPtr = TypeRegistry::GetInstance().CreateGameObject(typeName);
 	childGameObjectPtr->m_parent = this;
 	m_childrens.push_back(move(childGameObjectPtr));
+}
+
+void GameObjectBase::CreateComponent(string typeName)
+{
+	pair<unique_ptr<Base>, type_index> componentPair = TypeRegistry::GetInstance().CreateComponent(typeName);
+
+
 }
 
 void GameObjectBase::BaseInitialize()

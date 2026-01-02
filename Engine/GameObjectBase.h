@@ -100,8 +100,10 @@ public:
 
 	void RemoveChildGameObject(GameObjectBase* childGameObject) { m_childrenToRemove.push_back(childGameObject); }
 
+	void CreateComponent(std::string typeName); // 컴포넌트 추가 // 포인터 반환 안함
+
 	template<typename T> requires std::derived_from<T, ComponentBase>
-	T* CreateComponent(); // 컴포넌트 추가
+	T* CreateComponent(); // 컴포넌트 추가 // 포인터 반환
 
 	template<typename T> requires std::derived_from<T, ComponentBase>
 	T* GetComponent(); // 컴포넌트 가져오기 // 없으면 nullptr 반환
@@ -131,7 +133,7 @@ private:
 template<typename T> requires std::derived_from<T, GameObjectBase>
 inline T* GameObjectBase::CreateChildGameObject()
 {
-	auto child = std::make_unique<T>();
+	std::unique_ptr<T> child = std::make_unique<T>();
 
 	T* childPtr = child.get();
 	child->m_parent = this;
@@ -144,7 +146,7 @@ inline T* GameObjectBase::CreateChildGameObject()
 template<typename T> requires std::derived_from<T, GameObjectBase>
 inline T* GameObjectBase::CreateChildGameObject(std::string typeName)
 {
-	std::unique_ptr<GameObjectBase> childGameObjectPtr = std::unique_ptr<GameObjectBase>(dynamic_cast<GameObjectBase*>(TypeRegistry::GetInstance().Create(typeName).release()));
+	std::unique_ptr<GameObjectBase> childGameObjectPtr = TypeRegistry::GetInstance().CreateGameObject(typeName);
 
 	childGameObjectPtr->m_parent = this;
 	childGameObjectPtr->BaseInitialize();
@@ -157,14 +159,16 @@ inline T* GameObjectBase::CreateChildGameObject(std::string typeName)
 template<typename T> requires std::derived_from<T, ComponentBase>
 inline T* GameObjectBase::CreateComponent()
 {
-	std::unique_ptr<Base> component = std::make_unique<T>();
+	std::unique_ptr<T> component = std::make_unique<T>();
 
-	T* componentPtr = static_cast<T*>(component.get());
+	T* componentPtr = component.get();
 	componentPtr->SetOwner(this);
 	if (componentPtr->NeedsUpdate()) m_updateComponents.push_back(componentPtr);
 	if (componentPtr->NeedsRender()) m_renderComponents.push_back(componentPtr);
 
-	component->BaseInitialize();
+	Base* basePtr = static_cast<Base*>(componentPtr);
+	basePtr->BaseInitialize();
+
 	m_components[std::type_index(typeid(T))] = std::move(component);
 
 	return componentPtr;
