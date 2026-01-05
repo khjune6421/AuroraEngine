@@ -31,4 +31,4 @@ private:
 	TypeRegistry() = default;
 };
 
-#define REGISTER_TYPE(Type) namespace { bool s_##Type##_registered = []() { TypeRegistry::GetInstance().Register<Type>(#Type); return true;	}(); }
+#define REGISTER_TYPE(Type) namespace { bool s_##Type##_registered = []() { TypeRegistry::GetInstance().Register<Type>(GET_TYPE_NAME(Type)); return true; }(); }

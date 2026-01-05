@@ -41,6 +41,8 @@
 #include <nlohmann/json.hpp>
 
 // 메크로 정의
+
+// com_ptr 매크로
 #define com_ptr Microsoft::WRL::ComPtr
 
 // 각도 변환 상수 및 함수
@@ -49,14 +51,21 @@ constexpr float RAD_TO_DEG = 180.0f / DirectX::XM_PI;
 inline DirectX::XMVECTOR ToRadians(const DirectX::XMVECTOR& degrees) { return DirectX::XMVectorScale(degrees, DEG_TO_RAD); }
 inline DirectX::XMVECTOR ToDegrees(const DirectX::XMVECTOR& radians) { return DirectX::XMVectorScale(radians, RAD_TO_DEG); }
 
-template<typename T>
-constexpr std::string GetTypeName(T& obj)
-{
-	std::string typeName = typeid(obj).name();
-	if (typeName.find("class ") == 0) typeName = typeName.substr(6);
-
-	return typeName;
-}
+// 타입 이름 얻기 매크로
+#define GET_TYPE_NAME(Type) [&]() \
+{ \
+    std::string typeName = typeid(Type).name(); \
+    const char* prefixes[] = {"class ", "struct ", "union ", "enum "}; \
+    for (const char* prefix : prefixes) \
+	{ \
+        if (typeName.starts_with(prefix)) \
+		{ \
+            typeName = typeName.substr(std::strlen(prefix)); \
+            break; \
+        } \
+    } \
+    return typeName; \
+}()
 
 // HRESULT 결과 확인
 constexpr void CheckResult(HRESULT hr, const char* msg)
