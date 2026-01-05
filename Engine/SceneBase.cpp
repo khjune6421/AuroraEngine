@@ -55,6 +55,7 @@ void SceneBase::BaseInitialize()
 
 	#ifdef _DEBUG
 	m_debugCamera = make_unique<DebugCamera>();
+	static_cast<Base*>(m_debugCamera.get())->BaseInitialize();
 	m_debugCamera->Initialize();
 	m_mainCamera = static_cast<GameObjectBase*>(m_debugCamera.get())->CreateComponent<CameraComponent>();
 	#else
@@ -117,6 +118,12 @@ void SceneBase::BaseRender()
 
 void SceneBase::BaseRenderImGui()
 {
+	#ifdef _DEBUG
+	ImGui::Begin("Debug Camera");
+	static_cast<Base*>(m_debugCamera.get())->BaseRenderImGui();
+	ImGui::End();
+	#endif
+
 	ImGui::Begin(m_type.c_str());
 
 	if (ImGui::DragFloat3("Directional Light Direction", &m_directionalLightDirection.m128_f32[0], 0.001f, -1.0f, 1.0f)) {}
