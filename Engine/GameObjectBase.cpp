@@ -104,16 +104,6 @@ XMVECTOR GameObjectBase::GetWorldDirectionVector(Direction direction)
 	}
 }
 
-void GameObjectBase::CreateChildGameObject(string typeName)
-{
-	// 뭔가 이상함 // 기분이 더러움
-	unique_ptr<GameObjectBase> childGameObjectPtr = TypeRegistry::GetInstance().CreateGameObject(typeName);
-	childGameObjectPtr->m_parent = this;
-	childGameObjectPtr->BaseInitialize();
-
-	m_childrens.push_back(move(childGameObjectPtr));
-}
-
 void GameObjectBase::CreateComponent(string typeName)
 {
 	unique_ptr<ComponentBase> component = TypeRegistry::GetInstance().CreateComponent(typeName);
@@ -138,6 +128,15 @@ void GameObjectBase::CreateComponent(string typeName)
 	m_components[type_index(typeid(*component))] = move(component);
 }
 
+void GameObjectBase::CreateChildGameObject(string typeName)
+{
+	unique_ptr<GameObjectBase> childGameObjectPtr = TypeRegistry::GetInstance().CreateGameObject(typeName);
+	childGameObjectPtr->m_parent = this;
+	childGameObjectPtr->BaseInitialize();
+
+	m_childrens.push_back(move(childGameObjectPtr));
+}
+
 void GameObjectBase::BaseInitialize()
 {
 	m_type = GetTypeName(*this);
@@ -158,11 +157,14 @@ void GameObjectBase::BaseUpdate()
 
 	// 월드 행렬 업데이트
 	UpdateWorldMatrix();
+
+	// 제거할 컴포넌트 및 자식 게임 오브젝트 제거
+	RemovePending();
+
 	// 컴포넌트 업데이트
 	for (Base*& component : m_updateComponents) component->BaseUpdate();
 
-	// 제거할 자식 게임 오브젝트 제거
-	RemovePendingChildGameObjects();
+	// 제거할 자식 게임 오브젝트 제거;
 	// 자식 게임 오브젝트 업데이트
 	for (auto& child : m_childrens) child->BaseUpdate();
 }
@@ -192,6 +194,13 @@ void GameObjectBase::BaseRender()
 
 void GameObjectBase::BaseRenderImGui()
 {
+	ImGui::PushID(this);
+
+	if (ImGui::Button("Remove")) SetAlive(false);
+
+	ImGui::PopID();
+
+	ImGui::SameLine();
 	if (ImGui::TreeNode(m_name.c_str()))
 	{
 		// 위치
@@ -234,7 +243,7 @@ void GameObjectBase::BaseRenderImGui()
 		{
 			ImGui::Separator();
 			ImGui::Text("Children:");
-			for (auto& child : m_childrens) child->BaseRenderImGui();
+			for (unique_ptr<GameObjectBase>& child : m_childrens) child->BaseRenderImGui();
 		}
 		ImGui::Separator();
 		if (ImGui::Button("Add GameObject")) ImGui::OpenPopup("Select GameObject Type");
@@ -362,30 +371,46 @@ void GameObjectBase::BaseDeserialize(const nlohmann::json& jsonData)
 	SetDirty();
 }
 
+void GameObjectBase::RemovePending()
+{
+	// 제거할 자식 게임 오브젝트 제거
+	erase_if
+	(
+		m_childrens, [](const unique_ptr<GameObjectBase>& gameObject)
+		{
+			if (!gameObject->GetAlive())
+			{
+				gameObject->BaseFinalize();
+				return true;
+			}
+			return false;
+		}
+	);
+	// 제거할 컴포넌트 제거
+	erase_if
+	(
+		m_components, [&](const auto& component)
+		{
+			if (!component.second->GetAlive())
+			{
+				component.second->BaseFinalize();
+				
+				// 업데이트 및 렌더링 목록에서 제거
+				ComponentBase* compBasePtr = dynamic_cast<ComponentBase*>(component.second.get());
+				if (compBasePtr->NeedsUpdate()) erase_if(m_updateComponents, [&](Base* updateComponent) { return updateComponent == compBasePtr; });
+				if (compBasePtr->NeedsRender()) erase_if(m_renderComponents, [&](Base* renderComponent) { return renderComponent == compBasePtr; });
+
+				return true;
+			}
+			return false;
+		}
+	);
+}
+
 void GameObjectBase::SetDirty()
 {
 	m_isDirty = true;
 	for (auto& child : m_childrens) child->SetDirty();
-}
-
-void GameObjectBase::RemovePendingChildGameObjects()
-{
-	for (GameObjectBase* childToRemove : m_childrenToRemove)
-	{
-		erase_if
-		(
-			m_childrens, [childToRemove](const unique_ptr<GameObjectBase>& obj)
-			{
-				if (obj.get() == childToRemove)
-				{
-					obj->BaseFinalize();
-					return true;
-				}
-				return false;
-			}
-		);
-	}
-	m_childrenToRemove.clear();
 }
 
 const XMMATRIX& GameObjectBase::UpdateWorldMatrix()

@@ -18,10 +18,16 @@ public:
 
 	virtual nlohmann::json BaseSerialize() = 0;
 	virtual void BaseDeserialize(const nlohmann::json& jsonData) = 0;
+
+	// 소유한 객체나 자원 중 제거 대기중인 항목이 있으면 모두 제거
+	virtual void RemovePending() = 0;
 };
 
 class Base : public IBase
 {
+	bool m_isActive = true; // 활성화 여부 // TODO: 기능 추가
+	bool m_isAlive = true; // 생존 여부
+
 protected:
 	std::string m_type = "Base"; // 타입 이름
 
@@ -34,6 +40,11 @@ public:
 	Base& operator=(Base&&) = default;
 
 	std::string GetType() const { return m_type; }
+
+	void SetActive(bool isActive) { m_isActive = isActive; }
+	bool GetActive() const { return m_isActive; }
+	void SetAlive(bool isAlive) { m_isAlive = isAlive; }
+	bool GetAlive() const { return m_isAlive; }
 
 protected:
 	// 파생 클래스의 초기화

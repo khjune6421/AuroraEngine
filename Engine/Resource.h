@@ -204,6 +204,7 @@ constexpr std::array<D3D11_INPUT_ELEMENT_DESC, static_cast<size_t>(InputElement:
 enum class VSConstBuffers
 {
 	ViewProjection,
+	SkyboxViewProjection,
 	WorldNormal
 };
 enum class PSConstBuffers

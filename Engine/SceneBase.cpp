@@ -55,6 +55,7 @@ void SceneBase::BaseInitialize()
 
 	#ifdef _DEBUG
 	m_debugCamera = make_unique<DebugCamera>();
+	static_cast<Base*>(m_debugCamera.get())->BaseInitialize();
 	m_debugCamera->Initialize();
 	m_mainCamera = static_cast<GameObjectBase*>(m_debugCamera.get())->CreateComponent<CameraComponent>();
 	#else
@@ -72,7 +73,7 @@ void SceneBase::BaseUpdate()
 	Update();
 	#endif
 
-	RemovePendingGameObjects();
+	RemovePending();
 	// 게임 오브젝트 업데이트
 	for (unique_ptr<Base>& gameObject : m_gameObjects) gameObject->BaseUpdate();
 
@@ -117,9 +118,15 @@ void SceneBase::BaseRender()
 
 void SceneBase::BaseRenderImGui()
 {
+	#ifdef _DEBUG
+	ImGui::Begin("Debug Camera");
+	static_cast<Base*>(m_debugCamera.get())->BaseRenderImGui();
+	ImGui::End();
+	#endif
+
 	ImGui::Begin(m_type.c_str());
 
-	if (ImGui::DragFloat3("Directional Light Direction", &m_directionalLightDirection.m128_f32[0], 0.001f, -1.0f, 1.0f)) {}
+	if (ImGui::DragFloat3("Light Direction", &m_directionalLightDirection.m128_f32[0], 0.001f, -1.0f, 1.0f)) {}
 	if (ImGui::ColorEdit3("Scene Color", &m_lightColor.x)) {}
 
 	RenderImGui();
@@ -221,11 +228,28 @@ void SceneBase::BaseDeserialize(const nlohmann::json& jsonData)
 	}
 }
 
+void SceneBase::RemovePending()
+{
+	erase_if
+	(
+		m_gameObjects, [](const unique_ptr<Base>& gameObject)
+		{
+			if (!gameObject->GetAlive())
+			{
+				gameObject->BaseFinalize();
+				return true;
+			}
+			return false;
+		}
+	);
+}
+
 void SceneBase::GetResources()
 {
 	ResourceManager& resourceManager = ResourceManager::GetInstance();
 
 	m_viewProjectionConstantBuffer = resourceManager.GetConstantBuffer(sizeof(ViewProjectionBuffer)); // 뷰-투영 상수 버퍼 생성
+	m_skyboxViewProjectionConstantBuffer = resourceManager.GetConstantBuffer(sizeof(XMMATRIX)); // 스카이박스 뷰-투영 역행렬 상수 버퍼 생성
 	m_cameraPositionConstantBuffer = resourceManager.GetConstantBuffer(sizeof(XMVECTOR)); // 카메라 위치 상수 버퍼 생성
 	m_directionalLightConstantBuffer = resourceManager.GetConstantBuffer(sizeof(DirectionalLightBuffer)); // 방향광 상수 버퍼 생성
 
@@ -245,6 +269,12 @@ void SceneBase::UpdateConstantBuffers()
 	m_viewProjectionData.VPMatrix = m_viewProjectionData.projectionMatrix * m_viewProjectionData.viewMatrix;
 	m_deviceContext->UpdateSubresource(m_viewProjectionConstantBuffer.Get(), 0, nullptr, &m_viewProjectionData, 0, 0);
 	m_deviceContext->VSSetConstantBuffers(static_cast<UINT>(VSConstBuffers::ViewProjection), 1, m_viewProjectionConstantBuffer.GetAddressOf());
+
+	// 스카이박스 뷰-투영 역행렬 상수 버퍼 업데이트 및 셰이더에 설정 // m_viewProjectionData 재활용
+	m_viewProjectionData.viewMatrix.r[3] = XMVectorSet(0.0f, 0.0f, 0.0f, 1.0f); // 뷰 행렬의 위치 성분 제거
+	m_viewProjectionData.VPMatrix = XMMatrixInverse(nullptr, m_viewProjectionData.projectionMatrix * m_viewProjectionData.viewMatrix);
+	m_deviceContext->UpdateSubresource(m_skyboxViewProjectionConstantBuffer.Get(), 0, nullptr, &m_viewProjectionData.VPMatrix, 0, 0);
+	m_deviceContext->VSSetConstantBuffers(static_cast<UINT>(VSConstBuffers::SkyboxViewProjection), 1, m_skyboxViewProjectionConstantBuffer.GetAddressOf());
 
 	// 카메라 위치 상수 버퍼 업데이트 및 셰이더에 설정
 	m_deviceContext->UpdateSubresource(m_cameraPositionConstantBuffer.Get(), 0, nullptr, &m_mainCamera->GetPosition(), 0, 0);
@@ -274,25 +304,5 @@ void SceneBase::RenderSkybox()
 	m_deviceContext->Draw(3, 0);
 
 	m_deviceContext->OMSetDepthStencilState(nullptr, 0);
-}
-
-void SceneBase::RemovePendingGameObjects()
-{
-	for (Base* gameObjectToRemove : m_gameObjectsToRemove)
-	{
-		erase_if
-		(
-			m_gameObjects, [gameObjectToRemove](const unique_ptr<Base>& obj)
-			{
-				if (obj.get() == gameObjectToRemove)
-				{
-					obj->BaseFinalize();
-					return true;
-				}
-				return false;
-			}
-		);
-	}
-	m_gameObjectsToRemove.clear();
 }
 ///SceneBase.cpp의 끝
