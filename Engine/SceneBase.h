@@ -1,7 +1,6 @@
 ///SceneBase.h의 시작
 #pragma once
 #include "Base.h"
-#include "TypeRegistry.h"
 #include "GameObjectBase.h"
 #ifdef _DEBUG
 #include "DebugCamera.h"
@@ -19,9 +18,9 @@ class SceneBase : public Base
 
 	struct ViewProjectionBuffer // 뷰-투영 상수 버퍼 구조체
 	{
-		DirectX::XMMATRIX viewMatrix = DirectX::XMMatrixIdentity(); // 뷰 행렬
-		DirectX::XMMATRIX projectionMatrix = DirectX::XMMatrixIdentity(); // 투영 행렬
-		DirectX::XMMATRIX VPMatrix = DirectX::XMMatrixIdentity(); // VP 행렬
+		DirectX::XMMATRIX viewMatrix = DirectX::XMMatrixIdentity(); // 뷰 행렬 // 전치 안함
+		DirectX::XMMATRIX projectionMatrix = DirectX::XMMatrixIdentity(); // 투영 행렬 // 전치 안함
+		DirectX::XMMATRIX VPMatrix = DirectX::XMMatrixIdentity(); // VP 행렬 // 전치함
 	};
 	ViewProjectionBuffer m_viewProjectionData = {}; // 뷰-투영 상수 버퍼 데이터
 	com_ptr<ID3D11Buffer> m_viewProjectionConstantBuffer = nullptr; // 뷰-투영 상수 버퍼

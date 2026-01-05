@@ -7,9 +7,9 @@
 // --------------------------------------------------------
 cbuffer ViewProjection : register(b0)
 {
-    matrix ViewMatrix;
-    matrix ProjectionMatrix;
-    matrix VPMatrix;
+    matrix ViewMatrix; // 전치 안된 뷰 행렬
+    matrix ProjectionMatrix; // 전치 안된 투영 행렬
+    matrix VPMatrix; // 전치 된 뷰 행렬과 투영 행렬의 곱
 }
 
 cbuffer Skybox : register(b1)

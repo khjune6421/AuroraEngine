@@ -17,11 +17,11 @@ public:
 	std::unordered_map<std::string, std::function<std::unique_ptr<class ComponentBase>()>> m_componentRegistry;
 
 	template<typename T> requires std::derived_from<T, SceneBase>
-	void Register(const std::string& typeName) { m_sceneRegistry[typeName] = []() -> std::unique_ptr<SceneBase> { return std::make_unique<T>(); }; }
+	void Register() { m_sceneRegistry[GetTypeName<T>()] = []() -> std::unique_ptr<SceneBase> { return std::make_unique<T>(); }; }
 	template<typename T> requires std::derived_from<T, GameObjectBase>
-	void Register(const std::string& typeName) { m_gameObjectRegistry[typeName] = []() -> std::unique_ptr<GameObjectBase> { return std::make_unique<T>(); }; }
+	void Register() { m_gameObjectRegistry[GetTypeName<T>()] = []() -> std::unique_ptr<GameObjectBase> { return std::make_unique<T>(); }; }
 	template<typename T> requires std::derived_from<T, ComponentBase>
-	void Register(const std::string& typeName) { m_componentRegistry[typeName] = []() -> std::unique_ptr<ComponentBase> { return std::make_unique<T>(); }; }
+	void Register() { m_componentRegistry[GetTypeName<T>()] = []() -> std::unique_ptr<ComponentBase> { return std::make_unique<T>(); }; }
 
 	std::unique_ptr<SceneBase> CreateScene(const std::string& typeName);
 	std::unique_ptr<GameObjectBase> CreateGameObject(const std::string& typeName);
@@ -31,4 +31,4 @@ private:
 	TypeRegistry() = default;
 };
 
-#define REGISTER_TYPE(Type) namespace { bool s_##Type##_registered = []() { TypeRegistry::GetInstance().Register<Type>(#Type); return true;	}(); }
+#define REGISTER_TYPE(Type) namespace { bool s_##Type##_registered = []() { TypeRegistry::GetInstance().Register<Type>(); return true; }(); }

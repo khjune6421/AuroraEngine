@@ -41,6 +41,7 @@
 #include <nlohmann/json.hpp>
 
 // 메크로 정의
+// com_ptr 매크로
 #define com_ptr Microsoft::WRL::ComPtr
 
 // 각도 변환 상수 및 함수
@@ -49,12 +50,37 @@ constexpr float RAD_TO_DEG = 180.0f / DirectX::XM_PI;
 inline DirectX::XMVECTOR ToRadians(const DirectX::XMVECTOR& degrees) { return DirectX::XMVectorScale(degrees, DEG_TO_RAD); }
 inline DirectX::XMVECTOR ToDegrees(const DirectX::XMVECTOR& radians) { return DirectX::XMVectorScale(radians, RAD_TO_DEG); }
 
+// 타입 이름 얻기 매크로
 template<typename T>
+// 템플릿 기반 타입 이름 얻기
+inline std::string GetTypeName()
+{
+	std::string typeName = typeid(T).name();
+	constexpr std::array<const char*, 4> prefixes = { "class ", "struct ", "union ", "enum " };
+	for (const char* prefix : prefixes)
+	{
+		if (typeName.starts_with(prefix))
+		{
+			typeName = typeName.substr(std::strlen(prefix));
+			break;
+		}
+	}
+	return typeName;
+}
+template<typename T>
+// 객체 기반 타입 이름 얻기
 constexpr std::string GetTypeName(T& obj)
 {
 	std::string typeName = typeid(obj).name();
-	if (typeName.find("class ") == 0) typeName = typeName.substr(6);
-
+	constexpr std::array<const char*, 4> prefixes = { "class ", "struct ", "union ", "enum " };
+	for (const char* prefix : prefixes)
+	{
+		if (typeName.starts_with(prefix))
+		{
+			typeName = typeName.substr(std::strlen(prefix));
+			break;
+		}
+	}
 	return typeName;
 }
 

@@ -17,7 +17,7 @@ VSOutput main(uint vertexID : SV_VertexID)
     output.Position = float4(texCoord * float2(2.0f, -2.0f) + float2(-1.0f, 1.0f), 1.0f, 1.0f);
     
     // 원점에서 멀리 떨어진 위치 계산
-    output.ViewDir = mul(output.Position, SkyboxVPMatrix);
+    output.ViewDir = mul(output.Position, SkyboxVPMatrix).xyz;
     
     return output;
 }   

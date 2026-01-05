@@ -264,15 +264,15 @@ void SceneBase::GetResources()
 void SceneBase::UpdateConstantBuffers()
 {
 	// 뷰-투영 상수 버퍼 업데이트 및 셰이더에 설정
-	m_viewProjectionData.viewMatrix = XMMatrixTranspose(m_mainCamera->GetViewMatrix());
-	m_viewProjectionData.projectionMatrix = XMMatrixTranspose(m_mainCamera->GetProjectionMatrix());
-	m_viewProjectionData.VPMatrix = m_viewProjectionData.projectionMatrix * m_viewProjectionData.viewMatrix;
+	m_viewProjectionData.viewMatrix = m_mainCamera->GetViewMatrix();
+	m_viewProjectionData.projectionMatrix = m_mainCamera->GetProjectionMatrix();
+	m_viewProjectionData.VPMatrix = XMMatrixTranspose(m_viewProjectionData.viewMatrix * m_viewProjectionData.projectionMatrix);
 	m_deviceContext->UpdateSubresource(m_viewProjectionConstantBuffer.Get(), 0, nullptr, &m_viewProjectionData, 0, 0);
 	m_deviceContext->VSSetConstantBuffers(static_cast<UINT>(VSConstBuffers::ViewProjection), 1, m_viewProjectionConstantBuffer.GetAddressOf());
 
 	// 스카이박스 뷰-투영 역행렬 상수 버퍼 업데이트 및 셰이더에 설정 // m_viewProjectionData 재활용
 	m_viewProjectionData.viewMatrix.r[3] = XMVectorSet(0.0f, 0.0f, 0.0f, 1.0f); // 뷰 행렬의 위치 성분 제거
-	m_viewProjectionData.VPMatrix = XMMatrixInverse(nullptr, m_viewProjectionData.projectionMatrix * m_viewProjectionData.viewMatrix);
+	m_viewProjectionData.VPMatrix = XMMatrixTranspose(XMMatrixInverse(nullptr, m_viewProjectionData.viewMatrix * m_viewProjectionData.projectionMatrix));
 	m_deviceContext->UpdateSubresource(m_skyboxViewProjectionConstantBuffer.Get(), 0, nullptr, &m_viewProjectionData.VPMatrix, 0, 0);
 	m_deviceContext->VSSetConstantBuffers(static_cast<UINT>(VSConstBuffers::SkyboxViewProjection), 1, m_skyboxViewProjectionConstantBuffer.GetAddressOf());
 
