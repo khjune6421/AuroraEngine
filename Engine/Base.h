@@ -16,8 +16,8 @@ public:
 	virtual void BaseRenderImGui() = 0;
 	virtual void BaseFinalize() = 0;
 
-	virtual nlohmann::json BaseSerialize() { return nlohmann::json(); } // = 0;
-	virtual void BaseDeserialize(const nlohmann::json& jsonData) {} // = 0;
+	virtual nlohmann::json BaseSerialize() = 0;
+	virtual void BaseDeserialize(const nlohmann::json& jsonData) = 0;
 };
 
 class Base : public IBase
@@ -47,6 +47,8 @@ protected:
 	// 파생 클래스의 종료
 	virtual void Finalize() {}
 
+	// 파생 클래스의 직렬화
 	virtual nlohmann::json Serialize() { return nlohmann::json(); }
+	// 파생 클래스의 역직렬화
 	virtual void Deserialize(const nlohmann::json& jsonData) {}
 };

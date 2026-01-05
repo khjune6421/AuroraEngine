@@ -1,5 +1,7 @@
 /// GameObjectBase.h의 시작
 #pragma once
+#include "Base.h"
+#include "TypeRegistry.h"
 #include "ComponentBase.h"
 
 enum class Direction // 방향 열거형
@@ -122,6 +124,11 @@ private:
 	// 게임 오브젝트 종료
 	void BaseFinalize() override;
 
+	// 게임 오브젝트 직렬화
+	nlohmann::json BaseSerialize() override;
+	// 게임 오브젝트 역직렬화
+	void BaseDeserialize(const nlohmann::json& jsonData) override;
+
 	// 위치 갱신 필요로 설정 // 자식 게임 오브젝트도 설정
 	void SetDirty();
 	// 제거할 자식 게임 오브젝트 제거 // TODO: 컴포넌트 정리 추가 필요
@@ -159,6 +166,16 @@ inline T* GameObjectBase::CreateChildGameObject(std::string typeName)
 template<typename T> requires std::derived_from<T, ComponentBase>
 inline T* GameObjectBase::CreateComponent()
 {
+	if (m_components[std::type_index(typeid(T))])
+	{
+		#ifdef _DEBUG
+		std::cerr << "오류: 게임 오브젝트 '" << m_name << "'에 이미 컴포넌트 '" << typeid(T).name() << "'가 존재합니다." << std::endl;
+		#else
+		MessageBoxA(nullptr, ("오류: 게임 오브젝트 '" + m_name + "'에 이미 컴포넌트 '" + typeid(T).name() + "'가 존재합니다.").c_str(), "GameObjectBase Error", MB_OK | MB_ICONERROR);
+		#endif
+		return nullptr;
+	}
+
 	std::unique_ptr<T> component = std::make_unique<T>();
 
 	component->SetOwner(this);
@@ -192,7 +209,6 @@ inline void GameObjectBase::RemoveComponent()
 		Base* componentPtr = it->second.get();
 		if (componentPtr->NeedsUpdate()) erase_if(m_updateComponents, [componentPtr](Base* obj) { return obj == componentPtr; });
 		if (componentPtr->NeedsRender()) erase_if(m_renderComponents, [componentPtr](Base* obj) { return obj == componentPtr; });
-
 
 		it->second->BaseFinalize();
 		m_components.erase(it);

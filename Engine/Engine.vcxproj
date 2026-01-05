@@ -137,6 +137,7 @@
   <ItemGroup>
     <ClInclude Include="CameraComponent.h" />
     <ClInclude Include="ComponentBase.h" />
+    <ClInclude Include="DebugCamera.h" />
     <ClInclude Include="GameObjectBase.h" />
     <ClInclude Include="Base.h" />
     <ClInclude Include="InputManager.h" />
@@ -157,6 +158,7 @@
   <ItemGroup>
     <ClCompile Include="CameraComponent.cpp" />
     <ClCompile Include="ComponentBase.cpp" />
+    <ClCompile Include="DebugCamera.cpp" />
     <ClCompile Include="GameObjectBase.cpp" />
     <ClCompile Include="Base.cpp" />
     <ClCompile Include="InputManager.cpp" />

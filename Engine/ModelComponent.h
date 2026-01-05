@@ -51,6 +51,10 @@ private:
 	void Initialize() override;
 	void Render() override;
 	void RenderImGui() override;
+
+	nlohmann::json Serialize() override;
+	void Deserialize(const nlohmann::json& jsonData) override;
+
 	// 셰이더 생성
 	void CreateShaders();
 };

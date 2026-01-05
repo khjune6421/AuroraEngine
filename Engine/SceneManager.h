@@ -1,4 +1,5 @@
 #pragma once
+#include "Singleton.h"
 #include "SceneBase.h"
 
 class SceneManager : public Singleton<SceneManager>
@@ -20,8 +21,6 @@ public:
 	void Finalize() { if (m_currentScene) m_currentScene->BaseFinalize(); }
 
 	void ChangeScene(std::string sceneTypeName) { m_nextScene = TypeRegistry::GetInstance().CreateScene(sceneTypeName); }
-
-	void SaveCurrentScene();
 
 private:
 	SceneManager() = default;

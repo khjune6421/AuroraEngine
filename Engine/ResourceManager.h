@@ -1,5 +1,6 @@
 ///ResourceManager.h¿« Ω√¿€
 #pragma once
+#include "Singleton.h"
 #include "Resource.h"
 
 class ResourceManager : public Singleton<ResourceManager>

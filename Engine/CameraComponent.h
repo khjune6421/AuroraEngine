@@ -40,6 +40,9 @@ private:
 	void Update() override { UpdateViewMatrix(); UpdateProjectionMatrix(); }
 	void RenderImGui() override;
 
+	nlohmann::json Serialize() override;
+	void Deserialize(const nlohmann::json& jsonData) override;
+
 	// 뷰 행렬 갱신
 	void UpdateViewMatrix();
 	// 투영 행렬 갱신

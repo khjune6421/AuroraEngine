@@ -36,3 +36,21 @@ void CameraComponent::RenderImGui()
 	ImGui::DragFloat("NearZ", &m_nearZ, 0.01f, 0.01f, m_farZ - 0.01f);
 	ImGui::DragFloat("FarZ", &m_farZ, 1.0f, m_nearZ + 0.01f, 10000.0f);
 }
+
+nlohmann::json CameraComponent::Serialize()
+{
+	nlohmann::json jsonData;
+
+	jsonData["fovY"] = m_fovY;
+	jsonData["nearZ"] = m_nearZ;
+	jsonData["farZ"] = m_farZ;
+
+	return jsonData;
+}
+
+void CameraComponent::Deserialize(const nlohmann::json& jsonData)
+{
+	m_fovY = jsonData["fovY"].get<float>();
+	m_nearZ = jsonData["nearZ"].get<float>();
+	m_farZ = jsonData["farZ"].get<float>();
+}

@@ -1,0 +1,72 @@
+{
+    "directionalLightDirection": [
+        -0.5,
+        -1.0,
+        -0.5,
+        0.0
+    ],
+    "environmentMapFileName": "Skybox.dds",
+    "lightColor": [
+        1.0,
+        1.0,
+        1.0,
+        1.0
+    ],
+    "rootGameObjects": [
+        {
+            "childGameObjects": [],
+            "components": [
+                {
+                    "modelFileName": "box.fbx",
+                    "psShaderName": "PSModel.hlsl",
+                    "type": "ModelComponent",
+                    "vsShaderName": "VSModel.hlsl"
+                }
+            ],
+            "name": "GameObjectBase_1",
+            "position": [
+                -4.150000095367432,
+                0.0,
+                0.0,
+                0.0
+            ],
+            "rotation": [
+                0.0,
+                0.0,
+                0.0,
+                1.0
+            ],
+            "scale": [
+                1.0,
+                1.0,
+                1.0,
+                1.0
+            ],
+            "type": "GameObjectBase"
+        },
+        {
+            "childGameObjects": [],
+            "components": [],
+            "name": "HyojeTestObject_2",
+            "position": [
+                0.0,
+                0.0,
+                0.0,
+                0.0
+            ],
+            "rotation": [
+                0.0,
+                0.0,
+                0.0,
+                1.0
+            ],
+            "scale": [
+                1.0,
+                1.0,
+                1.0,
+                1.0
+            ],
+            "type": "HyojeTestObject"
+        }
+    ]
+}

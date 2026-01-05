@@ -1,4 +1,5 @@
 #pragma once
+#include "Singleton.h"
 
 class WindowManager : public Singleton<WindowManager>
 {

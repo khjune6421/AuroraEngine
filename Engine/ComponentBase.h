@@ -1,4 +1,6 @@
 #pragma once
+#include "Base.h"
+#include "TypeRegistry.h"
 
 class ComponentBase : public Base
 {
@@ -24,4 +26,9 @@ private:
 	void BaseRender() override { Render(); }
 	void BaseRenderImGui() override;
 	void BaseFinalize() override { Finalize(); }
+
+	// 컴포넌트 직렬화
+	nlohmann::json BaseSerialize() override;
+	// 컴포넌트 역직렬화
+	void BaseDeserialize(const nlohmann::json& jsonData) override { Deserialize(jsonData); }
 };

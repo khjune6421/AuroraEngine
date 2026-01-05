@@ -6,6 +6,10 @@
 #include "Renderer.h"
 #include "ResourceManager.h"
 
+#ifdef _DEBUG
+#include "InputManager.h"
+#endif
+
 using namespace std;
 using namespace DirectX;
 
@@ -23,10 +27,12 @@ GameObjectBase* SceneBase::CreateCameraObject()
 	return cameraGameObject;
 }
 
-void SceneBase::CreateRootGameObject(std::string typeName)
+void SceneBase::CreateRootGameObject(string typeName)
 {
 	unique_ptr<Base> gameObjectPtr = TypeRegistry::GetInstance().CreateGameObject(typeName);
+
 	gameObjectPtr->BaseInitialize();
+
 	m_gameObjects.push_back(move(gameObjectPtr));
 }
 
@@ -34,24 +40,57 @@ void SceneBase::BaseInitialize()
 {
 	m_type = GetTypeName(*this);
 
+	// 저장된 씬 파일 불러오기
+	const filesystem::path sceneFilePath = "../Asset/Scene/" + m_type + ".json";
+	if (filesystem::exists(sceneFilePath))
+	{
+		ifstream file(sceneFilePath);
+		nlohmann::json sceneData;
+		file >> sceneData;
+		file.close();
+		BaseDeserialize(sceneData);
+	}
+
 	GetResources();
 
+	#ifdef _DEBUG
+	m_debugCamera = make_unique<DebugCamera>();
+	m_debugCamera->Initialize();
+	m_mainCamera = static_cast<GameObjectBase*>(m_debugCamera.get())->CreateComponent<CameraComponent>();
+	#else
 	m_mainCamera = CreateCameraObject()->CreateComponent<CameraComponent>();
-
-	#ifdef NDEBUG
 	Initialize();
 	#endif
 }
 
 void SceneBase::BaseUpdate()
 {
-	#ifdef NDEBUG
+	#ifdef _DEBUG
+	m_debugCamera->Update();
+	static_cast<Base*>(m_debugCamera.get())->BaseUpdate();
+	#else
 	Update();
 	#endif
 
 	RemovePendingGameObjects();
 	// 게임 오브젝트 업데이트
 	for (unique_ptr<Base>& gameObject : m_gameObjects) gameObject->BaseUpdate();
+
+	#ifdef _DEBUG
+	// Ctrl + S 입력 시 씬 저장
+	InputManager& inputManager = InputManager::GetInstance();
+	if (inputManager.GetKey(KeyCode::Control) && inputManager.GetKeyDown(KeyCode::S))
+	{
+		cout << "씬: " << m_type << " 저장 중..." << endl;
+
+		const filesystem::path sceneFilePath = "../Asset/Scene/" + m_type + ".json";
+		ofstream file(sceneFilePath);
+		file << BaseSerialize().dump(4);
+		file.close();
+
+		cout << "씬: " << m_type << " 저장 완료!" << endl;
+	}
+	#endif
 }
 
 void SceneBase::BaseRender()
@@ -89,6 +128,22 @@ void SceneBase::BaseRenderImGui()
 	ImGui::Text("Game Objects:");
 	for (unique_ptr<Base>& gameObject : m_gameObjects) gameObject->BaseRenderImGui();
 
+	ImGui::Separator();
+	if (ImGui::Button("Add GameObject")) ImGui::OpenPopup("Select GameObject Type");
+	if (ImGui::BeginPopup("Select GameObject Type"))
+	{
+		for (const auto& [typeName, factory] : TypeRegistry::GetInstance().m_gameObjectRegistry)
+		{
+			if (ImGui::Selectable(typeName.c_str()))
+			{
+				CreateRootGameObject(typeName);
+				ImGui::CloseCurrentPopup();
+			}
+		}
+
+		ImGui::EndPopup();
+	}
+
 	ImGui::End();
 }
 
@@ -104,32 +159,66 @@ void SceneBase::BaseFinalize()
 
 nlohmann::json SceneBase::BaseSerialize()
 {
-	nlohmann::json sceneData;
+	nlohmann::json jsonData;
 
-	// Store scene type
-	sceneData["type"] = m_type;
-
-	// Store scene-specific data
-	sceneData["directionalLightDirection"] =
+	// 기본 씬 데이터 저장
+	jsonData["directionalLightDirection"] =
 	{
 		m_directionalLightDirection.m128_f32[0],
 		m_directionalLightDirection.m128_f32[1],
-		m_directionalLightDirection.m128_f32[2]
+		m_directionalLightDirection.m128_f32[2],
+		m_directionalLightDirection.m128_f32[3]
 	};
-	sceneData["lightColor"] =
-	{
-		m_lightColor.x,
-		m_lightColor.y,
-		m_lightColor.z,
-		m_lightColor.w
-	};
-	sceneData["environmentMapFileName"] = m_environmentMapFileName;
+	jsonData["lightColor"] = { m_lightColor.x, m_lightColor.y, m_lightColor.z, m_lightColor.w };
+	jsonData["environmentMapFileName"] = m_environmentMapFileName;
 
-	return sceneData;
+	// 파생 클래스의 직렬화 호출
+	nlohmann::json derivedData = Serialize();
+	if (!derivedData.is_null() && derivedData.is_object()) jsonData.merge_patch(derivedData);
+
+	// 게임 오브젝트들 저장
+	nlohmann::json gameObjectsData = nlohmann::json::array();
+	for (unique_ptr<Base>& gameObject : m_gameObjects) gameObjectsData.push_back(gameObject->BaseSerialize());
+	jsonData["rootGameObjects"] = gameObjectsData;
+
+	return jsonData;
 }
 
 void SceneBase::BaseDeserialize(const nlohmann::json& jsonData)
 {
+	// 기본 씬 데이터 로드
+	m_directionalLightDirection = XMVectorSet
+	(
+		jsonData["directionalLightDirection"][0].get<float>(),
+		jsonData["directionalLightDirection"][1].get<float>(),
+		jsonData["directionalLightDirection"][2].get<float>(),
+		jsonData["directionalLightDirection"][3].get<float>()
+	);
+	// 광원 색상
+	m_lightColor = XMFLOAT4
+	(
+		jsonData["lightColor"][0].get<float>(),
+		jsonData["lightColor"][1].get<float>(),
+		jsonData["lightColor"][2].get<float>(),
+		jsonData["lightColor"][3].get<float>()
+	);
+	// 환경 맵 파일 이름
+	m_environmentMapFileName = jsonData["environmentMapFileName"].get<string>();
+
+	// 파생 클래스의 데이터 로드
+	Deserialize(jsonData);
+
+	// 게임 오브젝트들 로드
+	for (const auto& gameObjectData : jsonData["rootGameObjects"])
+	{
+		string typeName = gameObjectData["type"].get<string>();
+		unique_ptr<Base> gameObjectPtr = TypeRegistry::GetInstance().CreateGameObject(typeName);
+
+		gameObjectPtr->BaseDeserialize(gameObjectData);
+		gameObjectPtr->BaseInitialize();
+
+		m_gameObjects.push_back(move(gameObjectPtr));
+	}
 }
 
 void SceneBase::GetResources()

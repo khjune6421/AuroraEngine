@@ -5,6 +5,8 @@
 #include "Renderer.h"
 #include "ResourceManager.h"
 
+using namespace std;
+
 REGISTER_TYPE(ModelComponent)
 
 void ModelComponent::Initialize()
@@ -70,6 +72,24 @@ void ModelComponent::RenderImGui()
 		m_model = ResourceManager::GetInstance().LoadModel(m_modelFileName);
 		CreateShaders();
 	}
+}
+
+nlohmann::json ModelComponent::Serialize()
+{
+	nlohmann::json jsonData;
+
+	jsonData["modelFileName"] = m_modelFileName;
+	jsonData["vsShaderName"] = m_vsShaderName;
+	jsonData["psShaderName"] = m_psShaderName;
+
+	return jsonData;
+}
+
+void ModelComponent::Deserialize(const nlohmann::json& jsonData)
+{
+	m_modelFileName = jsonData["modelFileName"].get<string>();
+	m_vsShaderName = jsonData["vsShaderName"].get<string>();
+	m_psShaderName = jsonData["psShaderName"].get<string>();
 }
 
 void ModelComponent::CreateShaders()

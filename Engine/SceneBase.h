@@ -1,9 +1,18 @@
 ///SceneBase.h의 시작
 #pragma once
+#include "Base.h"
+#include "TypeRegistry.h"
 #include "GameObjectBase.h"
+#ifdef _DEBUG
+#include "DebugCamera.h"
+#endif
 
 class SceneBase : public Base
 {
+	#ifdef _DEBUG
+	std::unique_ptr<DebugCamera> m_debugCamera = nullptr; // 디버그 카메라 게임 오브젝트
+	#endif
+
 	com_ptr<ID3D11DeviceContext> m_deviceContext = nullptr; // 디바이스 컨텍스트 포인터
 
 	std::vector<std::unique_ptr<Base>> m_gameObjects = {}; // 게임 오브젝트 배열

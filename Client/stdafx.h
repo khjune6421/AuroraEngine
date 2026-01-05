@@ -42,11 +42,6 @@
 // JSON 헤더
 #include <nlohmann/json.hpp>
 
-// 기타 사용자 정의 헤더
-#include "Base.h"
-#include "Singleton.h"
-#include "TypeRegistry.h"
-
 // 메크로 정의
 #define com_ptr Microsoft::WRL::ComPtr
 
