@@ -16,7 +16,6 @@ class SceneBase : public Base
 	com_ptr<ID3D11DeviceContext> m_deviceContext = nullptr; // 디바이스 컨텍스트 포인터
 
 	std::vector<std::unique_ptr<Base>> m_gameObjects = {}; // 게임 오브젝트 배열
-	std::vector<Base*> m_gameObjectsToRemove = {}; // 제거할 게임 오브젝트 배열
 
 	struct ViewProjectionBuffer // 뷰-투영 상수 버퍼 구조체
 	{
@@ -68,9 +67,6 @@ public:
 	template<typename T> requires std::derived_from<T, GameObjectBase>
 	T* CreateRootGameObject(std::string typeName); // 루트 게임 오브젝트 생성 // 포인터 반환
 
-	// 루트 게임 오브젝트 제거 // 제거 배열에 추가
-	void RemoveGameObject(GameObjectBase* gameObject) { m_gameObjectsToRemove.push_back(gameObject); }
-
 protected:
 	// 메인 카메라 게임 오브젝트 설정
 	virtual GameObjectBase* CreateCameraObject();
@@ -92,14 +88,15 @@ private:
 	// 씬 역직렬화
 	void BaseDeserialize(const nlohmann::json& jsonData) override;
 
+	// 제거할 게임 오브젝트 제거 // Update에서 호출
+	void RemovePending() override;
+
 	// 리소스 매니저에서 필요한 리소스 얻기
 	void GetResources();
 	// 상수 버퍼 업데이트
 	void UpdateConstantBuffers();
 	// 스카이박스 렌더링
 	void RenderSkybox();
-	// 제거할 게임 오브젝트 제거 // Update에서 호출
-	void RemovePendingGameObjects();
 };
 
 template<typename T> requires std::derived_from<T, GameObjectBase>

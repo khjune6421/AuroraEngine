@@ -73,7 +73,7 @@ void SceneBase::BaseUpdate()
 	Update();
 	#endif
 
-	RemovePendingGameObjects();
+	RemovePending();
 	// 게임 오브젝트 업데이트
 	for (unique_ptr<Base>& gameObject : m_gameObjects) gameObject->BaseUpdate();
 
@@ -138,7 +138,7 @@ void SceneBase::BaseRenderImGui()
 		ImGui::PushID(gameObject.get());
 
 		// 게임 오브젝트 제거 버튼
-		if (ImGui::Button("Remove")) RemoveGameObject(dynamic_cast<GameObjectBase*>(gameObject.get()));
+		if (ImGui::Button("Remove")) gameObject->SetAlive(false);
 
 		// GameObject ImGui 렌더링
 		ImGui::SameLine();
@@ -240,6 +240,22 @@ void SceneBase::BaseDeserialize(const nlohmann::json& jsonData)
 	}
 }
 
+void SceneBase::RemovePending()
+{
+	erase_if
+	(
+		m_gameObjects, [](const unique_ptr<Base>& gameObject)
+		{
+			if (!gameObject->GetAlive())
+			{
+				gameObject->BaseFinalize();
+				return true;
+			}
+			return false;
+		}
+	);
+}
+
 void SceneBase::GetResources()
 {
 	ResourceManager& resourceManager = ResourceManager::GetInstance();
@@ -300,25 +316,5 @@ void SceneBase::RenderSkybox()
 	m_deviceContext->Draw(3, 0);
 
 	m_deviceContext->OMSetDepthStencilState(nullptr, 0);
-}
-
-void SceneBase::RemovePendingGameObjects()
-{
-	for (Base* gameObjectToRemove : m_gameObjectsToRemove)
-	{
-		erase_if
-		(
-			m_gameObjects, [gameObjectToRemove](const unique_ptr<Base>& obj)
-			{
-				if (obj.get() == gameObjectToRemove)
-				{
-					obj->BaseFinalize();
-					return true;
-				}
-				return false;
-			}
-		);
-	}
-	m_gameObjectsToRemove.clear();
 }
 ///SceneBase.cpp의 끝

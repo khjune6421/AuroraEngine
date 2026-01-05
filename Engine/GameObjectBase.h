@@ -42,14 +42,12 @@ class GameObjectBase : public Base
 	com_ptr<ID3D11Buffer> m_worldWVPConstantBuffer = nullptr; // 월드, WVP 행렬 상수 버퍼
 
 	std::unordered_map<std::type_index, std::unique_ptr<Base>> m_components = {}; // 컴포넌트 맵
-	std::vector<std::type_index> m_componentToRemove = {}; // 제거할 컴포넌트 타입 인덱스 배열
 	std::vector<Base*> m_updateComponents = {}; // 업데이트할 컴포넌트 배열
 	std::vector<Base*> m_renderComponents = {}; // 렌더링할 컴포넌트 배열
 
 protected:
 	GameObjectBase* m_parent = nullptr; // 부모 게임 오브젝트 포인터
 	std::vector<std::unique_ptr<GameObjectBase>> m_childrens = {}; // 소유한 자식 게임 오브젝트 배열
-	std::vector<GameObjectBase*> m_childrenToRemove = {}; // 제거할 자식 게임 오브젝트 배열
 
 public:
 	GameObjectBase(); // 무조건 CreateGameObject로 생성
@@ -99,7 +97,6 @@ public:
 
 	template<typename T> requires std::derived_from<T, ComponentBase>
 	T* GetComponent(); // 컴포넌트 가져오기 // 없으면 nullptr 반환
-	void RemoveComponent(std::type_index componentTypeIndex); // 컴포넌트 제거
 
 	// 자식 게임 오브젝트 생성 // 포인터 반환 안함
 	void CreateChildGameObject(std::string typeName);
@@ -108,8 +105,6 @@ public:
 	// 자식 게임 오브젝트 제거 // 제거 배열에 추가
 	template<typename T> requires std::derived_from<T, GameObjectBase>
 	T* CreateChildGameObject(std::string typeName); // 자식 게임 오브젝트 생성 // 포인터 반환
-
-	void RemoveChildGameObject(GameObjectBase* childGameObject) { m_childrenToRemove.push_back(childGameObject); }
 
 private:
 	// 게임 오브젝트 초기화
@@ -128,12 +123,11 @@ private:
 	// 게임 오브젝트 역직렬화
 	void BaseDeserialize(const nlohmann::json& jsonData) override;
 
+	// 제거 대기 중인 컴포넌트 및 자식 게임 오브젝트 제거
+	void RemovePending() override;
+
 	// 위치 갱신 필요로 설정 // 자식 게임 오브젝트도 설정
 	void SetDirty();
-	// 제거할 컴포넌트 제거
-	void RemovePendingComponents();
-	// 제거할 자식 게임 오브젝트 제거
-	void RemovePendingChildGameObjects();
 	// 월드 행렬 갱신
 	const DirectX::XMMATRIX& UpdateWorldMatrix();
 };

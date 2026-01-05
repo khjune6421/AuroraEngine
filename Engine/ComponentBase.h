@@ -31,4 +31,7 @@ private:
 	nlohmann::json BaseSerialize() override;
 	// 컴포넌트 역직렬화
 	void BaseDeserialize(const nlohmann::json& jsonData) override { Deserialize(jsonData); }
+
+	// 컴포넌트는 제거 대기 처리가 필요 없으므로 빈 구현
+	void RemovePending() override {};
 };

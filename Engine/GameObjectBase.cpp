@@ -128,11 +128,6 @@ void GameObjectBase::CreateComponent(string typeName)
 	m_components[type_index(typeid(*component))] = move(component);
 }
 
-void GameObjectBase::RemoveComponent(type_index componentTypeIndex)
-{
-	m_componentToRemove.push_back(componentTypeIndex);
-}
-
 void GameObjectBase::CreateChildGameObject(string typeName)
 {
 	unique_ptr<GameObjectBase> childGameObjectPtr = TypeRegistry::GetInstance().CreateGameObject(typeName);
@@ -163,13 +158,13 @@ void GameObjectBase::BaseUpdate()
 	// 월드 행렬 업데이트
 	UpdateWorldMatrix();
 
-	// 제거할 컴포넌트 제거
-	RemovePendingComponents();
+	// 제거할 컴포넌트 및 자식 게임 오브젝트 제거
+	RemovePending();
+
 	// 컴포넌트 업데이트
 	for (Base*& component : m_updateComponents) component->BaseUpdate();
 
-	// 제거할 자식 게임 오브젝트 제거
-	RemovePendingChildGameObjects();
+	// 제거할 자식 게임 오브젝트 제거;
 	// 자식 게임 오브젝트 업데이트
 	for (auto& child : m_childrens) child->BaseUpdate();
 }
@@ -224,7 +219,7 @@ void GameObjectBase::BaseRenderImGui()
 				ImGui::PushID(component.get());
 
 				// 컴포넌트 제거 버튼
-				if (ImGui::Button("Remove")) RemoveComponent(typeIndex);
+				if (ImGui::Button("Remove")) component->SetAlive(false);
 
 				// Component ImGui 렌더링
 				ImGui::SameLine();
@@ -258,7 +253,7 @@ void GameObjectBase::BaseRenderImGui()
 				ImGui::PushID(child.get());
 
 				// 자식 게임 오브젝트 제거 버튼
-				if (ImGui::Button("Remove")) RemoveChildGameObject(child.get());
+				if (ImGui::Button("Remove")) child->SetAlive(false);
 
 				// Child GameObject ImGui 렌더링
 				ImGui::SameLine();
@@ -393,58 +388,43 @@ void GameObjectBase::BaseDeserialize(const nlohmann::json& jsonData)
 	SetDirty();
 }
 
+void GameObjectBase::RemovePending()
+{
+	erase_if
+	(
+		m_childrens, [](const unique_ptr<GameObjectBase>& gameObject)
+		{
+			if (!gameObject->GetAlive())
+			{
+				gameObject->BaseFinalize();
+				return true;
+			}
+			return false;
+		}
+	);
+	erase_if
+	(
+		m_components, [&](const auto& component)
+		{
+			if (!component.second->GetAlive())
+			{
+				component.second->BaseFinalize();
+				
+				ComponentBase* compBasePtr = dynamic_cast<ComponentBase*>(component.second.get());
+				if (compBasePtr->NeedsUpdate()) erase_if(m_updateComponents, [&](Base* updateComponent) { return updateComponent == compBasePtr; });
+				if (compBasePtr->NeedsRender()) erase_if(m_renderComponents, [&](Base* renderComponent) { return renderComponent == compBasePtr; });
+
+				return true;
+			}
+			return false;
+		}
+	);
+}
+
 void GameObjectBase::SetDirty()
 {
 	m_isDirty = true;
 	for (auto& child : m_childrens) child->SetDirty();
-}
-
-void GameObjectBase::RemovePendingComponents()
-{
-	for (const type_index& componentTypeIndex : m_componentToRemove)
-	{
-		erase_if
-		(
-			m_updateComponents, [this, &componentTypeIndex](Base* component)
-			{
-				return type_index(typeid(*component)) == componentTypeIndex;
-			}
-		);
-		erase_if
-		(
-			m_renderComponents, [this, &componentTypeIndex](Base* component)
-			{
-				return type_index(typeid(*component)) == componentTypeIndex;
-			}
-		);
-		auto it = m_components.find(componentTypeIndex);
-		if (it != m_components.end())
-		{
-			it->second->BaseFinalize();
-			m_components.erase(it);
-		}
-	}
-	m_componentToRemove.clear();
-}
-
-void GameObjectBase::RemovePendingChildGameObjects()
-{
-	for (GameObjectBase* childToRemove : m_childrenToRemove)
-	{
-		erase_if
-		(
-			m_childrens, [childToRemove](const unique_ptr<GameObjectBase>& obj)
-			{
-				if (obj.get() == childToRemove)
-				{
-					obj->BaseFinalize();
-					return true;
-				}
-				return false;
-			}
-		);
-	}
-	m_childrenToRemove.clear();
 }
 
 const XMMATRIX& GameObjectBase::UpdateWorldMatrix()
