@@ -52,6 +52,7 @@ inline DirectX::XMVECTOR ToDegrees(const DirectX::XMVECTOR& radians) { return Di
 
 // 타입 이름 얻기 매크로
 template<typename T>
+// 템플릿 개반 타입 이름 얻기
 inline std::string GetTypeName()
 {
 	std::string typeName = typeid(T).name();
@@ -66,7 +67,22 @@ inline std::string GetTypeName()
 	}
 	return typeName;
 }
-#define TYPE_NAME GetTypeName<decltype(*this)>()
+template<typename T>
+// 객체 기반 타입 이름 얻기
+constexpr std::string GetTypeName(T& obj)
+{
+	std::string typeName = typeid(obj).name();
+	constexpr std::array<const char*, 4> prefixes = { "class ", "struct ", "union ", "enum " };
+	for (const char* prefix : prefixes)
+	{
+		if (typeName.starts_with(prefix))
+		{
+			typeName = typeName.substr(std::strlen(prefix));
+			break;
+		}
+	}
+	return typeName;
+}
 
 // HRESULT 결과 확인
 constexpr void CheckResult(HRESULT hr, const char* msg)

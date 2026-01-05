@@ -38,7 +38,7 @@ void SceneBase::CreateRootGameObject(string typeName)
 
 void SceneBase::BaseInitialize()
 {
-	m_type = TYPE_NAME;
+	m_type = GetTypeName(*this);
 
 	// 저장된 씬 파일 불러오기
 	const filesystem::path sceneFilePath = "../Asset/Scene/" + m_type + ".json";

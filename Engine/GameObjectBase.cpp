@@ -139,7 +139,7 @@ void GameObjectBase::CreateChildGameObject(string typeName)
 
 void GameObjectBase::BaseInitialize()
 {
-	m_type = TYPE_NAME;
+	m_type = GetTypeName(*this);
 	m_name = m_type + "_" + to_string(m_id);
 
 	m_worldMatrixConstantBuffer = ResourceManager::GetInstance().GetConstantBuffer(sizeof(WorldBuffer));

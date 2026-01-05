@@ -1,7 +1,6 @@
 ///SceneBase.h¿« Ω√¿€
 #pragma once
 #include "Base.h"
-#include "TypeRegistry.h"
 #include "GameObjectBase.h"
 #ifdef _DEBUG
 #include "DebugCamera.h"
