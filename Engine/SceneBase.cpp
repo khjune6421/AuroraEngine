@@ -126,14 +126,26 @@ void SceneBase::BaseRenderImGui()
 
 	ImGui::Begin(m_type.c_str());
 
-	if (ImGui::DragFloat3("Directional Light Direction", &m_directionalLightDirection.m128_f32[0], 0.001f, -1.0f, 1.0f)) {}
+	if (ImGui::DragFloat3("Light Direction", &m_directionalLightDirection.m128_f32[0], 0.001f, -1.0f, 1.0f)) {}
 	if (ImGui::ColorEdit3("Scene Color", &m_lightColor.x)) {}
 
 	RenderImGui();
 
 	ImGui::Separator();
 	ImGui::Text("Game Objects:");
-	for (unique_ptr<Base>& gameObject : m_gameObjects) gameObject->BaseRenderImGui();
+	for (unique_ptr<Base>& gameObject : m_gameObjects)
+	{
+		ImGui::PushID(gameObject.get());
+
+		// 게임 오브젝트 제거 버튼
+		if (ImGui::Button("Remove")) RemoveGameObject(dynamic_cast<GameObjectBase*>(gameObject.get()));
+
+		// GameObject ImGui 렌더링
+		ImGui::SameLine();
+		gameObject->BaseRenderImGui();
+
+		ImGui::PopID();
+	}
 
 	ImGui::Separator();
 	if (ImGui::Button("Add GameObject")) ImGui::OpenPopup("Select GameObject Type");

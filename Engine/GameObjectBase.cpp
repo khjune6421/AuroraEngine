@@ -128,6 +128,11 @@ void GameObjectBase::CreateComponent(string typeName)
 	m_components[type_index(typeid(*component))] = move(component);
 }
 
+void GameObjectBase::RemoveComponent(type_index componentTypeIndex)
+{
+	m_componentToRemove.push_back(componentTypeIndex);
+}
+
 void GameObjectBase::CreateChildGameObject(string typeName)
 {
 	unique_ptr<GameObjectBase> childGameObjectPtr = TypeRegistry::GetInstance().CreateGameObject(typeName);
@@ -214,7 +219,19 @@ void GameObjectBase::BaseRenderImGui()
 		{
 			ImGui::Separator();
 			ImGui::Text("Components:");
-			for (auto& [typeIndex, component] : m_components) component->BaseRenderImGui();
+			for (auto& [typeIndex, component] : m_components)
+			{
+				ImGui::PushID(component.get());
+
+				// 컴포넌트 제거 버튼
+				if (ImGui::Button("Remove")) RemoveComponent(typeIndex);
+
+				// Component ImGui 렌더링
+				ImGui::SameLine();
+				component->BaseRenderImGui();
+
+				ImGui::PopID();
+			}
 		}
 		ImGui::Separator();
 		if (ImGui::Button("Add Component")) ImGui::OpenPopup("Select Component Type");
@@ -236,7 +253,19 @@ void GameObjectBase::BaseRenderImGui()
 		{
 			ImGui::Separator();
 			ImGui::Text("Children:");
-			for (auto& child : m_childrens) child->BaseRenderImGui();
+			for (unique_ptr<GameObjectBase>& child : m_childrens)
+			{
+				ImGui::PushID(child.get());
+
+				// 자식 게임 오브젝트 제거 버튼
+				if (ImGui::Button("Remove")) RemoveChildGameObject(child.get());
+
+				// Child GameObject ImGui 렌더링
+				ImGui::SameLine();
+				child->BaseRenderImGui();
+
+				ImGui::PopID();
+			}
 		}
 		ImGui::Separator();
 		if (ImGui::Button("Add GameObject")) ImGui::OpenPopup("Select GameObject Type");

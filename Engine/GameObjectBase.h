@@ -99,8 +99,7 @@ public:
 
 	template<typename T> requires std::derived_from<T, ComponentBase>
 	T* GetComponent(); // 컴포넌트 가져오기 // 없으면 nullptr 반환
-	template<typename T> requires std::derived_from<T, ComponentBase>
-	void RemoveComponent(); // 컴포넌트 제거
+	void RemoveComponent(std::type_index componentTypeIndex); // 컴포넌트 제거
 
 	// 자식 게임 오브젝트 생성 // 포인터 반환 안함
 	void CreateChildGameObject(std::string typeName);
@@ -174,12 +173,6 @@ inline T* GameObjectBase::GetComponent()
 	if (it != m_components.end()) return static_cast<T*>(it->second.get());
 
 	return nullptr;
-}
-
-template<typename T> requires std::derived_from<T, ComponentBase>
-inline void GameObjectBase::RemoveComponent()
-{
-	m_componentToRemove.push_back(std::type_index(typeid(T)));
 }
 
 template<typename T> requires std::derived_from<T, GameObjectBase>

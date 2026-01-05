@@ -7,6 +7,7 @@
 void DebugCamera::Initialize()
 {
 	SetPosition({ 0.0f, 5.0f, -10.0f });
+	LookAt({ 0.0f, 0.0f, 0.0f });
 }
 
 void DebugCamera::Update()
