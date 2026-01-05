@@ -27,6 +27,10 @@ class SceneBase : public Base
 	ViewProjectionBuffer m_viewProjectionData = {}; // 뷰-투영 상수 버퍼 데이터
 	com_ptr<ID3D11Buffer> m_viewProjectionConstantBuffer = nullptr; // 뷰-투영 상수 버퍼
 
+	std::string m_environmentMapFileName = "Skybox.dds"; // 환경 맵 파일 이름
+	com_ptr<ID3D11ShaderResourceView> m_environmentMapSRV = nullptr; // 환경 맵 셰이더 리소스 뷰
+	com_ptr<ID3D11Buffer> m_skyboxViewProjectionConstantBuffer = nullptr; // 스카이박스 뷰-투영 역행렬 상수 버퍼
+
 	DirectX::XMVECTOR m_cameraPosition = DirectX::XMVectorSet(0.0f, 0.0f, 0.0f, 1.0f); // 카메라 위치
 	com_ptr<ID3D11Buffer> m_cameraPositionConstantBuffer = nullptr; // 카메라 위치 상수 버퍼
 
@@ -37,9 +41,6 @@ class SceneBase : public Base
 	};
 	DirectionalLightBuffer m_directionalLightData = {}; // 방향광 상수 버퍼 데이터
 	com_ptr<ID3D11Buffer> m_directionalLightConstantBuffer = nullptr; // 방향광 상수 버퍼
-
-	std::string m_environmentMapFileName = "Skybox.dds"; // 환경 맵 파일 이름
-	com_ptr<ID3D11ShaderResourceView> m_environmentMapSRV = nullptr; // 환경 맵 셰이더 리소스 뷰
 
 	std::pair<com_ptr<ID3D11VertexShader>, com_ptr<ID3D11InputLayout>> m_skyboxVertexShaderAndInputLayout = {}; // 스카이박스 정점 셰이더
 	com_ptr<ID3D11PixelShader> m_skyboxPixelShader = nullptr; // 스카이박스 픽셀 셰이더

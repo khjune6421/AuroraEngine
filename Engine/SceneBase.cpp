@@ -245,6 +245,7 @@ void SceneBase::GetResources()
 	ResourceManager& resourceManager = ResourceManager::GetInstance();
 
 	m_viewProjectionConstantBuffer = resourceManager.GetConstantBuffer(sizeof(ViewProjectionBuffer)); // 뷰-투영 상수 버퍼 생성
+	m_skyboxViewProjectionConstantBuffer = resourceManager.GetConstantBuffer(sizeof(XMMATRIX)); // 스카이박스 뷰-투영 역행렬 상수 버퍼 생성
 	m_cameraPositionConstantBuffer = resourceManager.GetConstantBuffer(sizeof(XMVECTOR)); // 카메라 위치 상수 버퍼 생성
 	m_directionalLightConstantBuffer = resourceManager.GetConstantBuffer(sizeof(DirectionalLightBuffer)); // 방향광 상수 버퍼 생성
 
@@ -265,6 +266,13 @@ void SceneBase::UpdateConstantBuffers()
 	m_deviceContext->UpdateSubresource(m_viewProjectionConstantBuffer.Get(), 0, nullptr, &m_viewProjectionData, 0, 0);
 	m_deviceContext->VSSetConstantBuffers(static_cast<UINT>(VSConstBuffers::ViewProjection), 1, m_viewProjectionConstantBuffer.GetAddressOf());
 
+	// 스카이박스 뷰-투영 역행렬 상수 버퍼 업데이트 및 셰이더에 설정
+	m_viewProjectionData.viewMatrix.r[3] = XMVectorSet(0.0f, 0.0f, 0.0f, 1.0f); // 뷰 행렬의 위치 성분 제거
+	// VPMatrix 재활용
+	m_viewProjectionData.VPMatrix = XMMatrixInverse(nullptr, m_viewProjectionData.projectionMatrix * m_viewProjectionData.viewMatrix);
+	m_deviceContext->UpdateSubresource(m_skyboxViewProjectionConstantBuffer.Get(), 0, nullptr, &m_viewProjectionData.VPMatrix, 0, 0);
+	m_deviceContext->VSSetConstantBuffers(static_cast<UINT>(VSConstBuffers::SkyboxViewProjection), 1, m_skyboxViewProjectionConstantBuffer.GetAddressOf());
+
 	// 카메라 위치 상수 버퍼 업데이트 및 셰이더에 설정
 	m_deviceContext->UpdateSubresource(m_cameraPositionConstantBuffer.Get(), 0, nullptr, &m_mainCamera->GetPosition(), 0, 0);
 	m_deviceContext->PSSetConstantBuffers(static_cast<UINT>(PSConstBuffers::CameraPosition), 1, m_cameraPositionConstantBuffer.GetAddressOf());
@@ -278,12 +286,6 @@ void SceneBase::UpdateConstantBuffers()
 
 void SceneBase::RenderSkybox()
 {
-	// 뷰-투영 행렬의 역행렬 계산
-	m_viewProjectionData.viewMatrix.r[3] = XMVectorSet(0.0f, 0.0f, 0.0f, 1.0f); // 뷰 행렬의 위치 성분 제거
-	m_viewProjectionData.VPMatrix = XMMatrixInverse(nullptr, m_viewProjectionData.projectionMatrix * m_viewProjectionData.viewMatrix);
-	m_deviceContext->UpdateSubresource(m_viewProjectionConstantBuffer.Get(), 0, nullptr, &m_viewProjectionData, 0, 0);
-	m_deviceContext->VSSetConstantBuffers(static_cast<UINT>(VSConstBuffers::ViewProjection), 1, m_viewProjectionConstantBuffer.GetAddressOf());
-
 	m_deviceContext->IASetInputLayout(m_skyboxVertexShaderAndInputLayout.second.Get());
 	m_deviceContext->VSSetShader(m_skyboxVertexShaderAndInputLayout.first.Get(), nullptr, 0);
 	m_deviceContext->PSSetShader(m_skyboxPixelShader.Get(), nullptr, 0);
