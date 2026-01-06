@@ -1,7 +1,7 @@
-/// VSLine.hlslÀÇ ½ÃÀÛ
+/// VSLine.hlslì˜ ì‹œì‘
 #include "CommonVS.hlsli"
 
-//// ¸ğµÎ CommonVS.hlsliÀ» º¸³¿
+//// ëª¨ë‘ CommonVS.hlsliì„ ë³´ëƒ„
 //
 
 //cbuffer ViewProjection : register(b0)
@@ -36,4 +36,4 @@ VS_OUTPUT_POS main(VS_INPUT_POS input)
         
     return output;
 }
-/// VSLine.hlslÀÇ ³¡
+/// VSLine.hlslì˜ ë

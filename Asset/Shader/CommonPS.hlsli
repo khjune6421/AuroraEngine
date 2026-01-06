@@ -1,4 +1,4 @@
-/// CommonPS.hlsliÀÇ ½ÃÀÛ
+/// CommonPS.hlsliì˜ ì‹œì‘
 #ifndef __COMMON_PS_HLSLI__
 #define __COMMON_PS_HLSLI__
 
@@ -44,7 +44,7 @@ SamplerState SamplerLinearWrap : register(s1); // Model, Skybox
 // Textures
 // --------------------------------------------------------
 Texture2D sceneTexture : register(t0);
-TextureCube environmentMapTexture : register(t1); // ³ªÁß¿¡ ¹İ»ç±¤¿¡ »ç¿ë?
+TextureCube environmentMapTexture : register(t1); // ë‚˜ì¤‘ì— ë°˜ì‚¬ê´‘ì— ì‚¬ìš©?
 Texture2D albedoTexture : register(t2);
 Texture2D normalTexture : register(t3);
 Texture2D metallicTexture : register(t4);
@@ -52,7 +52,7 @@ Texture2D roughnessTexture : register(t5);
 Texture2D ambientOcclusionTexture : register(t6);
 
 // --------------------------------------------------------
-// Input Structures (VS Ãâ·Â°ú ¸ÅÄªµÇ¾î¾ß ÇÔ)
+// Input Structures (VS ì¶œë ¥ê³¼ ë§¤ì¹­ë˜ì–´ì•¼ í•¨)
 // --------------------------------------------------------
 
 struct PS_INPUT_STD
@@ -76,4 +76,4 @@ struct PS_INPUT_POS
 
 
 #endif // __COMMON_PS_HLSLI__
-/// CommonPS.hlsliÀÇ ³¡
+/// CommonPS.hlsliì˜ ë

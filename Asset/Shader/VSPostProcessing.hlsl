@@ -1,19 +1,5 @@
-/// VSModel.hlslÀÇ ½ÃÀÛ
+/// VSModel.hlslì˜ ì‹œì‘
 #include "CommonVS.hlsli"
-
-//// ¸ğµÎ CommonVS.hlsliÀ» º¸³¿
-//
-//struct VertexInput
-//{
-//    float4 Position : POSITION;
-//    float2 UV : TEXCOORD;
-//};
-
-//struct VertexOutput
-//{
-//    float4 Position : SV_POSITION;
-//    float2 UV : TEXCOORD;
-//};
 
 VS_OUTPUT_POS_UV main(VS_INPUT_POS_UV input)
 {

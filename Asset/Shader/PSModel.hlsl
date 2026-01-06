@@ -1,4 +1,4 @@
-/// PSModel.hlslÀÇ ½ÃÀÛ
+/// PSModel.hlslì˜ ì‹œì‘
 #include "CommonPS.hlsli"
 //cbuffer CameraPosition : register(b0)
 //{
@@ -7,7 +7,7 @@
 
 //cbuffer DirectionalLight : register(b1)
 //{
-//    float4 lightDirection; // Á¤±ÔÈ­µÈ ¹æÇâ º¤ÅÍ¿©¾ß ÇÔ
+//    float4 lightDirection; // ì •ê·œí™”ëœ ë°©í–¥ ë²¡í„°ì—¬ì•¼ í•¨
 //    float4 lightColor;
 //};
 
@@ -23,7 +23,7 @@
 
 //SamplerState textureSampler : register(s1);
 
-//TextureCube environmentMapTexture : register(t1); // ³ªÁß¿¡ ¹İ»ç±¤¿¡ »ç¿ë?
+//TextureCube environmentMapTexture : register(t1); // ë‚˜ì¤‘ì— ë°˜ì‚¬ê´‘ì— ì‚¬ìš©?
 //Texture2D albedoTexture : register(t2);
 //Texture2D normalTexture : register(t3);
 //Texture2D metallicTexture : register(t4);
@@ -47,4 +47,4 @@ float4 main(PS_INPUT_STD input) : SV_TARGET
     
     return albedo + EmissionFactor;
 }
-/// PSModel.hlslÀÇ ³¡
+/// PSModel.hlslì˜ ë

@@ -1,8 +1,8 @@
-/// PSLine.hlslÀÇ ½ÃÀÛ
+/// PSLine.hlslì˜ ì‹œì‘
 #include "CommonPS.hlsli"
 
 float4 main(PS_INPUT_POS input) : SV_TARGET
 {   
     return LineColor;
 }
-/// PSLine.hlslÀÇ ³¡
+/// PSLine.hlslì˜ ë

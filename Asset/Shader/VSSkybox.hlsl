@@ -1,7 +1,7 @@
-/// VSModel.hlslÀÇ ½ÃÀÛ
+/// VSModel.hlslì˜ ì‹œì‘
 #include "CommonVS.hlsli"
 
-// ¹ü¿ëÀûÀÌÁö ¾Ê¾Æµµ µÉ°Í °°À½
+// ë²”ìš©ì ì´ì§€ ì•Šì•„ë„ ë ê²ƒ ê°™ìŒ
 struct VSOutput
 {
     float4 Position : SV_POSITION;
@@ -12,12 +12,12 @@ VSOutput main(uint vertexID : SV_VertexID)
 {
     VSOutput output;
     
-    // ÀüÃ¼ È­¸éÀ» µ¤´Â 2°³ÀÇ »ï°¢Çü Á¤Á¡ À§Ä¡ °è»ê
+    // ì „ì²´ í™”ë©´ì„ ë®ëŠ” 2ê°œì˜ ì‚¼ê°í˜• ì •ì  ìœ„ì¹˜ ê³„ì‚°
     float2 texCoord = float2((vertexID << 1) & 2, vertexID & 2);
     output.Position = float4(texCoord * float2(2.0f, -2.0f) + float2(-1.0f, 1.0f), 1.0f, 1.0f);
     
-    // ¿øÁ¡¿¡¼­ ¸Ö¸® ¶³¾îÁø À§Ä¡ °è»ê
+    // ì›ì ì—ì„œ ë©€ë¦¬ ë–¨ì–´ì§„ ìœ„ì¹˜ ê³„ì‚°
     output.ViewDir = mul(output.Position, SkyboxVPMatrix).xyz;
     
     return output;
-}   
+}
