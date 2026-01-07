@@ -1,4 +1,4 @@
-/// TestScene.cppÀÇ ½ÃÀÛ
+/// TestScene.cppì˜ ì‹œì‘
 #include "stdafx.h"
 #include "TestScene.h"
 
@@ -20,4 +20,4 @@ GameObjectBase* TestScene::CreateCameraObject()
 	return CreateRootGameObject<CamRotObject>("CamRotObject")->CreateChildGameObject<TestCameraObject>();
 }
 
-/// TestScene.cppÀÇ ³¡
+/// TestScene.cppì˜ ë

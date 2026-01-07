@@ -1,4 +1,4 @@
-/// HyojeTestScene.cppÀÇ ½ÃÀÛ
+/// HyojeTestScene.cppì˜ ì‹œì‘
 #include "stdafx.h"
 #include "HyojeTestScene.h"
 

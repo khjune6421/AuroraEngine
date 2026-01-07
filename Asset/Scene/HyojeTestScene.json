@@ -17,15 +17,17 @@
             "childGameObjects": [],
             "components": [
                 {
-                    "modelFileName": "vehicle.fbx",
+                    "blendState": 1,
+                    "modelFileName": "box.fbx",
                     "psShaderName": "PSModel.hlsl",
+                    "rasterState": 1,
                     "type": "ModelComponent",
                     "vsShaderName": "VSModel.hlsl"
                 }
             ],
-            "name": "GameObjectBase_0",
+            "name": "GameObjectBase_1",
             "position": [
-                -3.200000047683716,
+                0.0,
                 0.0,
                 0.0,
                 0.0
@@ -37,36 +39,12 @@
                 1.0
             ],
             "scale": [
-                0.05000000074505806,
-                0.10000000149011612,
-                0.10999999940395355,
+                1.0,
+                1.0,
+                1.0,
                 1.0
             ],
             "type": "GameObjectBase"
-        },
-        {
-            "childGameObjects": [],
-            "components": [],
-            "name": "HyojeTestObject_1",
-            "position": [
-                0.0,
-                0.0,
-                0.0,
-                0.0
-            ],
-            "rotation": [
-                0.0,
-                0.0,
-                0.0,
-                1.0
-            ],
-            "scale": [
-                1.0,
-                1.0,
-                1.0,
-                1.0
-            ],
-            "type": "HyojeTestObject"
         }
     ]
 }

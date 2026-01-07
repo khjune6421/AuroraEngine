@@ -54,4 +54,4 @@ void SceneManager::Run()
 	m_renderer.EndFrame();
 	inputManager.EndFrame();
 }
-///SceneManager.cppÀÇ ³¡
+///SceneManager.cppì˜ ë

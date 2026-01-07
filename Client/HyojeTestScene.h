@@ -1,4 +1,4 @@
-/// HyojeTestScene.hÀÇ ½ÃÀÛ
+/// HyojeTestScene.hì˜ ì‹œì‘
 #pragma once
 #include "SceneBase.h"
 
@@ -17,4 +17,4 @@ protected:
 	virtual void Initialize() override;
 	GameObjectBase* CreateCameraObject() override;
 };
-/// HyojeTestScene.hÀÇ ³¡
+/// HyojeTestScene.hì˜ ë

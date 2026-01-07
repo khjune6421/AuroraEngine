@@ -1,5 +1,5 @@
 #pragma once
-//Ãß°¡~
+//ï¿½ß°ï¿½~
 #ifndef WIN32_LEAN_AND_MEAN		
 #define WIN32_LEAN_AND_MEAN
 #endif
@@ -8,17 +8,17 @@
 #define NOMINMAX
 #endif
 
-// À©µµ¿ì Çì´õ
+// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½
 #include <winsock2.h>
 #include <ws2tcpip.h>
 
 #include <windows.h>
 #include <mmsystem.h>
-#pragma comment(lib, "winmm.lib") // timeGetTimeÇÔ¼ö »ç¿ëÀ» À§ÇÑ ¶óÀÌºê·¯¸®
+#pragma comment(lib, "winmm.lib") // timeGetTimeï¿½Ô¼ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½Ìºê·¯ï¿½ï¿½
 #include <wrl/client.h>
-//~Ãß°¡
+//~ï¿½ß°ï¿½
 
-// STL Çì´õ
+// STL í—¤ë”
 #include <array>
 #include <filesystem>
 #include <functional>
@@ -26,10 +26,10 @@
 #include <iostream>
 #include <typeindex>
 #include <unordered_map>
-#include <queue>		//Ãß°¡
-#include <optional>		//Ãß°¡
+#include <queue>		//ï¿½ß°ï¿½
+#include <optional>		//ï¿½ß°ï¿½
 
-// DirectX Çì´õ
+// DirectX í—¤ë”
 #include <d3d11.h>
 #include <d3dcompiler.h>
 #include <dxgi1_2.h>
@@ -38,41 +38,41 @@
 #pragma comment(lib, "d3dcompiler.lib")
 #pragma comment(lib, "dxgi.lib")
 
-// DirectXTK Çì´õ
+// DirectXTK í—¤ë”
 #include <directxtk/SimpleMath.h>
 #include <directxtk/WICTextureLoader.h>
 #include <directxtk/DDSTextureLoader.h>
 
-// Assimp Çì´õ
+// Assimp í—¤ë”
 #include <assimp/Importer.hpp>
 #include <assimp/postprocess.h>
 #include <assimp/scene.h>
 
-// ImGui Çì´õ
+// ImGui í—¤ë”
 #include <imgui.h>
 #include <imgui_impl_win32.h>
 #include <imgui_impl_dx11.h>
 
-// JSON Çì´õ
+// JSON í—¤ë”
 #include <nlohmann/json.hpp>
 
-// boost-asio Çì´õ//Ãß°¡
+// boost-asio ï¿½ï¿½ï¿½//ï¿½ß°ï¿½
 #include <boost/asio.hpp>
 #include <boost/asio/executor_work_guard.hpp>
 
-// ¸ŞÅ©·Î Á¤ÀÇ
-// com_ptr ¸ÅÅ©·Î
+// ï¿½ï¿½Å©ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
+// com_ptr ï¿½ï¿½Å©ï¿½ï¿½
 #define com_ptr Microsoft::WRL::ComPtr
 
-// °¢µµ º¯È¯ »ó¼ö ¹× ÇÔ¼ö
+// ê°ë„ ë³€í™˜ ìƒìˆ˜ ë° í•¨ìˆ˜
 constexpr float DEG_TO_RAD = DirectX::XM_PI / 180.0f;
 constexpr float RAD_TO_DEG = 180.0f / DirectX::XM_PI;
 inline DirectX::XMVECTOR ToRadians(const DirectX::XMVECTOR& degrees) { return DirectX::XMVectorScale(degrees, DEG_TO_RAD); }
 inline DirectX::XMVECTOR ToDegrees(const DirectX::XMVECTOR& radians) { return DirectX::XMVectorScale(radians, RAD_TO_DEG); }
 
-// Å¸ÀÔ ÀÌ¸§ ¾ò±â ¸ÅÅ©·Î
+// íƒ€ì… ì´ë¦„ ì–»ê¸° ë§¤í¬ë¡œ
 template<typename T>
-// ÅÛÇÃ¸´ ±â¹İ Å¸ÀÔ ÀÌ¸§ ¾ò±â
+// í…œí”Œë¦¿ ê¸°ë°˜ íƒ€ì… ì´ë¦„ ì–»ê¸°
 inline std::string GetTypeName()
 {
 	std::string typeName = typeid(T).name();
@@ -88,7 +88,7 @@ inline std::string GetTypeName()
 	return typeName;
 }
 template<typename T>
-// °´Ã¼ ±â¹İ Å¸ÀÔ ÀÌ¸§ ¾ò±â
+// ê°ì²´ ê¸°ë°˜ íƒ€ì… ì´ë¦„ ì–»ê¸°
 constexpr std::string GetTypeName(T& obj)
 {
 	std::string typeName = typeid(obj).name();
@@ -104,16 +104,19 @@ constexpr std::string GetTypeName(T& obj)
 	return typeName;
 }
 
-// HRESULT °á°ú È®ÀÎ
+// HRESULT ê²°ê³¼ í™•ì¸
 constexpr void CheckResult(HRESULT hr, const char* msg)
 {
 	if (FAILED(hr))
 	{
 		#ifdef _DEBUG
-		std::cerr << msg << " ¿¡·¯ ÄÚµå: " << std::hex << hr << std::endl;
+		std::cerr << msg << " ì—ëŸ¬ ì½”ë“œ: " << std::hex << hr << std::endl;
 		#else
-		MessageBoxA(nullptr, msg, "¿À·ù", MB_OK | MB_ICONERROR);
+		MessageBoxA(nullptr, msg, "ì˜¤ë¥˜", MB_OK | MB_ICONERROR);
 		#endif
 		exit(EXIT_FAILURE);
 	}
 }
+
+// ì‚¬ìš©ì ì •ì˜ í—¤ë”
+#include "Resource.h"

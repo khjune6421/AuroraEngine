@@ -1,4 +1,4 @@
-///SceneBase.hÀÇ ½ÃÀÛ
+///SceneBase.hì˜ ì‹œì‘
 #pragma once
 #include "Base.h"
 #include "GameObjectBase.h"
@@ -9,93 +9,85 @@
 class SceneBase : public Base
 {
 	#ifdef _DEBUG
-	std::unique_ptr<DebugCamera> m_debugCamera = nullptr; // µğ¹ö±× Ä«¸Ş¶ó °ÔÀÓ ¿ÀºêÁ§Æ®
+	std::unique_ptr<DebugCamera> m_debugCamera = nullptr; // ë””ë²„ê·¸ ì¹´ë©”ë¼ ê²Œì„ ì˜¤ë¸Œì íŠ¸
 	#endif
 
-	com_ptr<ID3D11DeviceContext> m_deviceContext = nullptr; // µğ¹ÙÀÌ½º ÄÁÅØ½ºÆ® Æ÷ÀÎÅÍ
+	com_ptr<ID3D11DeviceContext> m_deviceContext = nullptr; // ë””ë°”ì´ìŠ¤ ì»¨í…ìŠ¤íŠ¸ í¬ì¸í„°
 
-	std::vector<std::unique_ptr<Base>> m_gameObjects = {}; // °ÔÀÓ ¿ÀºêÁ§Æ® ¹è¿­
+	std::vector<std::unique_ptr<Base>> m_gameObjects = {}; // ê²Œì„ ì˜¤ë¸Œì íŠ¸ ë°°ì—´
 
-	struct ViewProjectionBuffer // ºä-Åõ¿µ »ó¼ö ¹öÆÛ ±¸Á¶Ã¼
-	{
-		DirectX::XMMATRIX viewMatrix = DirectX::XMMatrixIdentity(); // ºä Çà·Ä // ÀüÄ¡ ¾ÈÇÔ
-		DirectX::XMMATRIX projectionMatrix = DirectX::XMMatrixIdentity(); // Åõ¿µ Çà·Ä // ÀüÄ¡ ¾ÈÇÔ
-		DirectX::XMMATRIX VPMatrix = DirectX::XMMatrixIdentity(); // VP Çà·Ä // ÀüÄ¡ÇÔ
-	};
-	ViewProjectionBuffer m_viewProjectionData = {}; // ºä-Åõ¿µ »ó¼ö ¹öÆÛ µ¥ÀÌÅÍ
-	com_ptr<ID3D11Buffer> m_viewProjectionConstantBuffer = nullptr; // ºä-Åõ¿µ »ó¼ö ¹öÆÛ
+	std::pair<com_ptr<ID3D11VertexShader>, com_ptr<ID3D11InputLayout>> m_skyboxVertexShaderAndInputLayout = {}; // ìŠ¤ì¹´ì´ë°•ìŠ¤ ì •ì  ì…°ì´ë”
+	com_ptr<ID3D11PixelShader> m_skyboxPixelShader = nullptr; // ìŠ¤ì¹´ì´ë°•ìŠ¤ í”½ì…€ ì…°ì´ë”
 
-	std::string m_environmentMapFileName = "Skybox.dds"; // È¯°æ ¸Ê ÆÄÀÏ ÀÌ¸§
-	com_ptr<ID3D11ShaderResourceView> m_environmentMapSRV = nullptr; // È¯°æ ¸Ê ¼ÎÀÌ´õ ¸®¼Ò½º ºä
-	com_ptr<ID3D11Buffer> m_skyboxViewProjectionConstantBuffer = nullptr; // ½ºÄ«ÀÌ¹Ú½º ºä-Åõ¿µ ¿ªÇà·Ä »ó¼ö ¹öÆÛ
+	std::string m_environmentMapFileName = "Skybox.dds"; // í™˜ê²½ ë§µ íŒŒì¼ ì´ë¦„
+	com_ptr<ID3D11ShaderResourceView> m_environmentMapSRV = nullptr; // í™˜ê²½ ë§µ ì…°ì´ë” ë¦¬ì†ŒìŠ¤ ë·°
 
-	DirectX::XMVECTOR m_cameraPosition = DirectX::XMVectorSet(0.0f, 0.0f, 0.0f, 1.0f); // Ä«¸Ş¶ó À§Ä¡
-	com_ptr<ID3D11Buffer> m_cameraPositionConstantBuffer = nullptr; // Ä«¸Ş¶ó À§Ä¡ »ó¼ö ¹öÆÛ
+	// ì •ì  ì…°ì´ë”ìš© ìƒìˆ˜ ë²„í¼
+	ViewProjectionBuffer m_viewProjectionData = {}; // ë·°-íˆ¬ì˜ ìƒìˆ˜ ë²„í¼ ë°ì´í„°
+	com_ptr<ID3D11Buffer> m_viewProjectionConstantBuffer = nullptr; // ë·°-íˆ¬ì˜ ìƒìˆ˜ ë²„í¼
 
-	struct DirectionalLightBuffer // ¹æÇâ±¤ »ó¼ö ¹öÆÛ ±¸Á¶Ã¼
-	{
-		DirectX::XMVECTOR lightDirection = DirectX::XMVectorSet(-0.5f, -1.0f, -0.5f, 0.0f); // ¹æÇâ±¤ ¹æÇâ
-		DirectX::XMFLOAT4 lightColor = { 1.0f, 1.0f, 1.0f, 1.0f }; // ¹æÇâ±¤ »ö»ó
-	};
-	DirectionalLightBuffer m_directionalLightData = {}; // ¹æÇâ±¤ »ó¼ö ¹öÆÛ µ¥ÀÌÅÍ
-	com_ptr<ID3D11Buffer> m_directionalLightConstantBuffer = nullptr; // ¹æÇâ±¤ »ó¼ö ¹öÆÛ
+	SkyboxViewProjectionBuffer m_skyboxViewProjectionData = {}; // ìŠ¤ì¹´ì´ë°•ìŠ¤ ë·°-íˆ¬ì˜ ì—­í–‰ë ¬ ìƒìˆ˜ ë²„í¼ ë°ì´í„°
+	com_ptr<ID3D11Buffer> m_skyboxViewProjectionConstantBuffer = nullptr; // ìŠ¤ì¹´ì´ë°•ìŠ¤ ë·°-íˆ¬ì˜ ì—­í–‰ë ¬ ìƒìˆ˜ ë²„í¼
 
-	std::pair<com_ptr<ID3D11VertexShader>, com_ptr<ID3D11InputLayout>> m_skyboxVertexShaderAndInputLayout = {}; // ½ºÄ«ÀÌ¹Ú½º Á¤Á¡ ¼ÎÀÌ´õ
-	com_ptr<ID3D11PixelShader> m_skyboxPixelShader = nullptr; // ½ºÄ«ÀÌ¹Ú½º ÇÈ¼¿ ¼ÎÀÌ´õ
-	com_ptr<ID3D11DepthStencilState> m_skyboxDepthStencilState = nullptr; // ½ºÄ«ÀÌ¹Ú½º ±íÀÌ¹öÆÛ »óÅÂ
+	// í”½ì…€ ì…°ì´ë”ìš© ìƒìˆ˜ ë²„í¼
+	CameraPositionBuffer m_cameraPositionData = {}; // ì¹´ë©”ë¼ ìœ„ì¹˜ ìƒìˆ˜ ë²„í¼ ë°ì´í„°
+	com_ptr<ID3D11Buffer> m_cameraPositionConstantBuffer = nullptr; // ì¹´ë©”ë¼ ìœ„ì¹˜ ìƒìˆ˜ ë²„í¼
+
+	DirectionalLightBuffer m_directionalLightData = {}; // ë°©í–¥ê´‘ ìƒìˆ˜ ë²„í¼ ë°ì´í„°
+	com_ptr<ID3D11Buffer> m_directionalLightConstantBuffer = nullptr; // ë°©í–¥ê´‘ ìƒìˆ˜ ë²„í¼
 
 protected:
-	class CameraComponent* m_mainCamera = nullptr; // ¸ŞÀÎ Ä«¸Ş¶ó ÄÄÆ÷³ÍÆ® Æ÷ÀÎÅÍ
-	DirectX::XMVECTOR m_directionalLightDirection = DirectX::XMVectorSet(-0.5f, -1.0f, -0.5f, 0.0f); // ¹æÇâ±¤ ¹æÇâ
-	DirectX::XMFLOAT4 m_lightColor = { 1.0f, 1.0f, 1.0f, 1.0f }; // È¯°æ±¤, ¹æÇâ±¤
+	class CameraComponent* m_mainCamera = nullptr; // ë©”ì¸ ì¹´ë©”ë¼ ì»´í¬ë„ŒíŠ¸ í¬ì¸í„°
+	DirectX::XMVECTOR m_directionalLightDirection = DirectX::XMVectorSet(-0.5f, -1.0f, -0.5f, 0.0f); // ë°©í–¥ê´‘ ë°©í–¥
+	DirectX::XMFLOAT4 m_lightColor = { 1.0f, 1.0f, 1.0f, 1.0f }; // í™˜ê²½ê´‘, ë°©í–¥ê´‘
 
 public:
 	SceneBase();
 	virtual ~SceneBase() = default;
-	SceneBase(const SceneBase&) = delete; // º¹»ç ±İÁö
-	SceneBase& operator=(const SceneBase&) = delete; // º¹»ç ´ëÀÔ ±İÁö
-	SceneBase(SceneBase&&) = delete; // ÀÌµ¿ ±İÁö
-	SceneBase& operator=(SceneBase&&) = delete; // ÀÌµ¿ ´ëÀÔ ±İÁö
+	SceneBase(const SceneBase&) = delete; // ë³µì‚¬ ê¸ˆì§€
+	SceneBase& operator=(const SceneBase&) = delete; // ë³µì‚¬ ëŒ€ì… ê¸ˆì§€
+	SceneBase(SceneBase&&) = delete; // ì´ë™ ê¸ˆì§€
+	SceneBase& operator=(SceneBase&&) = delete; // ì´ë™ ëŒ€ì… ê¸ˆì§€
 
-	// ·çÆ® °ÔÀÓ ¿ÀºêÁ§Æ® »ı¼º // Æ÷ÀÎÅÍ ¹İÈ¯ ¾ÈÇÔ
+	// ë£¨íŠ¸ ê²Œì„ ì˜¤ë¸Œì íŠ¸ ìƒì„± // í¬ì¸í„° ë°˜í™˜ ì•ˆí•¨
 	void CreateRootGameObject(std::string typeName);
 
 	template<typename T> requires std::derived_from<T, GameObjectBase>
-	T* CreateRootGameObject(); // ·çÆ® °ÔÀÓ ¿ÀºêÁ§Æ® »ı¼º // Æ÷ÀÎÅÍ ¹İÈ¯
+	T* CreateRootGameObject(); // ë£¨íŠ¸ ê²Œì„ ì˜¤ë¸Œì íŠ¸ ìƒì„± // í¬ì¸í„° ë°˜í™˜
 
 	template<typename T> requires std::derived_from<T, GameObjectBase>
-	T* CreateRootGameObject(std::string typeName); // ·çÆ® °ÔÀÓ ¿ÀºêÁ§Æ® »ı¼º // Æ÷ÀÎÅÍ ¹İÈ¯
+	T* CreateRootGameObject(std::string typeName); // ë£¨íŠ¸ ê²Œì„ ì˜¤ë¸Œì íŠ¸ ìƒì„± // í¬ì¸í„° ë°˜í™˜
 
 	GameObjectBase* CreateRootGameObjectPtr(const std::string& typeName);//·±Å¸ÀÓ Å¸ÀÔ°áÁ¤ ¹× Æ÷ÀÎÅÍ ¹İÈ¯¿ë
 protected:
-	// ¸ŞÀÎ Ä«¸Ş¶ó °ÔÀÓ ¿ÀºêÁ§Æ® ¼³Á¤
+	// ë©”ì¸ ì¹´ë©”ë¼ ê²Œì„ ì˜¤ë¸Œì íŠ¸ ì„¤ì •
 	virtual GameObjectBase* CreateCameraObject();
 
 private:
-	// ¾À ÃÊ±âÈ­ // ¾À »ç¿ë Àü ¹İµå½Ã È£ÃâÇØ¾ß ÇÔ
+	// ì”¬ ì´ˆê¸°í™” // ì”¬ ì‚¬ìš© ì „ ë°˜ë“œì‹œ í˜¸ì¶œí•´ì•¼ í•¨
 	void BaseInitialize() override;
-	// ¾À ¾÷µ¥ÀÌÆ® // ¾À ¸Å´ÏÀú°¡ È£Ãâ
+	// ì”¬ ì—…ë°ì´íŠ¸ // ì”¬ ë§¤ë‹ˆì €ê°€ í˜¸ì¶œ
 	void BaseUpdate() override;
-	// ¾À ·»´õ¸µ // ¾À ¸Å´ÏÀú°¡ È£Ãâ
+	// ì”¬ ë Œë”ë§ // ì”¬ ë§¤ë‹ˆì €ê°€ í˜¸ì¶œ
 	void BaseRender() override;
-	// ImGui ·»´õ¸µ
+	// ImGui ë Œë”ë§
 	void BaseRenderImGui() override;
-	// ¾À Á¾·á // ¾À ¸Å´ÏÀú°¡ ¾ÀÀ» ±³Ã¼ÇÒ ¶§ È£Ãâ
+	// ì”¬ ì¢…ë£Œ // ì”¬ ë§¤ë‹ˆì €ê°€ ì”¬ì„ êµì²´í•  ë•Œ í˜¸ì¶œ
 	void BaseFinalize() override;
 
-	// ¾À Á÷·ÄÈ­
+	// ì”¬ ì§ë ¬í™”
 	nlohmann::json BaseSerialize() override;
-	// ¾À ¿ªÁ÷·ÄÈ­
+	// ì”¬ ì—­ì§ë ¬í™”
 	void BaseDeserialize(const nlohmann::json& jsonData) override;
 
-	// Á¦°ÅÇÒ °ÔÀÓ ¿ÀºêÁ§Æ® Á¦°Å // Update¿¡¼­ È£Ãâ
+	// ì œê±°í•  ê²Œì„ ì˜¤ë¸Œì íŠ¸ ì œê±° // Updateì—ì„œ í˜¸ì¶œ
 	void RemovePending() override;
 
-	// ¸®¼Ò½º ¸Å´ÏÀú¿¡¼­ ÇÊ¿äÇÑ ¸®¼Ò½º ¾ò±â
+	// ë¦¬ì†ŒìŠ¤ ë§¤ë‹ˆì €ì—ì„œ í•„ìš”í•œ ë¦¬ì†ŒìŠ¤ ì–»ê¸°
 	void GetResources();
-	// »ó¼ö ¹öÆÛ ¾÷µ¥ÀÌÆ®
+	// ìƒìˆ˜ ë²„í¼ ì—…ë°ì´íŠ¸
 	void UpdateConstantBuffers();
-	// ½ºÄ«ÀÌ¹Ú½º ·»´õ¸µ
+	// ìŠ¤ì¹´ì´ë°•ìŠ¤ ë Œë”ë§
 	void RenderSkybox();
 };
 
@@ -122,4 +114,4 @@ inline T* SceneBase::CreateRootGameObject(std::string typeName)
 
 	return gameObjectPtr;
 }
-///SceneBase.hÀÇ ³¡
+///SceneBase.hì˜ ë

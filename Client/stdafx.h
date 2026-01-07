@@ -1,7 +1,7 @@
 #pragma once
 #define WIN32_LEAN_AND_MEAN
 
-// STL Çì´õ
+// STL í—¤ë”
 #include <array>
 #include <filesystem>
 #include <fstream>
@@ -12,11 +12,11 @@
 #include <typeindex>
 #include <unordered_map>
 
-// À©µµ¿ì Çì´õ
+// ìœˆë„ìš° í—¤ë”
 #include <wrl/client.h>
-#pragma comment(lib, "winmm.lib") // timeGetTimeÇÔ¼ö »ç¿ëÀ» À§ÇÑ ¶óÀÌºê·¯¸®
+#pragma comment(lib, "winmm.lib") // timeGetTimeí•¨ìˆ˜ ì‚¬ìš©ì„ ìœ„í•œ ë¼ì´ë¸ŒëŸ¬ë¦¬
 
-// DirectX Çì´õ
+// DirectX í—¤ë”
 #include <d3d11.h>
 #include <d3dcompiler.h>
 #include <dxgi1_2.h>
@@ -25,43 +25,43 @@
 #pragma comment(lib, "d3dcompiler.lib")
 #pragma comment(lib, "dxgi.lib")
 
-// DirectXTK Çì´õ
+// DirectXTK í—¤ë”
 #include <directxtk/SimpleMath.h>
 #include <directxtk/WICTextureLoader.h>
 #include <directxtk/DDSTextureLoader.h>
 
-// Assimp Çì´õ
+// Assimp í—¤ë”
 #include <assimp/Importer.hpp>
 #include <assimp/postprocess.h>
 #include <assimp/scene.h>
 
-// ImGui Çì´õ
+// ImGui í—¤ë”
 #include <imgui.h>
 #include <imgui_impl_win32.h>
 #include <imgui_impl_dx11.h>
 
-// JSON Çì´õ
+// JSON í—¤ë”
 #include <nlohmann/json.hpp>
 
-// using Á¤ÀÇ
+// using ì •ì˜
 #ifdef _DEBUG
 using std::cout;
 using std::endl;
 #endif
 
-// ¸ŞÅ©·Î Á¤ÀÇ
-// com_ptr ¸ÅÅ©·Î
+// ë©”í¬ë¡œ ì •ì˜
+// com_ptr ë§¤í¬ë¡œ
 #define com_ptr Microsoft::WRL::ComPtr
 
-// °¢µµ º¯È¯ »ó¼ö ¹× ÇÔ¼ö
+// ê°ë„ ë³€í™˜ ìƒìˆ˜ ë° í•¨ìˆ˜
 constexpr float DEG_TO_RAD = DirectX::XM_PI / 180.0f;
 constexpr float RAD_TO_DEG = 180.0f / DirectX::XM_PI;
 inline DirectX::XMVECTOR ToRadians(const DirectX::XMVECTOR& degrees) { return DirectX::XMVectorScale(degrees, DEG_TO_RAD); }
 inline DirectX::XMVECTOR ToDegrees(const DirectX::XMVECTOR& radians) { return DirectX::XMVectorScale(radians, RAD_TO_DEG); }
 
-// Å¸ÀÔ ÀÌ¸§ ¾ò±â ¸ÅÅ©·Î
+// íƒ€ì… ì´ë¦„ ì–»ê¸° ë§¤í¬ë¡œ
 template<typename T>
-// ÅÛÇÃ¸´ ±â¹İ Å¸ÀÔ ÀÌ¸§ ¾ò±â
+// í…œí”Œë¦¿ ê¸°ë°˜ íƒ€ì… ì´ë¦„ ì–»ê¸°
 inline std::string GetTypeName()
 {
 	std::string typeName = typeid(T).name();
@@ -77,7 +77,7 @@ inline std::string GetTypeName()
 	return typeName;
 }
 template<typename T>
-// °´Ã¼ ±â¹İ Å¸ÀÔ ÀÌ¸§ ¾ò±â
+// ê°ì²´ ê¸°ë°˜ íƒ€ì… ì´ë¦„ ì–»ê¸°
 constexpr std::string GetTypeName(T& obj)
 {
 	std::string typeName = typeid(obj).name();
@@ -92,3 +92,6 @@ constexpr std::string GetTypeName(T& obj)
 	}
 	return typeName;
 }
+
+// ì‚¬ìš©ì ì •ì˜ í—¤ë”
+#include "Resource.h"

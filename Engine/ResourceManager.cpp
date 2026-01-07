@@ -1,4 +1,4 @@
-///ResourceManager.cppÀÇ ½ÃÀÛ
+///ResourceManager.cppì˜ ì‹œì‘
 #include "stdafx.h"
 #include "ResourceManager.h"
 
@@ -11,29 +11,38 @@ void ResourceManager::Initialize(com_ptr<ID3D11Device> device, com_ptr<ID3D11Dev
 	m_deviceContext = deviceContext;
 
 	CreateDepthStencilStates();
+	CreateBlendStates();
 	CreateRasterStates();
-	CreateSamplerStates();
+
+	CreateAndSetConstantBuffers();
+	CreateAndSetSamplerStates();
+
 	CacheAllTexture();
 }
 
-com_ptr<ID3D11Buffer> ResourceManager::GetConstantBuffer(UINT bufferSize)
+void ResourceManager::SetDepthStencilState(DepthStencilState state)
 {
-	HRESULT hr = S_OK;
+	if (m_currentDepthStencilState == state) return;
 
-	com_ptr<ID3D11Buffer> constantBuffer = nullptr;
-	const D3D11_BUFFER_DESC bufferDesc =
-	{
-		.ByteWidth = bufferSize,
-		.Usage = D3D11_USAGE_DEFAULT,
-		.BindFlags = D3D11_BIND_CONSTANT_BUFFER,
-		.CPUAccessFlags = 0,
-		.MiscFlags = 0,
-		.StructureByteStride = 0
-	};
-	hr = m_device->CreateBuffer(&bufferDesc, nullptr, constantBuffer.GetAddressOf());
-	CheckResult(hr, "»ó¼ö ¹öÆÛ »ı¼º ½ÇÆĞ.");
+	m_deviceContext->OMSetDepthStencilState(m_depthStencilStates[static_cast<size_t>(state)].Get(), 0);
+	m_currentDepthStencilState = state;
+}
 
-	return constantBuffer;
+void ResourceManager::SetBlendState(BlendState state)
+{
+	if (m_currentBlendState == state) return;
+
+	constexpr array<FLOAT, 4> blendFactor = { 1.0f, 1.0f, 1.0f, 1.0f }; // ë‚˜ì¤‘ì— ë”°ë¡œ ë°›ë„ë¡ ìˆ˜ì •?
+	m_deviceContext->OMSetBlendState(m_blendStates[static_cast<size_t>(state)].Get(), blendFactor.data(), 0xFFFFFFFF);
+	m_currentBlendState = state;
+}
+
+void ResourceManager::SetRasterState(RasterState state)
+{
+	if (m_currentRasterState == state) return;
+
+	m_deviceContext->RSSetState(m_rasterStates[static_cast<size_t>(state)].Get());
+	m_currentRasterState = state;
 }
 
 com_ptr<ID3D11Buffer> ResourceManager::CreateVertexBuffer(const void* data, UINT stride, UINT count, bool isDynamic)
@@ -72,20 +81,20 @@ com_ptr<ID3D11Buffer> ResourceManager::CreateVertexBuffer(const void* data, UINT
 		hr = m_device->CreateBuffer(&bufferDesc, nullptr, vertexBuffer.GetAddressOf());
 	}
 
-	CheckResult(hr, "¹ü¿ë Á¤Á¡ ¹öÆÛ »ı¼º ½ÇÆĞ.");
+	CheckResult(hr, "ë²”ìš© ì •ì  ë²„í¼ ìƒì„± ì‹¤íŒ¨.");
 
 	return vertexBuffer;
 }
 
 pair<com_ptr<ID3D11VertexShader>, com_ptr<ID3D11InputLayout>> ResourceManager::GetVertexShaderAndInputLayout(const string& shaderName, const vector<InputElement>& inputElements)
 {
-	// ±âÁ¸¿¡ »ı¼ºµÈ ¼ÎÀÌ´õ ¹× ÀÔ·Â ·¹ÀÌ¾Æ¿ôÀÌ ÀÖÀ¸¸é Àç»ç¿ë
+	// ê¸°ì¡´ì— ìƒì„±ëœ ì…°ì´ë” ë° ì…ë ¥ ë ˆì´ì•„ì›ƒì´ ìˆìœ¼ë©´ ì¬ì‚¬ìš©
 	auto it = m_vertexShadersAndInputLayouts.find(shaderName);
 	if (it != m_vertexShadersAndInputLayouts.end()) return it->second;
 
 	HRESULT hr = S_OK;
 
-	// Á¤Á¡ ¼ÎÀÌ´õ ÄÄÆÄÀÏ
+	// ì •ì  ì…°ì´ë” ì»´íŒŒì¼
 	com_ptr<ID3DBlob> VSCode = CompileShader(shaderName, "vs_5_0");
 	hr = m_device->CreateVertexShader
 	(
@@ -94,9 +103,9 @@ pair<com_ptr<ID3D11VertexShader>, com_ptr<ID3D11InputLayout>> ResourceManager::G
 		nullptr,
 		m_vertexShadersAndInputLayouts[shaderName].first.GetAddressOf()
 	);
-	CheckResult(hr, "Á¤Á¡ ¼ÎÀÌ´õ »ı¼º ½ÇÆĞ.");
+	CheckResult(hr, "ì •ì  ì…°ì´ë” ìƒì„± ì‹¤íŒ¨.");
 
-	// ÀÔ·Â ·¹ÀÌ¾Æ¿ô »ı¼º
+	// ì…ë ¥ ë ˆì´ì•„ì›ƒ ìƒì„±
 	if (!inputElements.empty())
 	{
 		vector<D3D11_INPUT_ELEMENT_DESC> inputElementDescs;
@@ -110,7 +119,7 @@ pair<com_ptr<ID3D11VertexShader>, com_ptr<ID3D11InputLayout>> ResourceManager::G
 			VSCode->GetBufferSize(),
 			m_vertexShadersAndInputLayouts[shaderName].second.GetAddressOf()
 		);
-		CheckResult(hr, "ÀÔ·Â ·¹ÀÌ¾Æ¿ô »ı¼º ½ÇÆĞ.");
+		CheckResult(hr, "ì…ë ¥ ë ˆì´ì•„ì›ƒ ìƒì„± ì‹¤íŒ¨.");
 	}
 
 	return m_vertexShadersAndInputLayouts[shaderName];
@@ -118,13 +127,13 @@ pair<com_ptr<ID3D11VertexShader>, com_ptr<ID3D11InputLayout>> ResourceManager::G
 
 com_ptr<ID3D11PixelShader> ResourceManager::GetPixelShader(const string& shaderName)
 {
-	// ±âÁ¸¿¡ »ı¼ºµÈ ÇÈ¼¿ ¼ÎÀÌ´õ°¡ ÀÖÀ¸¸é Àç»ç¿ë
+	// ê¸°ì¡´ì— ìƒì„±ëœ í”½ì…€ ì…°ì´ë”ê°€ ìˆìœ¼ë©´ ì¬ì‚¬ìš©
 	auto it = m_pixelShaders.find(shaderName);
 	if (it != m_pixelShaders.end()) return it->second;
 
 	HRESULT hr = S_OK;
 
-	// ÇÈ¼¿ ¼ÎÀÌ´õ ÄÄÆÄÀÏ
+	// í”½ì…€ ì…°ì´ë” ì»´íŒŒì¼
 	com_ptr<ID3DBlob> PSCode = CompileShader(shaderName, "ps_5_0");
 	hr = m_device->CreatePixelShader
 	(
@@ -133,38 +142,38 @@ com_ptr<ID3D11PixelShader> ResourceManager::GetPixelShader(const string& shaderN
 		nullptr,
 		m_pixelShaders[shaderName].GetAddressOf()
 	);
-	CheckResult(hr, "ÇÈ¼¿ ¼ÎÀÌ´õ »ı¼º ½ÇÆĞ.");
+	CheckResult(hr, "í”½ì…€ ì…°ì´ë” ìƒì„± ì‹¤íŒ¨.");
 
 	return m_pixelShaders[shaderName];
 }
 
 com_ptr<ID3D11ShaderResourceView> ResourceManager::GetTexture(const string& fileName)
 {
-	// ±âÁ¸¿¡ »ı¼ºµÈ ÅØ½ºÃ³°¡ ÀÖÀ¸¸é Àç»ç¿ë
+	// ê¸°ì¡´ì— ìƒì„±ëœ í…ìŠ¤ì²˜ê°€ ìˆìœ¼ë©´ ì¬ì‚¬ìš©
 	auto it = m_textures.find(fileName);
 	if (it != m_textures.end()) return it->second;
 
 	HRESULT hr = S_OK;
 
-	// Ä³½ÃµÈ ÅØ½ºÃ³ µ¥ÀÌÅÍ »ç¿ë
+	// ìºì‹œëœ í…ìŠ¤ì²˜ ë°ì´í„° ì‚¬ìš©
 	const auto cacheIt = m_textureCaches.find(fileName);
 	if (cacheIt == m_textureCaches.end())
 	{
 		#ifdef _DEBUG
-		cerr << "ÅØ½ºÃ³ µ¥ÀÌÅÍ Ä³½Ã ¾øÀ½: " << fileName << endl;
+		cerr << "í…ìŠ¤ì²˜ ë°ì´í„° ìºì‹œ ì—†ìŒ: " << fileName << endl;
 		#else
-		MessageBoxA(nullptr, ("ÅØ½ºÃ³ µ¥ÀÌÅÍ Ä³½Ã ¾øÀ½: " + fileName).c_str(), "¿À·ù", MB_OK | MB_ICONERROR);
+		MessageBoxA(nullptr, ("í…ìŠ¤ì²˜ ë°ì´í„° ìºì‹œ ì—†ìŒ: " + fileName).c_str(), "ì˜¤ë¥˜", MB_OK | MB_ICONERROR);
 		#endif
 		exit(EXIT_FAILURE);
 	}
 
-	// ÆÄÀÏ È®ÀåÀÚ È®ÀÎ
+	// íŒŒì¼ í™•ì¥ì í™•ì¸
 	const string extension = fileName.substr(fileName.find_last_of('.') + 1);
 	const bool isDDS = (extension == "dds" || extension == "DDS");
 
 	if (isDDS)
 	{
-		// DDS ÆÄÀÏ (Å¥ºê¸Ê µî)
+		// DDS íŒŒì¼ (íë¸Œë§µ ë“±)
 		hr = CreateDDSTextureFromMemoryEx
 		(
 			m_device.Get(),
@@ -175,16 +184,16 @@ com_ptr<ID3D11ShaderResourceView> ResourceManager::GetTexture(const string& file
 			D3D11_USAGE_DEFAULT,
 			D3D11_BIND_SHADER_RESOURCE,
 			0,
-			D3D11_RESOURCE_MISC_GENERATE_MIPS, // mipmap ÀÚµ¿ »ı¼º
+			0, // dds ëŠ” mipmap ìë™ ìƒì„± ì•ˆí•¨
 			DDS_LOADER_DEFAULT,
 			nullptr,
 			m_textures[fileName].GetAddressOf()
 		);
-		CheckResult(hr, "DDS ÅØ½ºÃ³ »ı¼º ½ÇÆĞ.");
+		CheckResult(hr, "DDS í…ìŠ¤ì²˜ ìƒì„± ì‹¤íŒ¨.");
 	}
 	else
 	{
-		// WIC Áö¿ø ÀÌ¹ÌÁö (jpg, png µî)
+		// WIC ì§€ì› ì´ë¯¸ì§€ (jpg, png ë“±)
 		hr = CreateWICTextureFromMemoryEx
 		(
 			m_device.Get(),
@@ -195,12 +204,12 @@ com_ptr<ID3D11ShaderResourceView> ResourceManager::GetTexture(const string& file
 			D3D11_USAGE_DEFAULT,
 			D3D11_BIND_SHADER_RESOURCE,
 			0,
-			D3D11_RESOURCE_MISC_GENERATE_MIPS, // mipmap ÀÚµ¿ »ı¼º
-			WIC_LOADER_DEFAULT, // ³ªÁß¿¡ °¨¸¶ º¸Á¤ ¿É¼Çµµ ³Ö±â
+			D3D11_RESOURCE_MISC_GENERATE_MIPS, // mipmap ìë™ ìƒì„±
+			WIC_LOADER_DEFAULT, // ë‚˜ì¤‘ì— ê°ë§ˆ ë³´ì • ì˜µì…˜ë„ ë„£ê¸°
 			nullptr,
 			m_textures[fileName].GetAddressOf()
 		);
-		CheckResult(hr, "ÅØ½ºÃ³ »ı¼º ½ÇÆĞ.");
+		CheckResult(hr, "í…ìŠ¤ì²˜ ìƒì„± ì‹¤íŒ¨.");
 	}
 
 	return m_textures[fileName];
@@ -218,36 +227,36 @@ const Model* ResourceManager::LoadModel(const string& fileName)
 	const aiScene* scene = importer.ReadFile
 	(
 		fullPath,
-		aiProcess_CalcTangentSpace | // Á¢¼± °ø°£ °è»ê
-		aiProcess_JoinIdenticalVertices | // µ¿ÀÏÇÑ Á¤Á¡ °áÇÕ // ¸Ş¸ğ¸® Àı¾à // Á» À§ÇèÇÔ
-		aiProcess_Triangulate | // »ï°¢ÇüÈ­
-		aiProcess_GenSmoothNormals | // ºÎµå·¯¿î ¹ı¼± »ı¼º // Á¶±İ ´À¸± ¼ö ÀÖ´Ù°í ÇÏ´Ï±î À¯ÀÇ
-		aiProcess_SplitLargeMeshes | // Å« ¸Ş½¬ ºĞÇÒ // µå·Î¿ì Äİ ÃÖ´ëÄ¡¸¦ ³Ñ´Â ¸Ş½¬ ¹æÁö // ÀÌ ¿É¼ÇÀÌ ¾µÀÏÀÌ »ı±â¸é ¹º°¡ Å©°Ô Àß¸øµÈ°ÅÀÓ
-		aiProcess_ValidateDataStructure | // µ¥ÀÌÅÍ ±¸Á¶ °ËÁõ // Å« ¹®Á¦°¡ ¾Æ´Ï¿©µµ °æ°í´Â ³²±è
-		aiProcess_ImproveCacheLocality | // Á¤Á¡ Ä³½Ã Áö¿ª¼º Çâ»ó
-		aiProcess_RemoveRedundantMaterials | // »ç¿ëµÇÁö ¾Ê´Â ÀçÁú Á¦°Å
-		aiProcess_FixInfacingNormals | // µÚÁıÈù ¹ı¼±(³»ºÎ¸¦ ÇâÇÑ ¹ı¼±) ¼öÁ¤ // ¸¸¾à ÀÇµµÇÑ °ÍÀÌ¶ó¸é ÀÌ ¿É¼ÇÀ» »©¾ßÇÔ
-		aiProcess_PopulateArmatureData | // º» Á¤º¸ Ã¤¿ì±â // ¾Ö´Ï¸ŞÀÌ¼ÇÀÌ ÀÖ´Â ¸ğµ¨¿¡ ÇÊ¿ä // »ç½Ç ¹¹ÇÏ´Â°ÇÁö Àß ¸ğ¸£°ÚÀ½
-		aiProcess_SortByPType | // ÇÁ¸®¹ÌÆ¼ºê Å¸ÀÔº°·Î ¸Ş½¬ Á¤·Ä // »ï°¢Çü, ¼±, Á¡ µîÀ¸·Î ³ª´® // »ï°¢Çü¸¸ ÇÊ¿äÇÏ¸é ³ª¸ÓÁö´Â ¹«½Ã °¡´É
-		aiProcess_FindDegenerates | // ¾öÃ» ÀÛÀº(»ç½Ç»ó ¾Èº¸ÀÌ´Â) »ï°¢Çü Á¦°Å
-		aiProcess_FindInvalidData | // Àß¸øµÈ µ¥ÀÌÅÍ(³ë¸» °ª = 0 °°Àº°Å) Ã£±â ¹× ¼öÁ¤
-		aiProcess_GenUVCoords | // ºñUV ¸ÊÇÎ(±¸¸é, ¿øÅë µî)À» UV ÁÂÇ¥ Ã¤³Î·Î º¯È¯
-		aiProcess_TransformUVCoords | // UV ÁÂÇ¥ º¯È¯ Àû¿ë // ¹¹ÇÏ´Â°ÇÁö ¸ğ¸£°ÚÀ½
-		aiProcess_FindInstances | // Áßº¹ ¸Ş½¬ Ã£±â
-		aiProcess_OptimizeMeshes | // ¸Ş½¬ ÃÖÀûÈ­
-		aiProcess_OptimizeGraph | // ¾À ±×·¡ÇÁ ÃÖÀûÈ­ // ¾Ö´Ï¸ŞÀÌ¼ÇÀÌ³ª º»ÀÌ ¾ø´Â ³ëµå º´ÇÕ // Á» À§ÇèÇÒ ¼ö ÀÖÀ¸´Ï À¯ÀÇ
-		aiProcess_SplitByBoneCount | // º» °³¼ö·Î ¸Ş½¬ ºĞÇÒ // ÇÑ ¸Ş½¬¿¡ º»ÀÌ ³Ê¹« ¸¹À¸¸é ¿©·¯ ¸Ş½¬·Î ³ª´® // ¹¹ÇÏ´Â°ÇÁö ¸ğ¸£°ÚÀ½
-		aiProcess_Debone | // »ç¿ëÇÏÁö ¾Ê´Â ´õ¹Ì º» Á¦°Å
-		aiProcess_DropNormals | // aiProcess_JoinIdenticalVertices ¿Í °°ÀÌ »ç¿ë // Á¤Á¡ ³ë¸» Á¦°Å
-		aiProcess_GenBoundingBoxes | // ¹Ù¿îµù ¹Ú½º »ı¼º
-		aiProcess_ConvertToLeftHanded // DirectX ÁÂÇ¥°è(¿Ş¼Õ ÁÂÇ¥°è)·Î º¯È¯
+		aiProcess_CalcTangentSpace | // ì ‘ì„  ê³µê°„ ê³„ì‚°
+		aiProcess_JoinIdenticalVertices | // ë™ì¼í•œ ì •ì  ê²°í•© // ë©”ëª¨ë¦¬ ì ˆì•½ // ì¢€ ìœ„í—˜í•¨
+		aiProcess_Triangulate | // ì‚¼ê°í˜•í™”
+		aiProcess_GenSmoothNormals | // ë¶€ë“œëŸ¬ìš´ ë²•ì„  ìƒì„± // ì¡°ê¸ˆ ëŠë¦´ ìˆ˜ ìˆë‹¤ê³  í•˜ë‹ˆê¹Œ ìœ ì˜
+		aiProcess_SplitLargeMeshes | // í° ë©”ì‰¬ ë¶„í•  // ë“œë¡œìš° ì½œ ìµœëŒ€ì¹˜ë¥¼ ë„˜ëŠ” ë©”ì‰¬ ë°©ì§€ // ì´ ì˜µì…˜ì´ ì“¸ì¼ì´ ìƒê¸°ë©´ ë­”ê°€ í¬ê²Œ ì˜ëª»ëœê±°ì„
+		aiProcess_ValidateDataStructure | // ë°ì´í„° êµ¬ì¡° ê²€ì¦ // í° ë¬¸ì œê°€ ì•„ë‹ˆì—¬ë„ ê²½ê³ ëŠ” ë‚¨ê¹€
+		aiProcess_ImproveCacheLocality | // ì •ì  ìºì‹œ ì§€ì—­ì„± í–¥ìƒ
+		aiProcess_RemoveRedundantMaterials | // ì‚¬ìš©ë˜ì§€ ì•ŠëŠ” ì¬ì§ˆ ì œê±°
+		aiProcess_FixInfacingNormals | // ë’¤ì§‘íŒ ë²•ì„ (ë‚´ë¶€ë¥¼ í–¥í•œ ë²•ì„ ) ìˆ˜ì • // ë§Œì•½ ì˜ë„í•œ ê²ƒì´ë¼ë©´ ì´ ì˜µì…˜ì„ ë¹¼ì•¼í•¨
+		aiProcess_PopulateArmatureData | // ë³¸ ì •ë³´ ì±„ìš°ê¸° // ì• ë‹ˆë©”ì´ì…˜ì´ ìˆëŠ” ëª¨ë¸ì— í•„ìš” // ì‚¬ì‹¤ ë­í•˜ëŠ”ê±´ì§€ ì˜ ëª¨ë¥´ê² ìŒ
+		aiProcess_SortByPType | // í”„ë¦¬ë¯¸í‹°ë¸Œ íƒ€ì…ë³„ë¡œ ë©”ì‰¬ ì •ë ¬ // ì‚¼ê°í˜•, ì„ , ì  ë“±ìœ¼ë¡œ ë‚˜ëˆ” // ì‚¼ê°í˜•ë§Œ í•„ìš”í•˜ë©´ ë‚˜ë¨¸ì§€ëŠ” ë¬´ì‹œ ê°€ëŠ¥
+		aiProcess_FindDegenerates | // ì—„ì²­ ì‘ì€(ì‚¬ì‹¤ìƒ ì•ˆë³´ì´ëŠ”) ì‚¼ê°í˜• ì œê±°
+		aiProcess_FindInvalidData | // ì˜ëª»ëœ ë°ì´í„°(ë…¸ë§ ê°’ = 0 ê°™ì€ê±°) ì°¾ê¸° ë° ìˆ˜ì •
+		aiProcess_GenUVCoords | // ë¹„UV ë§µí•‘(êµ¬ë©´, ì›í†µ ë“±)ì„ UV ì¢Œí‘œ ì±„ë„ë¡œ ë³€í™˜
+		aiProcess_TransformUVCoords | // UV ì¢Œí‘œ ë³€í™˜ ì ìš© // ë­í•˜ëŠ”ê±´ì§€ ëª¨ë¥´ê² ìŒ
+		aiProcess_FindInstances | // ì¤‘ë³µ ë©”ì‰¬ ì°¾ê¸°
+		aiProcess_OptimizeMeshes | // ë©”ì‰¬ ìµœì í™”
+		aiProcess_OptimizeGraph | // ì”¬ ê·¸ë˜í”„ ìµœì í™” // ì• ë‹ˆë©”ì´ì…˜ì´ë‚˜ ë³¸ì´ ì—†ëŠ” ë…¸ë“œ ë³‘í•© // ì¢€ ìœ„í—˜í•  ìˆ˜ ìˆìœ¼ë‹ˆ ìœ ì˜
+		aiProcess_SplitByBoneCount | // ë³¸ ê°œìˆ˜ë¡œ ë©”ì‰¬ ë¶„í•  // í•œ ë©”ì‰¬ì— ë³¸ì´ ë„ˆë¬´ ë§ìœ¼ë©´ ì—¬ëŸ¬ ë©”ì‰¬ë¡œ ë‚˜ëˆ” // ë­í•˜ëŠ”ê±´ì§€ ëª¨ë¥´ê² ìŒ
+		aiProcess_Debone | // ì‚¬ìš©í•˜ì§€ ì•ŠëŠ” ë”ë¯¸ ë³¸ ì œê±°
+		aiProcess_DropNormals | // aiProcess_JoinIdenticalVertices ì™€ ê°™ì´ ì‚¬ìš© // ì •ì  ë…¸ë§ ì œê±°
+		aiProcess_GenBoundingBoxes | // ë°”ìš´ë”© ë°•ìŠ¤ ìƒì„±
+		aiProcess_ConvertToLeftHanded // DirectX ì¢Œí‘œê³„(ì™¼ì† ì¢Œí‘œê³„)ë¡œ ë³€í™˜
 	);
 	if (!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode)
 	{
 		#ifdef _DEBUG
-		cerr << "¸ğµ¨ ·Îµå ½ÇÆĞ: " << importer.GetErrorString() << endl;
+		cerr << "ëª¨ë¸ ë¡œë“œ ì‹¤íŒ¨: " << importer.GetErrorString() << endl;
 		#else
-		MessageBoxA(nullptr, ("¸ğµ¨ ·Îµå ½ÇÆĞ: " + string(importer.GetErrorString())).c_str(), "¿À·ù", MB_OK | MB_ICONERROR);
+		MessageBoxA(nullptr, ("ëª¨ë¸ ë¡œë“œ ì‹¤íŒ¨: " + string(importer.GetErrorString())).c_str(), "ì˜¤ë¥˜", MB_OK | MB_ICONERROR);
 		#endif
 		exit(EXIT_FAILURE);
 	}
@@ -263,7 +272,17 @@ void ResourceManager::CreateDepthStencilStates()
 	for (size_t i = 0; i < static_cast<size_t>(DepthStencilState::Count); ++i)
 	{
 		hr = m_device->CreateDepthStencilState(&DEPTH_STENCIL_DESC_TEMPLATES[i], m_depthStencilStates[i].GetAddressOf());
-		CheckResult(hr, "±íÀÌ¹öÆÛ »óÅÂ »ı¼º ½ÇÆĞ.");
+		CheckResult(hr, "ê¹Šì´ë²„í¼ ìƒíƒœ ìƒì„± ì‹¤íŒ¨.");
+	}
+}
+
+void ResourceManager::CreateBlendStates()
+{
+	HRESULT hr = S_OK;
+	for (size_t i = 0; i < static_cast<size_t>(BlendState::Count); ++i)
+	{
+		hr = m_device->CreateBlendState(&BLEND_DESC_TEMPLATES[i], m_blendStates[i].GetAddressOf());
+		CheckResult(hr, "ë¸”ë Œë“œ ìƒíƒœ ìƒì„± ì‹¤íŒ¨.");
 	}
 }
 
@@ -274,18 +293,53 @@ void ResourceManager::CreateRasterStates()
 	for (size_t i = 0; i < static_cast<size_t>(RasterState::Count); ++i)
 	{
 		hr = m_device->CreateRasterizerState(&RASTERIZER_DESC_TEMPLATES[i], m_rasterStates[i].GetAddressOf());
-		CheckResult(hr, "·¡½ºÅÍ »óÅÂ »ı¼º ½ÇÆĞ.");
+		CheckResult(hr, "ë˜ìŠ¤í„° ìƒíƒœ ìƒì„± ì‹¤íŒ¨.");
 	}
 }
 
-void ResourceManager::CreateSamplerStates()
+void ResourceManager::CreateAndSetConstantBuffers()
+{
+	HRESULT hr = S_OK;
+
+	// ì •ì  ì…°ì´ë”ìš© ìƒìˆ˜ ë²„í¼ ìƒì„± ë° ì„¤ì •
+	// ë·°-íˆ¬ì˜ ìƒìˆ˜ ë²„í¼
+	hr = m_device->CreateBuffer(&VS_CONST_BUFFER_DESCS[static_cast<size_t>(VSConstBuffers::ViewProjection)], nullptr, m_vsConstantBuffers[static_cast<size_t>(VSConstBuffers::ViewProjection)].GetAddressOf());
+	CheckResult(hr, "ViewProjection ìƒìˆ˜ ë²„í¼ ìƒì„± ì‹¤íŒ¨.");
+	m_deviceContext->VSSetConstantBuffers(static_cast<UINT>(VSConstBuffers::ViewProjection), 1, m_vsConstantBuffers[static_cast<size_t>(VSConstBuffers::ViewProjection)].GetAddressOf());
+	// ìŠ¤ì¹´ì´ë°•ìŠ¤ ë·°-íˆ¬ì˜ ì—­í–‰ë ¬ ìƒìˆ˜ ë²„í¼
+	hr = m_device->CreateBuffer(&VS_CONST_BUFFER_DESCS[static_cast<size_t>(VSConstBuffers::SkyboxViewProjection)], nullptr, m_vsConstantBuffers[static_cast<size_t>(VSConstBuffers::SkyboxViewProjection)].GetAddressOf());
+	CheckResult(hr, "Object ìƒìˆ˜ ë²„í¼ ìƒì„± ì‹¤íŒ¨.");
+	m_deviceContext->VSSetConstantBuffers(static_cast<UINT>(VSConstBuffers::SkyboxViewProjection), 1, m_vsConstantBuffers[static_cast<size_t>(VSConstBuffers::SkyboxViewProjection)].GetAddressOf());
+	// ê°ì²´ ì›”ë“œ, ìŠ¤ì¼€ì¼ ì—­í–‰ë ¬ ì ìš©í•œ ì›”ë“œ ìƒìˆ˜ ë²„í¼
+	hr = m_device->CreateBuffer(&VS_CONST_BUFFER_DESCS[static_cast<size_t>(VSConstBuffers::WorldNormal)], nullptr, m_vsConstantBuffers[static_cast<size_t>(VSConstBuffers::WorldNormal)].GetAddressOf());
+	CheckResult(hr, "WorldNormal ìƒìˆ˜ ë²„í¼ ìƒì„± ì‹¤íŒ¨.");
+	m_deviceContext->VSSetConstantBuffers(static_cast<UINT>(VSConstBuffers::WorldNormal), 1, m_vsConstantBuffers[static_cast<size_t>(VSConstBuffers::WorldNormal)].GetAddressOf());
+
+	// í”½ì…€ ì…°ì´ë”ìš© ìƒìˆ˜ ë²„í¼ ìƒì„± ë° ì„¤ì •
+	// ì¹´ë©”ë¼ ìœ„ì¹˜ ìƒìˆ˜ ë²„í¼
+	hr = m_device->CreateBuffer(&PS_CONST_BUFFER_DESCS[static_cast<size_t>(PSConstBuffers::CameraPosition)], nullptr, m_psConstantBuffers[static_cast<size_t>(PSConstBuffers::CameraPosition)].GetAddressOf());
+	CheckResult(hr, "CameraPosition ìƒìˆ˜ ë²„í¼ ìƒì„± ì‹¤íŒ¨.");
+	m_deviceContext->PSSetConstantBuffers(static_cast<UINT>(PSConstBuffers::CameraPosition), 1, m_psConstantBuffers[static_cast<size_t>(PSConstBuffers::CameraPosition)].GetAddressOf());
+	// ë°©í–¥ê´‘ ìƒìˆ˜ ë²„í¼
+	hr = m_device->CreateBuffer(&PS_CONST_BUFFER_DESCS[static_cast<size_t>(PSConstBuffers::DirectionalLight)], nullptr, m_psConstantBuffers[static_cast<size_t>(PSConstBuffers::DirectionalLight)].GetAddressOf());
+	CheckResult(hr, "DirectionalLight ìƒìˆ˜ ë²„í¼ ìƒì„± ì‹¤íŒ¨.");
+	m_deviceContext->PSSetConstantBuffers(static_cast<UINT>(PSConstBuffers::DirectionalLight), 1, m_psConstantBuffers[static_cast<size_t>(PSConstBuffers::DirectionalLight)].GetAddressOf());
+	// ì¬ì§ˆ íŒ©í„° ìƒìˆ˜ ë²„í¼
+	hr = m_device->CreateBuffer(&PS_CONST_BUFFER_DESCS[static_cast<size_t>(PSConstBuffers::MaterialFactor)], nullptr, m_psConstantBuffers[static_cast<size_t>(PSConstBuffers::MaterialFactor)].GetAddressOf());
+	CheckResult(hr, "MaterialFactor ìƒìˆ˜ ë²„í¼ ìƒì„± ì‹¤íŒ¨.");
+	m_deviceContext->PSSetConstantBuffers(static_cast<UINT>(PSConstBuffers::MaterialFactor), 1, m_psConstantBuffers[static_cast<size_t>(PSConstBuffers::MaterialFactor)].GetAddressOf());
+}
+
+void ResourceManager::CreateAndSetSamplerStates()
 {
 	HRESULT hr = S_OK;
 
 	for (size_t i = 0; i < static_cast<size_t>(SamplerState::Count); ++i)
 	{
 		hr = m_device->CreateSamplerState(&SAMPLER_DESC_TEMPLATES[i], m_samplerStates[i].GetAddressOf());
-		CheckResult(hr, "»ùÇÃ·¯ »óÅÂ »ı¼º ½ÇÆĞ.");
+		CheckResult(hr, "ìƒ˜í”ŒëŸ¬ ìƒíƒœ ìƒì„± ì‹¤íŒ¨.");
+
+		m_deviceContext->PSSetSamplers(static_cast<UINT>(i), 1, m_samplerStates[i].GetAddressOf());
 	}
 }
 
@@ -299,33 +353,33 @@ void ResourceManager::CacheAllTexture()
 		{
 			const string fileName = filesystem::relative(dirEntry.path(), textureDirectory).string();
 
-			// ÅØ½ºÃ³ ÆÄÀÏ ÀĞ±â
+			// í…ìŠ¤ì²˜ íŒŒì¼ ì½ê¸°
 			ifstream fileStream(dirEntry.path(), ios::binary | ios::ate);
 
 			if (fileStream)
 			{
 				const streamsize fileSize = fileStream.tellg();
 				fileStream.seekg(0, ios::beg);
-				vector<uint8_t> fileData(static_cast<size_t>(fileSize));
+				vector<char> fileData(static_cast<size_t>(fileSize));
 
-				if (fileStream.read(reinterpret_cast<char*>(fileData.data()), fileSize)) m_textureCaches[fileName] = move(fileData);
-				else cerr << "ÅØ½ºÃ³ ÆÄÀÏ ÀĞ±â ½ÇÆĞ: " << fileName << endl;
+				if (fileStream.read(fileData.data(), fileSize)) m_textureCaches[fileName] = vector<uint8_t>(fileData.begin(), fileData.end());
+				else cerr << "í…ìŠ¤ì²˜ íŒŒì¼ ì½ê¸° ì‹¤íŒ¨: " << fileName << endl;
 			}
-			else cerr << "ÅØ½ºÃ³ ÆÄÀÏ ¿­±â ½ÇÆĞ: " << fileName << endl;
+			else cerr << "í…ìŠ¤ì²˜ íŒŒì¼ ì—´ê¸° ì‹¤íŒ¨: " << fileName << endl;
 		}
 	}
 }
 
 void ResourceManager::ProcessNode(const aiNode* node, const aiScene* scene, Model& model)
 {
-	// ³ëµåÀÇ ¸Ş½¬ Ã³¸®
+	// ë…¸ë“œì˜ ë©”ì‰¬ ì²˜ë¦¬
 	for (UINT i = 0; i < node->mNumMeshes; ++i)
 	{
 		aiMesh* mesh = scene->mMeshes[node->mMeshes[i]];
 		model.meshes.push_back(ProcessMesh(mesh, scene));
 	}
 
-	// ÀÚ½Ä ³ëµå Àç±Í Ã³¸®
+	// ìì‹ ë…¸ë“œ ì¬ê·€ ì²˜ë¦¬
 	for (UINT i = 0; i < node->mNumChildren; ++i) ProcessNode(node->mChildren[i], scene, model);
 }
 
@@ -333,26 +387,26 @@ Mesh ResourceManager::ProcessMesh(const aiMesh* mesh, const aiScene* scene)
 {
 	Mesh resultMesh;
 
-	// Á¤Á¡ Ã³¸®
+	// ì •ì  ì²˜ë¦¬
 	for (UINT i = 0; i < mesh->mNumVertices; ++i)
 	{
 		Vertex vertex;
-		// À§Ä¡
+		// ìœ„ì¹˜
 		vertex.position = { mesh->mVertices[i].x, mesh->mVertices[i].y, mesh->mVertices[i].z, 1.0f };
 
-		// UV // Ã¹ ¹øÂ° UV Ã¤³Î¸¸ »ç¿ë
+		// UV // ì²« ë²ˆì§¸ UV ì±„ë„ë§Œ ì‚¬ìš©
 		if (mesh->mTextureCoords[0]) vertex.UV = { mesh->mTextureCoords[0][i].x, mesh->mTextureCoords[0][i].y };
 
-		// ¹ı¼±
+		// ë²•ì„ 
 		if (mesh->HasNormals()) vertex.normal = { mesh->mNormals[i].x, mesh->mNormals[i].y, mesh->mNormals[i].z };
 
-		// Á¢¼±
+		// ì ‘ì„ 
 		if (mesh->HasTangentsAndBitangents()) vertex.tangent = { mesh->mTangents[i].x, mesh->mTangents[i].y, mesh->mTangents[i].z };
 
 		resultMesh.vertices.push_back(vertex);
 	}
 
-	// ÀÎµ¦½º Ã³¸®
+	// ì¸ë±ìŠ¤ ì²˜ë¦¬
 	for (UINT i = 0; i < mesh->mNumFaces; ++i)
 	{
 		const aiFace& face = mesh->mFaces[i];
@@ -360,16 +414,16 @@ Mesh ResourceManager::ProcessMesh(const aiMesh* mesh, const aiScene* scene)
 	}
 	resultMesh.indexCount = static_cast<UINT>(resultMesh.indices.size());
 
-	// ¹Ù¿îµù ¹Ú½º Ã³¸®
+	// ë°”ìš´ë”© ë°•ìŠ¤ ì²˜ë¦¬
 	resultMesh.boundingBox =
 	{
-		// Áß½É
+		// ì¤‘ì‹¬
 		{
 			(mesh->mAABB.mMin.x + mesh->mAABB.mMax.x) * 0.5f,
 			(mesh->mAABB.mMin.y + mesh->mAABB.mMax.y) * 0.5f,
 			(mesh->mAABB.mMin.z + mesh->mAABB.mMax.z) * 0.5f
 		},
-		// ²ÀÁşÁ¡±îÁöÀÇ °Å¸®
+		// ê¼­ì§“ì ê¹Œì§€ì˜ ê±°ë¦¬
 		{
 			(mesh->mAABB.mMax.x - mesh->mAABB.mMin.x) * 0.5f,
 			(mesh->mAABB.mMax.y - mesh->mAABB.mMin.y) * 0.5f,
@@ -377,17 +431,15 @@ Mesh ResourceManager::ProcessMesh(const aiMesh* mesh, const aiScene* scene)
 		}
 	};
 
-	// ÀçÁú Ã³¸®
+	// ì¬ì§ˆ ì²˜ë¦¬
 	if (mesh->mMaterialIndex >= 0)
 	{
 		aiMaterial* material = scene->mMaterials[mesh->mMaterialIndex];
 		resultMesh.materialFactor = ProcessMaterialFactor(material);
 
-		resultMesh.materialTexture.albedoTextureSRV = GetTexture("SampleAlbedo.jpg");
-		resultMesh.materialTexture.normalTextureSRV = GetTexture("SampleNormal.jpg");
-		resultMesh.materialTexture.metallicTextureSRV = GetTexture("SampleMetallic.jpg");
-		resultMesh.materialTexture.roughnessTextureSRV = GetTexture("SampleRoughness.jpg");
-		resultMesh.materialTexture.ambientOcclusionTextureSRV = GetTexture("SampleAmbientOcclusion.jpg");
+		resultMesh.materialTexture.albedoTextureSRV = GetTexture("SampleAlbedo.dds");
+		resultMesh.materialTexture.ORMTextureSRV = GetTexture("SampleORM.dds");
+		resultMesh.materialTexture.normalTextureSRV = GetTexture("SampleNormal.dds");
 	}
 
 	CreateMeshBuffers(resultMesh);
@@ -395,23 +447,25 @@ Mesh ResourceManager::ProcessMesh(const aiMesh* mesh, const aiScene* scene)
 	return resultMesh;
 }
 
-MaterialFactor ResourceManager::ProcessMaterialFactor(aiMaterial* material)
+MaterialFactorBuffer ResourceManager::ProcessMaterialFactor(aiMaterial* material)
 {
-	MaterialFactor resultMaterialFactor;
+	MaterialFactorBuffer resultMaterialFactor;
 
-	// Albedo/Diffuse »ö»ó ÆÑÅÍ
+	// Albedo/Diffuse ìƒ‰ìƒ íŒ©í„°
 	aiColor4D albedoColor;
 	if (AI_SUCCESS == material->Get(AI_MATKEY_COLOR_DIFFUSE, albedoColor)) resultMaterialFactor.albedoFactor = { albedoColor.r, albedoColor.g, albedoColor.b, albedoColor.a };
 
-	// PBR ¸ŞÅ»¸¯ ÆÑÅÍ
+	// PBR ë©”íƒˆë¦­ íŒ©í„°
 	float metallicFactor = 1.0f;
 	if (AI_SUCCESS == material->Get(AI_MATKEY_METALLIC_FACTOR, metallicFactor)) resultMaterialFactor.metallicFactor = metallicFactor;
 
-	// PBR ·¯ÇÁ´Ï½º ÆÑÅÍ
+	// PBR ëŸ¬í”„ë‹ˆìŠ¤ íŒ©í„°
 	float roughnessFactor = 1.0f;
 	if (AI_SUCCESS == material->Get(AI_MATKEY_ROUGHNESS_FACTOR, roughnessFactor)) resultMaterialFactor.roughnessFactor = roughnessFactor;
 
-	// TODO: PBR È¯°æ±¤ Â÷Æó ÆÑÅÍ
+	// êµ´ì ˆë¥  íŒ©í„°
+	float iorFactor = 1.5f;
+	if (AI_SUCCESS == material->Get(AI_MATKEY_REFRACTI, iorFactor)) resultMaterialFactor.iorFactor = iorFactor;
 
 	return resultMaterialFactor;
 }
@@ -420,12 +474,12 @@ void ResourceManager::CreateMeshBuffers(Mesh& mesh)
 {
 	HRESULT hr = S_OK;
 
-	// Á¤Á¡ ¹öÆÛ »ı¼º
+	// ì •ì  ë²„í¼ ìƒì„±
 	if (mesh.vertices.empty()) return;
 	const D3D11_BUFFER_DESC vertexBufferDesc =
 	{
 		.ByteWidth = static_cast<UINT>(sizeof(Vertex) * mesh.vertices.size()),
-		.Usage = D3D11_USAGE_DEFAULT, // ÀÌ°Å D3D11_USAGE_IMMUTABLE·Î ¹Ù²Ü ¼ö ÀÖ³ª?
+		.Usage = D3D11_USAGE_DEFAULT, // ì´ê±° D3D11_USAGE_IMMUTABLEë¡œ ë°”ê¿€ ìˆ˜ ìˆë‚˜?
 		.BindFlags = D3D11_BIND_VERTEX_BUFFER,
 		.CPUAccessFlags = 0,
 		.MiscFlags = 0,
@@ -438,14 +492,14 @@ void ResourceManager::CreateMeshBuffers(Mesh& mesh)
 		.SysMemSlicePitch = 0
 	};
 	hr = m_device->CreateBuffer(&vertexBufferDesc, &vertexInitialData, mesh.vertexBuffer.GetAddressOf());
-	CheckResult(hr, "¸Ş½¬ Á¤Á¡ ¹öÆÛ »ı¼º ½ÇÆĞ.");
+	CheckResult(hr, "ë©”ì‰¬ ì •ì  ë²„í¼ ìƒì„± ì‹¤íŒ¨.");
 
-	// ÀÎµ¦½º ¹öÆÛ »ı¼º
+	// ì¸ë±ìŠ¤ ë²„í¼ ìƒì„±
 	if (mesh.indices.empty()) return;
 	const D3D11_BUFFER_DESC indexBufferDesc =
 	{
 		.ByteWidth = static_cast<UINT>(sizeof(UINT) * mesh.indices.size()),
-		.Usage = D3D11_USAGE_DEFAULT, // ÀÌ°Íµµ
+		.Usage = D3D11_USAGE_DEFAULT, // ì´ê²ƒë„
 		.BindFlags = D3D11_BIND_INDEX_BUFFER,
 		.CPUAccessFlags = 0,
 		.MiscFlags = 0,
@@ -458,7 +512,7 @@ void ResourceManager::CreateMeshBuffers(Mesh& mesh)
 		.SysMemSlicePitch = 0
 	};
 	hr = m_device->CreateBuffer(&indexBufferDesc, &indexInitialData, mesh.indexBuffer.GetAddressOf());
-	CheckResult(hr, "¸Ş½¬ ÀÎµ¦½º ¹öÆÛ »ı¼º ½ÇÆĞ.");
+	CheckResult(hr, "ë©”ì‰¬ ì¸ë±ìŠ¤ ë²„í¼ ìƒì„± ì‹¤íŒ¨.");
 }
 
 com_ptr<ID3DBlob> ResourceManager::CompileShader(const string& shaderName, const char* shaderModel)
@@ -485,8 +539,8 @@ com_ptr<ID3DBlob> ResourceManager::CompileShader(const string& shaderName, const
 		shaderCode.GetAddressOf(),
 		errorBlob.GetAddressOf()
 	);
-	if (errorBlob) cerr << shaderName << " ¼ÎÀÌ´õ ÄÄÆÄÀÏ ¿À·ù: " << static_cast<const char*>(errorBlob->GetBufferPointer()) << endl;
+	if (errorBlob) cerr << shaderName << " ì…°ì´ë” ì»´íŒŒì¼ ì˜¤ë¥˜: " << static_cast<const char*>(errorBlob->GetBufferPointer()) << endl;
 
 	return shaderCode;
 }
-///ResourceManager.cppÀÇ ³¡
+///ResourceManager.cppì˜ ë

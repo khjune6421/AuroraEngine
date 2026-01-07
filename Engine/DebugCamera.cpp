@@ -22,7 +22,7 @@ void DebugCamera::Update()
 	if (input.GetKey(KeyCode::Space)) MoveDirection(deltaTime * m_moveSpeed, Direction::Up);
 	if (input.GetKey(KeyCode::Shift)) MoveDirection(deltaTime * m_moveSpeed, Direction::Down);*/
 
-	deltaTime *= 15.0f; // È¸Àü ¼Óµµ º¸Á¤
+	deltaTime *= 15.0f; // íšŒì „ ì†ë„ ë³´ì •
 	if (input.GetKey(KeyCode::W)) Rotate({ -deltaTime * m_moveSpeed, 0.0f, 0.0f, 0.0f });
 	if (input.GetKey(KeyCode::S)) Rotate({ deltaTime * m_moveSpeed, 0.0f, 0.0f, 0.0f });
 	if (input.GetKey(KeyCode::A)) Rotate({ 0.0f, -deltaTime * m_moveSpeed, 0.0f, 0.0f });

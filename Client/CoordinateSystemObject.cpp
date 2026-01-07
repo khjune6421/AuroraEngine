@@ -1,4 +1,4 @@
-///CoordinateSystemObject.cppÀÇ ½ÃÀÛ
+///CoordinateSystemObject.cppì˜ ì‹œì‘
 #include "stdafx.h"
 #include "CoordinateSystemObject.h"
 
@@ -18,16 +18,16 @@ void CoordinateSystemObject::Initialize()
 		CreateChildGameObject<LineObject>();
 		m_childrens[i]->SetScale({ 100.0f, 1.0f, 1.0f });
 		m_childrens[i]->SetPosition({ 0, .0f, -50.0f + 5 * i });
-		if(i == 10)
-		{
-			//ºí·£´õ xÃà»ö
-			m_childrens[i]->GetComponent<LineComponent>()->SetColor({ 0.965f, 0.212f, 0.322f, 1.0f });
-		}
-		else
-		{
-			//ºí·£´õ ÀÏ¹İÃà»ö
-			m_childrens[i]->GetComponent<LineComponent>()->SetColor({ 0.616f, 0.624f, 0.631f, 0.1f });
-		}
+		//if(i == 10)
+		//{
+		//	//ë¸”ëœë” xì¶•ìƒ‰
+		//	m_childrens[i]->GetComponent<LineComponent>()->SetColor({ 0.965f, 0.212f, 0.322f, 1.0f });
+		//}
+		//else
+		//{
+		//	//ë¸”ëœë” ì¼ë°˜ì¶•ìƒ‰
+		//	m_childrens[i]->GetComponent<LineComponent>()->SetColor({ 0.616f, 0.624f, 0.631f, 0.1f });
+		//}
 	}
 
 	for (int i = 0; i < 21; i++)
@@ -36,28 +36,28 @@ void CoordinateSystemObject::Initialize()
 		m_childrens[i + 21]->SetScale({ 100.0f, 1.0f, 1.0f });
 		m_childrens[i + 21]->SetRotation({0, 90 ,0});
 		m_childrens[i + 21]->SetPosition({ -50.0f + 5 * i, .0f, 0 });
-		if (i == 10)
-		{
-			//ºí·£´õ zÃà»ö
-			m_childrens[i + 21]->GetComponent<LineComponent>()->SetColor({ 0.176f, 0.541f, 0.949f, 1.0f });
-		}
-		else
-		{
-			//ºí·£´õ ÀÏ¹İÃà»ö
-			m_childrens[i + 21]->GetComponent<LineComponent>()->SetColor({ 0.616f, 0.624f, 0.631f, 0.1f });
-		}
+		//if (i == 10)
+		//{
+		//	//ë¸”ëœë” zì¶•ìƒ‰
+		//	m_childrens[i + 21]->GetComponent<LineComponent>()->SetColor({ 0.176f, 0.541f, 0.949f, 1.0f });
+		//}
+		//else
+		//{
+		//	//ë¸”ëœë” ì¼ë°˜ì¶•ìƒ‰
+		//	m_childrens[i + 21]->GetComponent<LineComponent>()->SetColor({ 0.616f, 0.624f, 0.631f, 0.1f });
+		//}
 	}
 
 	{
 		
 		CreateChildGameObject<LineObject>();
-		//m_childrens[21+21]->SetScale({ 1.0f, 1.0f, 1.0f }); //ÀÌ°Ô ¸Â´Âµ¥
+		//m_childrens[21+21]->SetScale({ 1.0f, 1.0f, 1.0f }); //ì´ê²Œ ë§ëŠ”ë°
 		m_childrens[21+21]->SetScale({ 5.0f, 1.0f, 1.0f }); 
 		m_childrens[21+21]->SetRotation({ 0, 0 ,90 });
-		//m_childrens[21+21]->SetPosition({ .0f , .0f, 0.5f }); // ÀÌ°Ô ¸Â´Âµ¥
+		//m_childrens[21+21]->SetPosition({ .0f , .0f, 0.5f }); // ì´ê²Œ ë§ëŠ”ë°
 		m_childrens[21+21]->SetPosition({ .0f , 2.5f, .0f });
-		// ºí·£´õ yÃà»ö
-		m_childrens[21+21]->GetComponent<LineComponent>()->SetColor({ 0.498f, 0.769f, 0.067f, 1.0f });
+		// ë¸”ëœë” yì¶•ìƒ‰
+		//m_childrens[21+21]->GetComponent<LineComponent>()->SetColor({ 0.498f, 0.769f, 0.067f, 1.0f });
 	}
 
 }
@@ -67,4 +67,4 @@ void CoordinateSystemObject::Update()
 
 }
 
-///CoordinateSystemObject.cppÀÇ ³¡
+///CoordinateSystemObject.cppì˜ ë

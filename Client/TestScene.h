@@ -1,4 +1,4 @@
-/// TestScene.hÀÇ ½ÃÀÛ
+// TestScene.hì˜ ì‹œì‘
 #pragma once
 #include "SceneBase.h"
 

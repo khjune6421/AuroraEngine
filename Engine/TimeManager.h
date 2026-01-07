@@ -5,11 +5,11 @@ class TimeManager : public Singleton<TimeManager>
 {
 	friend class Singleton<TimeManager>;
 
-	DWORD m_previousTime = 0; // ÀÌÀü ÇÁ·¹ÀÓ ½Ã°£ // ¹Ğ¸®ÃÊ ´ÜÀ§
-	DWORD m_currentTime = 0;  // ÇöÀç ÇÁ·¹ÀÓ ½Ã°£ // ¹Ğ¸®ÃÊ ´ÜÀ§
+	DWORD m_previousTime = 0; // ì´ì „ í”„ë ˆì„ ì‹œê°„ // ë°€ë¦¬ì´ˆ ë‹¨ìœ„
+	DWORD m_currentTime = 0;  // í˜„ì¬ í”„ë ˆì„ ì‹œê°„ // ë°€ë¦¬ì´ˆ ë‹¨ìœ„
 
-	float m_timeScale = 1.0f; // ½Ã°£ ¹èÀ²
-	float m_deltaTime = 0.0f; // µ¨Å¸ Å¸ÀÓ // ÃÊ ´ÜÀ§
+	float m_timeScale = 1.0f; // ì‹œê°„ ë°°ìœ¨
+	float m_deltaTime = 0.0f; // ë¸íƒ€ íƒ€ì„ // ì´ˆ ë‹¨ìœ„
 
 public:
 	~TimeManager() = default;
@@ -18,13 +18,13 @@ public:
 	TimeManager(TimeManager&&) = delete;
 	TimeManager& operator=(TimeManager&&) = delete;
 
-	// Å¸ÀÌ¸Ó ÃÊ±âÈ­
+	// íƒ€ì´ë¨¸ ì´ˆê¸°í™”
 	void Initialize();
-	// Å¸ÀÌ¸Ó ¾÷µ¥ÀÌÆ®
+	// íƒ€ì´ë¨¸ ì—…ë°ì´íŠ¸
 	void UpdateTime();
 
 	void SetTimeScale(float timeScale) { m_timeScale = timeScale; }
-	// µ¨Å¸ Å¸ÀÓ ¾ò±â
+	// ë¸íƒ€ íƒ€ì„ ì–»ê¸°
 	float GetDeltaTime() const { return m_deltaTime; }
 
 private:

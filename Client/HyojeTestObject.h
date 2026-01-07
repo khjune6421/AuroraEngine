@@ -1,4 +1,4 @@
-///HyojeTestObject.hÀÇ ½ÃÀÛ
+///HyojeTestObject.hì˜ ì‹œì‘
 #pragma once
 #include "GameObjectBase.h"
 
@@ -17,4 +17,4 @@ private:
 	void Update() override;
 };
 
-///HyojeTestObject.hÀÇ ³¡
+///HyojeTestObject.hì˜ ë

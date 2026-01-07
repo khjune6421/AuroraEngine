@@ -1,4 +1,4 @@
-/// InputManager.cppÀÇ ½ÃÀÛ
+/// InputManager.cppì˜ ì‹œì‘
 /// https://github.com/DragonT-iger/DTEngine/blob/main/DTEngine/InputManager.cpp
 /// 
 #include "stdafx.h" 
@@ -156,4 +156,4 @@ int InputManager::MapKeyCodeToVKey(KeyCode key) const
     }
 }
 
-/// InputManager.cppÀÇ ³¡
+/// InputManager.cppì˜ ë

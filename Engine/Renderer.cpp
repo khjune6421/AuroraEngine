@@ -14,7 +14,7 @@ void Renderer::Initialize()
 	CreateSwapChain();
 	CreateBackBufferResources();
 
-	// ¾À ¸Å´ÏÀú ÃÊ±âÈ­
+	// ì”¬ ë§¤ë‹ˆì € ì´ˆê¸°í™”
 	SceneManager::GetInstance().Initialize();
 }
 
@@ -22,20 +22,20 @@ void Renderer::BeginFrame()
 {
 	HRESULT hr = S_OK;
 
-	// ·¡½ºÅÍ »óÅÂ º¯°æ
-	m_deviceContext->RSSetState(m_sceneRasterState.Get());
+	// ë˜ìŠ¤í„° ìƒíƒœ ë³€ê²½
+	ResourceManager::GetInstance().SetRasterState(RasterState::Solid);
 
-	// ¼ÎÀÌ´õ ¸®¼Ò½º ÇØÁ¦
+	// ì…°ì´ë” ë¦¬ì†ŒìŠ¤ í•´ì œ
 	UnbindShaderResources();
 
-	// ¾À ·»´õ Å¸°ÙÀ¸·Î ¼³Á¤
+	// ì”¬ ë Œë” íƒ€ê²Ÿìœ¼ë¡œ ì„¤ì •
 	m_deviceContext->OMSetRenderTargets(1, m_sceneBuffer.renderTargetView.GetAddressOf(), m_sceneBuffer.depthStencilView.Get());
 
-	// ¾À ·»´õ Å¸°Ù Å¬¸®¾î
+	// ì”¬ ë Œë” íƒ€ê²Ÿ í´ë¦¬ì–´
 	ClearRenderTarget(m_sceneBuffer);
 
 	#ifdef _DEBUG
-	// ImGui ÇÁ·¹ÀÓ ½ÃÀÛ
+	// ImGui í”„ë ˆì„ ì‹œì‘
 	BeginImGuiFrame();
 	#endif
 }
@@ -44,40 +44,40 @@ void Renderer::EndFrame()
 {
 	HRESULT hr = S_OK;
 
-	// ¾À ·»´õ Å¸°Ù MSAA ÇØÁ¦ ¹× °á°ú ÅØ½ºÃ³ º¹»ç
+	// ì”¬ ë Œë” íƒ€ê²Ÿ MSAA í•´ì œ ë° ê²°ê³¼ í…ìŠ¤ì²˜ ë³µì‚¬
 	ResolveSceneMSAA();
 
-	// ·¡½ºÅÍ »óÅÂ º¯°æ
-	m_deviceContext->RSSetState(m_backBufferRasterState.Get());
+	// ë˜ìŠ¤í„° ìƒíƒœ ë³€ê²½
+	ResourceManager::GetInstance().SetRasterState(RasterState::BackBuffer);
 
-	// ÇÈ¼¿ ¼ÎÀÌ´õÀÇ ¼ÎÀÌ´õ ¸®¼Ò½º ºä ÇØÁ¦
+	// í”½ì…€ ì…°ì´ë”ì˜ ì…°ì´ë” ë¦¬ì†ŒìŠ¤ ë·° í•´ì œ
 	UnbindShaderResources();
 
-	// ¹é ¹öÆÛ ·»´õ Å¸°ÙÀ¸·Î ¼³Á¤
+	// ë°± ë²„í¼ ë Œë” íƒ€ê²Ÿìœ¼ë¡œ ì„¤ì •
 	m_deviceContext->OMSetRenderTargets(1, m_backBuffer.renderTargetView.GetAddressOf(), m_backBuffer.depthStencilView.Get());
 
-	// ¹é ¹öÆÛ Å¬¸®¾î
+	// ë°± ë²„í¼ í´ë¦¬ì–´
 	ClearRenderTarget(m_backBuffer);
 
-	// ¹é ¹öÆÛ·Î ¾À ·»´õ¸µ
+	// ë°± ë²„í¼ë¡œ ì”¬ ë Œë”ë§
 	RenderSceneToBackBuffer();
 
 	#ifdef _DEBUG
-	// ImGui ÇÁ·¹ÀÓ ³¡
+	// ImGui í”„ë ˆì„ ë
 	EndImGuiFrame();
 	#endif
 
-	// ½º¿Ò Ã¼ÀÎ ÇÁ·¹Á¨Æ®
-	hr = m_swapChain->Present(1, 0);
-	CheckResult(hr, "½º¿Ò Ã¼ÀÎ ÇÁ·¹Á¨Æ® ½ÇÆĞ.");
+	// ìŠ¤ì™‘ ì²´ì¸ í”„ë ˆì  íŠ¸
+	hr = m_swapChain->Present(1, 0); // DXGI_PRESENT_ALLOW_TEARING // ë‚˜ì¤‘ì— í•„ìš”ì‹œ ì ìš©
+	CheckResult(hr, "ìŠ¤ì™‘ ì²´ì¸ í”„ë ˆì  íŠ¸ ì‹¤íŒ¨.");
 }
 
 void Renderer::Finalize()
 {
-	// ImGui DirectX11 Á¾·á
+	// ImGui DirectX11 ì¢…ë£Œ
 	ImGui_ImplDX11_Shutdown();
 
-	// RenderResourceManager Á¾·á´Â µû·Î ÇÊ¿ä ¾øÀ½
+	// RenderResourceManager ì¢…ë£ŒëŠ” ë”°ë¡œ í•„ìš” ì—†ìŒ
 
 	SceneManager::GetInstance().Finalize();
 }
@@ -88,18 +88,18 @@ HRESULT Renderer::Resize(UINT width, UINT height)
 
 	HRESULT hr = S_OK;
 
-	// ·»´õ Å¸°Ù ¹× ¼ÎÀÌ´õ ¸®¼Ò½º ÇØÁ¦
+	// ë Œë” íƒ€ê²Ÿ ë° ì…°ì´ë” ë¦¬ì†ŒìŠ¤ í•´ì œ
 	UnbindShaderResources();
 	constexpr ID3D11RenderTargetView* nullRTV = nullptr;
 	m_deviceContext->OMSetRenderTargets(1, &nullRTV, nullptr);
 
 	m_deviceContext->Flush();
 
-	// ¹é ¹öÆÛ ¸®¼Ò½º ÇØÁ¦
+	// ë°± ë²„í¼ ë¦¬ì†ŒìŠ¤ í•´ì œ
 	m_backBuffer.renderTarget.Reset();
 	m_backBuffer.renderTargetView.Reset();
 
-	// ¾À ¹öÆÛ ¸®¼Ò½º ÇØÁ¦
+	// ì”¬ ë²„í¼ ë¦¬ì†ŒìŠ¤ í•´ì œ
 	m_sceneBuffer.renderTarget.Reset();
 	m_sceneBuffer.renderTargetView.Reset();
 	m_sceneBuffer.depthStencilTexture.Reset();
@@ -111,7 +111,7 @@ HRESULT Renderer::Resize(UINT width, UINT height)
 	m_swapChainDesc.Height = height;
 	m_aspectRatio = static_cast<float>(width) / static_cast<float>(height);
 
-	// ½º¿Ò Ã¼ÀÎ Å©±â Á¶Á¤
+	// ìŠ¤ì™‘ ì²´ì¸ í¬ê¸° ì¡°ì •
 	hr = m_swapChain->ResizeBuffers
 	(
 		m_swapChainDesc.BufferCount,
@@ -120,13 +120,13 @@ HRESULT Renderer::Resize(UINT width, UINT height)
 		m_swapChainDesc.Format,
 		m_swapChainDesc.Flags
 	);
-	CheckResult(hr, "½º¿Ò Ã¼ÀÎ ¹öÆÛ Å©±â Á¶Á¤ ½ÇÆĞ.");
+	CheckResult(hr, "ìŠ¤ì™‘ ì²´ì¸ ë²„í¼ í¬ê¸° ì¡°ì • ì‹¤íŒ¨.");
 
-	// »õ·Î¿î ¹é ¹öÆÛ, ¾À ·»´õ Å¸°Ù »ı¼º
+	// ìƒˆë¡œìš´ ë°± ë²„í¼, ì”¬ ë Œë” íƒ€ê²Ÿ ìƒì„±
 	CreateBackBufferRenderTarget();
 	CreateSceneRenderTarget();
 
-	// ºäÆ÷Æ® ¼³Á¤
+	// ë·°í¬íŠ¸ ì„¤ì •
 	SetViewport();
 
 	return hr;
@@ -153,11 +153,11 @@ void Renderer::CreateDeviceAndContext()
 		nullptr,
 		m_deviceContext.GetAddressOf()
 	);
-	CheckResult(hr, "µğ¹ÙÀÌ½º ¹× µğ¹ÙÀÌ½º ÄÁÅØ½ºÆ® »ı¼º ½ÇÆĞ.");
+	CheckResult(hr, "ë””ë°”ì´ìŠ¤ ë° ë””ë°”ì´ìŠ¤ ì»¨í…ìŠ¤íŠ¸ ìƒì„± ì‹¤íŒ¨.");
 
-	// ImGui DirectX11 ÃÊ±âÈ­
+	// ImGui DirectX11 ì´ˆê¸°í™”
 	ImGui_ImplDX11_Init(m_device.Get(), m_deviceContext.Get());
-	// RenderResourceManager ÃÊ±âÈ­
+	// RenderResourceManager ì´ˆê¸°í™”
 	ResourceManager::GetInstance().Initialize(m_device, m_deviceContext);
 }
 
@@ -170,13 +170,13 @@ void Renderer::CreateSwapChain()
 	com_ptr<IDXGIFactory2> dxgiFactory = nullptr;
 
 	hr = m_device.As(&dxgiDevice);
-	CheckResult(hr, "ID3D11Device ·ÎºÎÅÍ IDXGIDevice ¾ò±â ½ÇÆĞ.");
+	CheckResult(hr, "ID3D11Device ë¡œë¶€í„° IDXGIDevice ì–»ê¸° ì‹¤íŒ¨.");
 	hr = dxgiDevice->GetAdapter(dxgiAdapter.GetAddressOf());
-	CheckResult(hr, "IDXGIDevice ·ÎºÎÅÍ IDXGIAdapter ¾ò±â ½ÇÆĞ.");
+	CheckResult(hr, "IDXGIDevice ë¡œë¶€í„° IDXGIAdapter ì–»ê¸° ì‹¤íŒ¨.");
 	hr = dxgiAdapter->GetParent(IID_PPV_ARGS(&dxgiFactory));
-	CheckResult(hr, "IDXGIAdapter ·ÎºÎÅÍ IDXGIFactory2 ¾ò±â ½ÇÆĞ.");
+	CheckResult(hr, "IDXGIAdapter ë¡œë¶€í„° IDXGIFactory2 ì–»ê¸° ì‹¤íŒ¨.");
 
-	// ½º¿Ò Ã¼ÀÎ »ı¼º
+	// ìŠ¤ì™‘ ì²´ì¸ ìƒì„±
 	hr = dxgiFactory->CreateSwapChainForHwnd
 	(
 		dxgiDevice.Get(),
@@ -186,7 +186,7 @@ void Renderer::CreateSwapChain()
 		nullptr,
 		m_swapChain.GetAddressOf()
 	);
-	CheckResult(hr, "½º¿Ò Ã¼ÀÎ »ı¼º ½ÇÆĞ.");
+	CheckResult(hr, "ìŠ¤ì™‘ ì²´ì¸ ìƒì„± ì‹¤íŒ¨.");
 }
 
 void Renderer::CreateBackBufferRenderTarget()
@@ -194,23 +194,23 @@ void Renderer::CreateBackBufferRenderTarget()
 	HRESULT hr = S_OK;
 
 	hr = m_swapChain->GetBuffer(0, IID_PPV_ARGS(&m_backBuffer.renderTarget));
-	CheckResult(hr, "½º¿Ò Ã¼ÀÎ ¹öÆÛ ¾ò±â ½ÇÆĞ.");
+	CheckResult(hr, "ìŠ¤ì™‘ ì²´ì¸ ë²„í¼ ì–»ê¸° ì‹¤íŒ¨.");
 
-	// ·»´õ Å¸°Ù ºä »ı¼º
+	// ë Œë” íƒ€ê²Ÿ ë·° ìƒì„±
 	const D3D11_RENDER_TARGET_VIEW_DESC rtvDesc =
 	{
 		.Format = m_swapChainDesc.Format,
 		.ViewDimension = m_swapChainDesc.SampleDesc.Count > 1 ? D3D11_RTV_DIMENSION_TEXTURE2DMS : D3D11_RTV_DIMENSION_TEXTURE2D
 	};
 	hr = m_device->CreateRenderTargetView(m_backBuffer.renderTarget.Get(), &rtvDesc, m_backBuffer.renderTargetView.GetAddressOf());
-	CheckResult(hr, "·»´õ Å¸°Ù ºä »ı¼º ½ÇÆĞ.");
+	CheckResult(hr, "ë Œë” íƒ€ê²Ÿ ë·° ìƒì„± ì‹¤íŒ¨.");
 }
 
 void Renderer::CreateBackBufferResources()
 {
 	HRESULT hr = S_OK;
 
-	constexpr array<BackBufferVertex, 3> backBufferVertices = // ÀüÃ¼ È­¸é »ï°¢Çü Á¤Á¡ µ¥ÀÌÅÍ
+	constexpr array<BackBufferVertex, 3> backBufferVertices = // ì „ì²´ í™”ë©´ ì‚¼ê°í˜• ì •ì  ë°ì´í„°
 	{
 		BackBufferVertex{.position = { -1.0f, -1.0f, 0.0f, 1.0f }, .UV = { 0.0f, 1.0f } },
 		BackBufferVertex{.position = { -1.0f, 3.0f, 0.0f, 1.0f }, .UV = { 0.0f, -1.0f } },
@@ -233,17 +233,13 @@ void Renderer::CreateBackBufferResources()
 	};
 
 	hr = m_device->CreateBuffer(&bufferDesc, &initialData, m_backBufferVertexBuffer.GetAddressOf());
-	CheckResult(hr, "¹é ¹öÆÛ Á¤Á¡ ¹öÆÛ »ı¼º ½ÇÆĞ.");
+	CheckResult(hr, "ë°± ë²„í¼ ì •ì  ë²„í¼ ìƒì„± ì‹¤íŒ¨.");
 
 	ResourceManager& resourceManager = ResourceManager::GetInstance();
-	// ·¡½ºÅÍ »óÅÂ »ı¼º
-	m_backBufferRasterState = resourceManager.GetRasterState(RasterState::BackBuffer);
-	// »ùÇÃ·¯ »óÅÂ »ı¼º
-	m_backBufferSamplerState = resourceManager.GetSamplerState(SamplerState::BackBuffer);
-	// Á¤Á¡ ¼ÎÀÌ´õ ¹× ÀÔ·Â ·¹ÀÌ¾Æ¿ô »ı¼º
+	// ì •ì  ì…°ì´ë” ë° ì…ë ¥ ë ˆì´ì•„ì›ƒ ìƒì„±
 	vector<InputElement> inputElements = { InputElement::Position, InputElement::UV };
 	m_backBufferVertexShaderAndInputLayout = resourceManager.GetVertexShaderAndInputLayout("VSPostProcessing.hlsl", inputElements);
-	// ÇÈ¼¿ ¼ÎÀÌ´õ ÄÄÆÄÀÏ ¹× »ı¼º
+	// í”½ì…€ ì…°ì´ë” ì»´íŒŒì¼ ë° ìƒì„±
 	m_backBufferPixelShader = resourceManager.GetPixelShader("PSPostProcessing.hlsl");
 }
 
@@ -251,40 +247,40 @@ void Renderer::CreateSceneRenderTarget()
 {
 	HRESULT hr = S_OK;
 
-	// ·»´õ Å¸°Ù ÅØ½ºÃ³ »ı¼º
+	// ë Œë” íƒ€ê²Ÿ í…ìŠ¤ì²˜ ìƒì„±
 	const D3D11_TEXTURE2D_DESC textureDesc =
 	{
 		.Width = m_swapChainDesc.Width,
 		.Height = m_swapChainDesc.Height,
-		.MipLevels = 1, // ´ÜÀÏ ¹Ó¸Ê
-		.ArraySize = 1, // ´ÜÀÏ ÅØ½ºÃ³
-		.Format = DXGI_FORMAT_R8G8B8A8_UNORM, // °¨¸¶ º¸Á¤ ¾ÈÇÔ
+		.MipLevels = 1, // ë‹¨ì¼ ë°‰ë§µ
+		.ArraySize = 1, // ë‹¨ì¼ í…ìŠ¤ì²˜
+		.Format = DXGI_FORMAT_R8G8B8A8_UNORM, // ê°ë§ˆ ë³´ì • ì•ˆí•¨
 		.SampleDesc = m_sceneBufferSampleDesc,
-		.Usage = D3D11_USAGE_DEFAULT, // GPU ÀĞ±â/¾²±â
-		.BindFlags = D3D11_BIND_RENDER_TARGET | D3D11_BIND_SHADER_RESOURCE, // ·»´õ Å¸°Ù ¹× ¼ÎÀÌ´õ ¸®¼Ò½º
-		.CPUAccessFlags = 0, // CPU Á¢±Ù ¾øÀ½
-		.MiscFlags = 0 // ±âÅ¸ ÇÃ·¡±× ¾øÀ½
+		.Usage = D3D11_USAGE_DEFAULT, // GPU ì½ê¸°/ì“°ê¸°
+		.BindFlags = D3D11_BIND_RENDER_TARGET | D3D11_BIND_SHADER_RESOURCE, // ë Œë” íƒ€ê²Ÿ ë° ì…°ì´ë” ë¦¬ì†ŒìŠ¤
+		.CPUAccessFlags = 0, // CPU ì ‘ê·¼ ì—†ìŒ
+		.MiscFlags = 0 // ê¸°íƒ€ í”Œë˜ê·¸ ì—†ìŒ
 	};
 	hr = m_device->CreateTexture2D(&textureDesc, nullptr, m_sceneBuffer.renderTarget.GetAddressOf());
-	CheckResult(hr, "¾À ·»´õ Å¸°Ù ÅØ½ºÃ³ »ı¼º ½ÇÆĞ.");
+	CheckResult(hr, "ì”¬ ë Œë” íƒ€ê²Ÿ í…ìŠ¤ì²˜ ìƒì„± ì‹¤íŒ¨.");
 
-	// ·»´õ Å¸°Ù ºä »ı¼º
+	// ë Œë” íƒ€ê²Ÿ ë·° ìƒì„±
 	const D3D11_RENDER_TARGET_VIEW_DESC rtvDesc =
 	{
 		.Format = textureDesc.Format,
-		.ViewDimension = textureDesc.SampleDesc.Count > 1 ? D3D11_RTV_DIMENSION_TEXTURE2DMS : D3D11_RTV_DIMENSION_TEXTURE2D // ¸ÖÆ¼»ùÇÃ¸µ ¿©ºÎ¿¡ µû¸¥ ºä Â÷¿ø
+		.ViewDimension = textureDesc.SampleDesc.Count > 1 ? D3D11_RTV_DIMENSION_TEXTURE2DMS : D3D11_RTV_DIMENSION_TEXTURE2D // ë©€í‹°ìƒ˜í”Œë§ ì—¬ë¶€ì— ë”°ë¥¸ ë·° ì°¨ì›
 	};
 	hr = m_device->CreateRenderTargetView(m_sceneBuffer.renderTarget.Get(), &rtvDesc, m_sceneBuffer.renderTargetView.GetAddressOf());
-	CheckResult(hr, "¾À ·»´õ Å¸°Ù ºä »ı¼º ½ÇÆĞ.");
+	CheckResult(hr, "ì”¬ ë Œë” íƒ€ê²Ÿ ë·° ìƒì„± ì‹¤íŒ¨.");
 
-	// ±íÀÌ-½ºÅÙ½Ç ÅØ½ºÃ³ ¹× ºä »ı¼º
+	// ê¹Šì´-ìŠ¤í…ì‹¤ í…ìŠ¤ì²˜ ë° ë·° ìƒì„±
 	const D3D11_TEXTURE2D_DESC depthStencilDesc =
 	{
 		.Width = m_swapChainDesc.Width,
 		.Height = m_swapChainDesc.Height,
 		.MipLevels = 1,
 		.ArraySize = 1,
-		.Format = DXGI_FORMAT_D32_FLOAT_S8X24_UINT, // ±íÀÌ: 32ºñÆ® ½Ç¼ö, ½ºÅÙ½Ç: 8ºñÆ® Á¤¼ö
+		.Format = DXGI_FORMAT_D32_FLOAT_S8X24_UINT, // ê¹Šì´: 32ë¹„íŠ¸ ì‹¤ìˆ˜, ìŠ¤í…ì‹¤: 8ë¹„íŠ¸ ì •ìˆ˜
 		.SampleDesc = textureDesc.SampleDesc,
 		.Usage = D3D11_USAGE_DEFAULT,
 		.BindFlags = D3D11_BIND_DEPTH_STENCIL,
@@ -292,9 +288,9 @@ void Renderer::CreateSceneRenderTarget()
 		.MiscFlags = 0
 	};
 	hr = m_device->CreateTexture2D(&depthStencilDesc, nullptr, m_sceneBuffer.depthStencilTexture.GetAddressOf());
-	CheckResult(hr, "¾À ±íÀÌ-½ºÅÙ½Ç ÅØ½ºÃ³ »ı¼º ½ÇÆĞ.");
+	CheckResult(hr, "ì”¬ ê¹Šì´-ìŠ¤í…ì‹¤ í…ìŠ¤ì²˜ ìƒì„± ì‹¤íŒ¨.");
 
-	// ±íÀÌ-½ºÅÙ½Ç ºä »ı¼º
+	// ê¹Šì´-ìŠ¤í…ì‹¤ ë·° ìƒì„±
 	const D3D11_DEPTH_STENCIL_VIEW_DESC dsvDesc =
 	{
 		.Format = depthStencilDesc.Format,
@@ -302,7 +298,7 @@ void Renderer::CreateSceneRenderTarget()
 		.Flags = 0
 	};
 	hr = m_device->CreateDepthStencilView(m_sceneBuffer.depthStencilTexture.Get(), &dsvDesc, m_sceneBuffer.depthStencilView.GetAddressOf());
-	CheckResult(hr, "¾À ±íÀÌ-½ºÅÙ½Ç ºä »ı¼º ½ÇÆĞ.");
+	CheckResult(hr, "ì”¬ ê¹Šì´-ìŠ¤í…ì‹¤ ë·° ìƒì„± ì‹¤íŒ¨.");
 
 	const D3D11_TEXTURE2D_DESC sceneResultDesc =
 	{
@@ -311,16 +307,16 @@ void Renderer::CreateSceneRenderTarget()
 		.MipLevels = 1,
 		.ArraySize = 1,
 		.Format = textureDesc.Format,
-		.SampleDesc = { 1, 0 }, // °á°ú ÅØ½ºÃ³´Â ´ÜÀÏ »ùÇÃ¸µ
+		.SampleDesc = { 1, 0 }, // ê²°ê³¼ í…ìŠ¤ì²˜ëŠ” ë‹¨ì¼ ìƒ˜í”Œë§
 		.Usage = D3D11_USAGE_DEFAULT,
-		.BindFlags = D3D11_BIND_SHADER_RESOURCE, // ¼ÎÀÌ´õ ¸®¼Ò½º ¿ëµµ
+		.BindFlags = D3D11_BIND_SHADER_RESOURCE, // ì…°ì´ë” ë¦¬ì†ŒìŠ¤ ìš©ë„
 		.CPUAccessFlags = 0,
 		.MiscFlags = 0
 	};
 	hr = m_device->CreateTexture2D(&sceneResultDesc, nullptr, m_sceneResultTexture.GetAddressOf());
-	CheckResult(hr, "¾À °á°ú ÅØ½ºÃ³ »ı¼º ½ÇÆĞ.");
+	CheckResult(hr, "ì”¬ ê²°ê³¼ í…ìŠ¤ì²˜ ìƒì„± ì‹¤íŒ¨.");
 
-	// ¾À ·»´õ Å¸°ÙÀÇ ¼ÎÀÌ´õ ¸®¼Ò½º ºä »ı¼º
+	// ì”¬ ë Œë” íƒ€ê²Ÿì˜ ì…°ì´ë” ë¦¬ì†ŒìŠ¤ ë·° ìƒì„±
 	const D3D11_SHADER_RESOURCE_VIEW_DESC srvDesc =
 	{
 		.Format = textureDesc.Format,
@@ -328,10 +324,7 @@ void Renderer::CreateSceneRenderTarget()
 		.Texture2D = {.MostDetailedMip = 0, .MipLevels = 1 }
 	};
 	hr = m_device->CreateShaderResourceView(m_sceneResultTexture.Get(), &srvDesc, m_sceneShaderResourceView.GetAddressOf());
-	CheckResult(hr, "¾À ¼ÎÀÌ´õ ¸®¼Ò½º ºä »ı¼º ½ÇÆĞ.");
-
-	// ·¡½ºÅÍ »óÅÂ »ı¼º
-	m_sceneRasterState = ResourceManager::GetInstance().GetRasterState(RasterState::Solid);
+	CheckResult(hr, "ì”¬ ì…°ì´ë” ë¦¬ì†ŒìŠ¤ ë·° ìƒì„± ì‹¤íŒ¨.");
 }
 
 void Renderer::SetViewport()
@@ -377,7 +370,7 @@ void Renderer::ResolveSceneMSAA()
 
 void Renderer::RenderSceneToBackBuffer()
 {
-	// ÀüÃ¼ È­¸é »ï°¢Çü ·»´õ¸µ
+	// ì „ì²´ í™”ë©´ ì‚¼ê°í˜• ë Œë”ë§
 	constexpr UINT stride = sizeof(BackBufferVertex);
 	constexpr UINT offset = 0;
 
@@ -388,7 +381,6 @@ void Renderer::RenderSceneToBackBuffer()
 	m_deviceContext->VSSetShader(m_backBufferVertexShaderAndInputLayout.first.Get(), nullptr, 0);
 	m_deviceContext->PSSetShader(m_backBufferPixelShader.Get(), nullptr, 0);
 
-	m_deviceContext->PSSetSamplers(static_cast<UINT>(SamplerState::BackBuffer), 1, m_backBufferSamplerState.GetAddressOf());
 	m_deviceContext->PSSetShaderResources(static_cast<UINT>(TextureSlots::BackBuffer), 1, m_sceneShaderResourceView.GetAddressOf());
 
 	m_deviceContext->Draw(3, 0);

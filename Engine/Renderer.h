@@ -1,56 +1,54 @@
 #pragma once
 #include "Singleton.h"
-#include "Resource.h"
 
 class Renderer : public Singleton<Renderer>
 {
 	friend class Singleton<Renderer>;
 
-	const std::array<D3D_FEATURE_LEVEL, 3> m_featureLevels = // Áö¿øÇÒ Direct3D ¹öÀü
+	const std::array<D3D_FEATURE_LEVEL, 3> m_featureLevels = // ì§€ì›í•  Direct3D ë²„ì „
 	{
 		D3D_FEATURE_LEVEL_11_0,
 		D3D_FEATURE_LEVEL_10_1,
 		D3D_FEATURE_LEVEL_10_0
 	};
 
-	float m_aspectRatio = 16.0f / 9.0f; // È­¸é Á¾È¾ºñ
-	DXGI_SWAP_CHAIN_DESC1 m_swapChainDesc = // ½º¿Ò Ã¼ÀÎ ¼³Á¤
+	float m_aspectRatio = 16.0f / 9.0f; // í™”ë©´ ì¢…íš¡ë¹„
+	DXGI_SWAP_CHAIN_DESC1 m_swapChainDesc = // ìŠ¤ì™‘ ì²´ì¸ ì„¤ì •
 	{
 		.Width = 1280,
 		.Height = 720,
 		.Format = DXGI_FORMAT_R8G8B8A8_UNORM,
-		.Stereo = FALSE, // VR¿ë ÀÔÃ¼ ¿µ»ó¿ë // »ç¿ë ¾ÈÇÔ
-		.SampleDesc = {.Count = 1, .Quality = 0 }, // ¸ÖÆ¼»ùÇÃ¸µ ¼³Á¤ // ½º¿Ò Ã¼ÀÎ ÀÚÃ¼¿¡´Â ¸ÖÆ¼»ùÇÃ¸µ Àû¿ë ¸øÇÔ
-		.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT, // ·»´õ Å¸°ÙÀ¸·Î »ç¿ë
-		.BufferCount = 2, // ´õºí ¹öÆÛ¸µ
-		.Scaling = DXGI_SCALING_STRETCH, // Ã¢ Å©±â¿¡ ¸Â°Ô ½ºÆ®·¹Äª
-		.SwapEffect = DXGI_SWAP_EFFECT_FLIP_DISCARD, // ÇÃ¸³ ¸ğµå // Àß ¸ğ¸£°Ú´Âµ¥ ÀÌ°Ô ºü¸£´Ù ÇÔ
-		.AlphaMode = DXGI_ALPHA_MODE_UNSPECIFIED, // ¾ËÆÄ ºí·»µù ¾øÀ½
-		.Flags = DXGI_SWAP_CHAIN_FLAG_ALLOW_MODE_SWITCH // ÀüÃ¼ È­¸é ÀüÈ¯ Çã¿ë
+		.Stereo = FALSE, // VRìš© ì…ì²´ ì˜ìƒìš© // ì‚¬ìš© ì•ˆí•¨
+		.SampleDesc = {.Count = 1, .Quality = 0 }, // ë©€í‹°ìƒ˜í”Œë§ ì„¤ì • // ìŠ¤ì™‘ ì²´ì¸ ìì²´ì—ëŠ” ë©€í‹°ìƒ˜í”Œë§ ì ìš© ëª»í•¨
+		.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT, // ë Œë” íƒ€ê²Ÿìœ¼ë¡œ ì‚¬ìš©
+		.BufferCount = 2, // ë”ë¸” ë²„í¼ë§
+		.Scaling = DXGI_SCALING_STRETCH, // ì°½ í¬ê¸°ì— ë§ê²Œ ìŠ¤íŠ¸ë ˆì¹­
+		.SwapEffect = DXGI_SWAP_EFFECT_FLIP_DISCARD, // í”Œë¦½ ëª¨ë“œ // ì˜ ëª¨ë¥´ê² ëŠ”ë° ì´ê²Œ ë¹ ë¥´ë‹¤ í•¨
+		.AlphaMode = DXGI_ALPHA_MODE_UNSPECIFIED, // ì•ŒíŒŒ ë¸”ë Œë”© ì—†ìŒ
+		.Flags = DXGI_SWAP_CHAIN_FLAG_ALLOW_MODE_SWITCH // ì „ì²´ í™”ë©´ ì „í™˜ í—ˆìš©
 	};
-	// TODO: ³ªÁß¿¡ ÀüÃ¼ È­¸é ¼³Á¤µµ ¸â¹ö º¯¼ö·Î Ãß°¡ DXGI_SWAP_CHAIN_FULLSCREEN_DESC
+	// TODO: ë‚˜ì¤‘ì— ì „ì²´ í™”ë©´ ì„¤ì •ë„ ë©¤ë²„ ë³€ìˆ˜ë¡œ ì¶”ê°€ DXGI_SWAP_CHAIN_FULLSCREEN_DESC
 
-	com_ptr<ID3D11Device> m_device = nullptr; // µğ¹ÙÀÌ½º
-	com_ptr<ID3D11DeviceContext> m_deviceContext = nullptr; // µğ¹ÙÀÌ½º ÄÁÅØ½ºÆ®
-	com_ptr<IDXGISwapChain1> m_swapChain = nullptr; // ½º¿Ò Ã¼ÀÎ
+	com_ptr<ID3D11Device> m_device = nullptr; // ë””ë°”ì´ìŠ¤
+	com_ptr<ID3D11DeviceContext> m_deviceContext = nullptr; // ë””ë°”ì´ìŠ¤ ì»¨í…ìŠ¤íŠ¸
+	com_ptr<IDXGISwapChain1> m_swapChain = nullptr; // ìŠ¤ì™‘ ì²´ì¸
 
-	RenderTarget m_backBuffer; // ¹é ¹öÆÛ ·»´õ Å¸°Ù // È­¸é¿¡ Ãâ·ÂµÇ´Â ¹öÆÛ // UI¸¸À» Á÷Á¢ÀûÀ¸·Î ·£´õ
-	com_ptr<ID3D11RasterizerState> m_backBufferRasterState = nullptr; // ¹é ¹öÆÛ¿ë ·¡½ºÅÍ »óÅÂ
-	com_ptr<ID3D11SamplerState> m_backBufferSamplerState = nullptr; // ¹é ¹öÆÛ¿ë »ùÇÃ·¯ »óÅÂ
+	// ë°± ë²„í¼ ë Œë” íƒ€ê²Ÿ ê´€ë ¨ ë¦¬ì†ŒìŠ¤
+	RenderTarget m_backBuffer; // ë°± ë²„í¼ ë Œë” íƒ€ê²Ÿ // í™”ë©´ì— ì¶œë ¥ë˜ëŠ” ë²„í¼ // UIë§Œì„ ì§ì ‘ì ìœ¼ë¡œ ëœë”
 	struct BackBufferVertex
 	{
 		DirectX::XMFLOAT4 position = {};
 		DirectX::XMFLOAT2 UV = {};
 	};
-	com_ptr<ID3D11Buffer> m_backBufferVertexBuffer = nullptr; // ¹é ¹öÆÛ¿ë Á¤Á¡ ¹öÆÛ
-	std::pair<com_ptr<ID3D11VertexShader>, com_ptr<ID3D11InputLayout>> m_backBufferVertexShaderAndInputLayout = {}; // ¹é ¹öÆÛ¿ë Á¤Á¡ ¼ÎÀÌ´õ ¹× ÀÔ·Â ·¹ÀÌ¾Æ¿ô
-	com_ptr<ID3D11PixelShader> m_backBufferPixelShader = nullptr; // ¹é ¹öÆÛ¿ë ÈÄÃ³¸® ÇÈ¼¿ ¼ÎÀÌ´õ
+	com_ptr<ID3D11Buffer> m_backBufferVertexBuffer = nullptr; // ë°± ë²„í¼ìš© ì •ì  ë²„í¼
+	std::pair<com_ptr<ID3D11VertexShader>, com_ptr<ID3D11InputLayout>> m_backBufferVertexShaderAndInputLayout = {}; // ë°± ë²„í¼ìš© ì •ì  ì…°ì´ë” ë° ì…ë ¥ ë ˆì´ì•„ì›ƒ
+	com_ptr<ID3D11PixelShader> m_backBufferPixelShader = nullptr; // ë°± ë²„í¼ìš© í›„ì²˜ë¦¬ í”½ì…€ ì…°ì´ë”
 
-	DXGI_SAMPLE_DESC m_sceneBufferSampleDesc = { 4, 0 }; // ¾À ·»´õ Å¸°Ù¿ë »ùÇÃ ¼³¸í // ¸ÖÆ¼»ùÇÃ¸µ ¼³Á¤
-	RenderTarget m_sceneBuffer; // ¾À ·»´õ Å¸°Ù // ½ÇÁ¦ °ÔÀÓ ¾ÀÀ» ·£´õ¸µÇÏ´Â ¹öÆÛ
-	com_ptr<ID3D11RasterizerState> m_sceneRasterState = nullptr; // ¾À ·»´õ Å¸°Ù¿ë ·¡½ºÅÍ »óÅÂ
-	com_ptr<ID3D11Texture2D> m_sceneResultTexture = nullptr; // ¾À ·»´õ Å¸°ÙÀÇ °á°ú ÅØ½ºÃ³ // MSAA ´Ù¿î»ùÇÃ¸µ ÈÄ °á°ú ÀúÀå
-	com_ptr<ID3D11ShaderResourceView> m_sceneShaderResourceView = nullptr; // ¾À ·»´õ Å¸°ÙÀÇ ¼ÎÀÌ´õ ¸®¼Ò½º ºä // ¹é ¹öÆÛ¿¡ Àû¿ëÇÏ¸é¼­ ÈÄÃ³¸®µÊ
+	// ì”¬ ë Œë” íƒ€ê²Ÿ ê´€ë ¨ ë¦¬ì†ŒìŠ¤
+	DXGI_SAMPLE_DESC m_sceneBufferSampleDesc = { 4, 0 }; // ì”¬ ë Œë” íƒ€ê²Ÿìš© ìƒ˜í”Œ ì„¤ëª… // ë©€í‹°ìƒ˜í”Œë§ ì„¤ì •
+	RenderTarget m_sceneBuffer; // ì”¬ ë Œë” íƒ€ê²Ÿ // ì‹¤ì œ ê²Œì„ ì”¬ì„ ëœë”ë§í•˜ëŠ” ë²„í¼
+	com_ptr<ID3D11Texture2D> m_sceneResultTexture = nullptr; // ì”¬ ë Œë” íƒ€ê²Ÿì˜ ê²°ê³¼ í…ìŠ¤ì²˜ // MSAA ë‹¤ìš´ìƒ˜í”Œë§ í›„ ê²°ê³¼ ì €ì¥
+	com_ptr<ID3D11ShaderResourceView> m_sceneShaderResourceView = nullptr; // ì”¬ ë Œë” íƒ€ê²Ÿì˜ ì…°ì´ë” ë¦¬ì†ŒìŠ¤ ë·° // ë°± ë²„í¼ì— ì ìš©í•˜ë©´ì„œ í›„ì²˜ë¦¬ë¨
 
 public:
 	Renderer() = default;
@@ -60,56 +58,56 @@ public:
 	Renderer(Renderer&&) = delete;
 	Renderer& operator=(Renderer&&) = delete;
 
-	// ·»´õ·¯ ÃÊ±âÈ­ // WindowManager¿¡¼­ À©µµ¿ì »ı¼º ÈÄ È£Ãâ
+	// ë Œë”ëŸ¬ ì´ˆê¸°í™” // WindowManagerì—ì„œ ìœˆë„ìš° ìƒì„± í›„ í˜¸ì¶œ
 	void Initialize();
 
-	// ÇÁ·¹ÀÓ ½ÃÀÛ
+	// í”„ë ˆì„ ì‹œì‘
 	void BeginFrame();
-	// ÇÁ·¹ÀÓ Á¾·á // È­¸é¿¡ ³»¿ë Ãâ·Â
+	// í”„ë ˆì„ ì¢…ë£Œ // í™”ë©´ì— ë‚´ìš© ì¶œë ¥
 	void EndFrame();
 
-	// ·»´õ·¯ Á¾·á // WindowManager¿¡¼­ À©µµ¿ì Á¾·á Àü È£Ãâ
+	// ë Œë”ëŸ¬ ì¢…ë£Œ // WindowManagerì—ì„œ ìœˆë„ìš° ì¢…ë£Œ ì „ í˜¸ì¶œ
 	void Finalize();
 
-	// µğ¹ÙÀÌ½º ÄÁÅØ½ºÆ® Á¶È¸
+	// ë””ë°”ì´ìŠ¤ ì»¨í…ìŠ¤íŠ¸ ì¡°íšŒ
 	com_ptr<ID3D11DeviceContext> GetDeviceContext() const { return m_deviceContext; }
 
-	// È­¸é Å©±â Á¶Á¤
+	// í™”ë©´ í¬ê¸° ì¡°ì •
 	HRESULT Resize(UINT width, UINT height);
-	// È­¸é Á¾È¾ºñ Á¶È¸
+	// í™”ë©´ ì¢…íš¡ë¹„ ì¡°íšŒ
 	float GetAspectRatio() const { return m_aspectRatio; }
 
-	// ½º¿Ò Ã¼ÀÎ ¼³Á¤ º¯°æ
+	// ìŠ¤ì™‘ ì²´ì¸ ì„¤ì • ë³€ê²½
 	void SetSwapChainDesc(const DXGI_SWAP_CHAIN_DESC1& desc) { m_swapChainDesc = desc; }
-	// ½º¿Ò Ã¼ÀÎ ¼³Á¤ Á¶È¸
+	// ìŠ¤ì™‘ ì²´ì¸ ì„¤ì • ì¡°íšŒ
 	const DXGI_SWAP_CHAIN_DESC1& GetSwapChainDesc() const { return m_swapChainDesc; }
 
 private:
-	// ÃÊ±âÈ­ ÇÔ¼ö
-	// µğ¹ÙÀÌ½º ¹× µğ¹ÙÀÌ½º ÄÁÅØ½ºÆ® »ı¼º
+	// ì´ˆê¸°í™” í•¨ìˆ˜
+	// ë””ë°”ì´ìŠ¤ ë° ë””ë°”ì´ìŠ¤ ì»¨í…ìŠ¤íŠ¸ ìƒì„±
 	void CreateDeviceAndContext();
-	// ½º¿Ò Ã¼ÀÎ »ı¼º
+	// ìŠ¤ì™‘ ì²´ì¸ ìƒì„±
 	void CreateSwapChain();
-	// ¹é ¹öÆÛ ·»´õ Å¸°Ù »ı¼º
+	// ë°± ë²„í¼ ë Œë” íƒ€ê²Ÿ ìƒì„±
 	void CreateBackBufferRenderTarget();
-	// ¹é ¹öÆÛ ¼ÎÀÌ´õ ¹× »ó¼ö ¹öÆÛ »ı¼º
+	// ë°± ë²„í¼ ì…°ì´ë” ë° ìƒìˆ˜ ë²„í¼ ìƒì„±
 	void CreateBackBufferResources();
-	// ¾À ·»´õ Å¸°Ù »ı¼º
+	// ì”¬ ë Œë” íƒ€ê²Ÿ ìƒì„±
 	void CreateSceneRenderTarget();
-	// ºäÆ÷Æ® ¼³Á¤
+	// ë·°í¬íŠ¸ ì„¤ì •
 	void SetViewport();
 
-	// ·£´õ¸µ ÆÄÀÌÇÁ¶óÀÎ ÇÔ¼ö
-	// ImGui ÇÁ·¹ÀÓ ½ÃÀÛ
+	// ëœë”ë§ íŒŒì´í”„ë¼ì¸ í•¨ìˆ˜
+	// ImGui í”„ë ˆì„ ì‹œì‘
 	void BeginImGuiFrame();
-	// ¼ÎÀÌ´õ ¸®¼Ò½º ÇØÁ¦
+	// ì…°ì´ë” ë¦¬ì†ŒìŠ¤ í•´ì œ
 	void UnbindShaderResources();
-	// ·»´õ Å¸°Ù Å¬¸®¾î
+	// ë Œë” íƒ€ê²Ÿ í´ë¦¬ì–´
 	void ClearRenderTarget(RenderTarget& target);
-	// ¾À ·»´õ Å¸°Ù MSAA ´Ù¿î»ùÇÃ¸µ // MSAA ¹ÌÀû¿ë½Ã ±×³É º¹»ç
+	// ì”¬ ë Œë” íƒ€ê²Ÿ MSAA ë‹¤ìš´ìƒ˜í”Œë§ // MSAA ë¯¸ì ìš©ì‹œ ê·¸ëƒ¥ ë³µì‚¬
 	void ResolveSceneMSAA();
-	// ¹é ¹öÆÛ ·£´õ¸µ
+	// ë°± ë²„í¼ ëœë”ë§
 	void RenderSceneToBackBuffer();
-	// ImGui ÇÁ·¹ÀÓ Á¾·á
+	// ImGui í”„ë ˆì„ ì¢…ë£Œ
 	void EndImGuiFrame();
 };

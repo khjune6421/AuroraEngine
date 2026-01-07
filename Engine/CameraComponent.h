@@ -3,17 +3,17 @@
 
 class CameraComponent : public ComponentBase
 {
-	float m_fovY = DirectX::XM_PIDIV4; // ¼öÁ÷ ½Ã¾ß°¢ (¶óµğ¾È ´ÜÀ§)
+	float m_fovY = DirectX::XM_PIDIV4; // ìˆ˜ì§ ì‹œì•¼ê° (ë¼ë””ì•ˆ ë‹¨ìœ„)
 
-	UINT m_screenWidth = 1280; // È­¸é ³Êºñ
-	UINT m_screenHeight = 720; // È­¸é ³ôÀÌ
+	UINT m_screenWidth = 1280; // í™”ë©´ ë„ˆë¹„
+	UINT m_screenHeight = 720; // í™”ë©´ ë†’ì´
 
-	float m_nearZ = 0.1f; // ±ÙÆò¸é
-	float m_farZ = 1000.0f; // ¿øÆò¸é
+	float m_nearZ = 0.1f; // ê·¼í‰ë©´
+	float m_farZ = 1000.0f; // ì›í‰ë©´
 
-	DirectX::XMMATRIX m_viewMatrix = DirectX::XMMatrixIdentity(); // ºä Çà·Ä
-	DirectX::XMMATRIX m_projectionMatrix = DirectX::XMMatrixIdentity(); // Åõ¿µ Çà·Ä
-	const DirectX::XMVECTOR* m_position = nullptr; // Ä«¸Ş¶ó À§Ä¡
+	DirectX::XMMATRIX m_viewMatrix = DirectX::XMMatrixIdentity(); // ë·° í–‰ë ¬
+	DirectX::XMMATRIX m_projectionMatrix = DirectX::XMMatrixIdentity(); // íˆ¬ì˜ í–‰ë ¬
+	const DirectX::XMVECTOR* m_position = nullptr; // ì¹´ë©”ë¼ ìœ„ì¹˜
 
 public:
 	CameraComponent() = default;
@@ -36,15 +36,15 @@ public:
 
 private:
 	void Initialize() override;
-	// À§Ä¡, ºä Çà·Ä °»½Å
+	// ìœ„ì¹˜, ë·° í–‰ë ¬ ê°±ì‹ 
 	void Update() override { UpdateViewMatrix(); UpdateProjectionMatrix(); }
 	void RenderImGui() override;
 
 	nlohmann::json Serialize() override;
 	void Deserialize(const nlohmann::json& jsonData) override;
 
-	// ºä Çà·Ä °»½Å
+	// ë·° í–‰ë ¬ ê°±ì‹ 
 	void UpdateViewMatrix();
-	// Åõ¿µ Çà·Ä °»½Å
+	// íˆ¬ì˜ í–‰ë ¬ ê°±ì‹ 
 	void UpdateProjectionMatrix();
 };

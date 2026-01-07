@@ -1,9 +1,9 @@
-/// GameObjectBase.hÀÇ ½ÃÀÛ
+/// GameObjectBase.hì˜ ì‹œì‘
 #pragma once
 #include "Base.h"
 #include "ComponentBase.h"
 
-enum class Direction // ¹æÇâ ¿­°ÅÇü
+enum class Direction // ë°©í–¥ ì—´ê±°í˜•
 {
 	Left, Right,
 	Up, Down,
@@ -14,120 +14,115 @@ enum class Direction // ¹æÇâ ¿­°ÅÇü
 
 class GameObjectBase : public Base
 {
-	UINT m_id = 0; // °íÀ¯ ID
-	std::string m_name = ""; // ÀÌ¸§
+	UINT m_id = 0; // ê³ ìœ  ID
+	std::string m_name = ""; // ì´ë¦„
 
-	// º¯È¯ °ü·Ã ¸â¹ö º¯¼ö
-	DirectX::XMMATRIX m_worldMatrix = DirectX::XMMatrixIdentity(); // ¿ùµå Çà·Ä
-	DirectX::XMMATRIX m_positionMatrix = DirectX::XMMatrixIdentity(); // À§Ä¡ Çà·Ä
-	DirectX::XMMATRIX m_rotationMatrix = DirectX::XMMatrixIdentity(); // È¸Àü Çà·Ä
-	DirectX::XMMATRIX m_scaleMatrix = DirectX::XMMatrixIdentity(); // ½ºÄÉÀÏ Çà·Ä
-	DirectX::XMMATRIX m_inverseScaleSquareMatrix = DirectX::XMMatrixIdentity(); // ½ºÄÉÀÏ ¿ªÇà·Ä Á¦°ö (¹ı¼± Çà·Ä °è»ê¿ë)
+	// ë³€í™˜ ê´€ë ¨ ë©¤ë²„ ë³€ìˆ˜
+	DirectX::XMMATRIX m_worldMatrix = DirectX::XMMatrixIdentity(); // ì›”ë“œ í–‰ë ¬
+	DirectX::XMMATRIX m_positionMatrix = DirectX::XMMatrixIdentity(); // ìœ„ì¹˜ í–‰ë ¬
+	DirectX::XMMATRIX m_rotationMatrix = DirectX::XMMatrixIdentity(); // íšŒì „ í–‰ë ¬
+	DirectX::XMMATRIX m_scaleMatrix = DirectX::XMMatrixIdentity(); // ìŠ¤ì¼€ì¼ í–‰ë ¬
+	DirectX::XMMATRIX m_inverseScaleSquareMatrix = DirectX::XMMatrixIdentity(); // ìŠ¤ì¼€ì¼ ì—­í–‰ë ¬ ì œê³± (ë²•ì„  í–‰ë ¬ ê³„ì‚°ìš©)
 
-	DirectX::XMVECTOR m_position = DirectX::XMVectorZero(); // À§Ä¡
-	DirectX::XMVECTOR m_quaternion = DirectX::XMQuaternionIdentity(); // ÄõÅÍ´Ï¾ğ
-	DirectX::XMVECTOR m_euler = DirectX::XMVectorZero(); // ¿ÀÀÏ·¯
-	DirectX::XMVECTOR m_scale = DirectX::XMVectorSet(1.0f, 1.0f, 1.0f, 1.0f); // Å©±â
-	bool m_isDirty = true; // À§Ä¡ °»½Å ÇÊ¿ä ¿©ºÎ
+	DirectX::XMVECTOR m_position = DirectX::XMVectorZero(); // ìœ„ì¹˜
+	DirectX::XMVECTOR m_quaternion = DirectX::XMQuaternionIdentity(); // ì¿¼í„°ë‹ˆì–¸
+	DirectX::XMVECTOR m_euler = DirectX::XMVectorZero(); // ì˜¤ì¼ëŸ¬
+	DirectX::XMVECTOR m_scale = DirectX::XMVectorSet(1.0f, 1.0f, 1.0f, 1.0f); // í¬ê¸°
+	bool m_isDirty = true; // ìœ„ì¹˜ ê°±ì‹  í•„ìš” ì—¬ë¶€
 
-	com_ptr<ID3D11DeviceContext> m_deviceContext = nullptr; // µğ¹ÙÀÌ½º ÄÁÅØ½ºÆ® Æ÷ÀÎÅÍ
+	com_ptr<ID3D11DeviceContext> m_deviceContext = nullptr; // ë””ë°”ì´ìŠ¤ ì»¨í…ìŠ¤íŠ¸ í¬ì¸í„°
 
-	struct WorldBuffer // ¿ùµå ¹× WVP Çà·Ä »ó¼ö ¹öÆÛ ±¸Á¶Ã¼
-	{
-		DirectX::XMMATRIX worldMatrix = DirectX::XMMatrixIdentity(); // ¿ùµå Çà·Ä
-		DirectX::XMMATRIX normalMatrix = DirectX::XMMatrixIdentity(); // ½ºÄÉÀÏ ¿ªÇà·ÄÀ» Àû¿ëÇÑ ¿ùµå Çà·Ä
-	};
-	WorldBuffer m_worldData = {}; // ¿ùµå ¹× WVP Çà·Ä »ó¼ö ¹öÆÛ µ¥ÀÌÅÍ
-	com_ptr<ID3D11Buffer> m_worldMatrixConstantBuffer = nullptr; // ¿ùµå, WVP Çà·Ä »ó¼ö ¹öÆÛ
+	WorldNormalBuffer m_worldData = {}; // ì›”ë“œ ë° WVP í–‰ë ¬ ìƒìˆ˜ ë²„í¼ ë°ì´í„°
+	com_ptr<ID3D11Buffer> m_worldMatrixConstantBuffer = nullptr; // ì›”ë“œ, WVP í–‰ë ¬ ìƒìˆ˜ ë²„í¼
 
-	std::unordered_map<std::type_index, std::unique_ptr<Base>> m_components = {}; // ÄÄÆ÷³ÍÆ® ¸Ê
-	std::vector<Base*> m_updateComponents = {}; // ¾÷µ¥ÀÌÆ®ÇÒ ÄÄÆ÷³ÍÆ® ¹è¿­
-	std::vector<Base*> m_renderComponents = {}; // ·»´õ¸µÇÒ ÄÄÆ÷³ÍÆ® ¹è¿­
+	std::unordered_map<std::type_index, std::unique_ptr<Base>> m_components = {}; // ì»´í¬ë„ŒíŠ¸ ë§µ
+	std::vector<Base*> m_updateComponents = {}; // ì—…ë°ì´íŠ¸í•  ì»´í¬ë„ŒíŠ¸ ë°°ì—´
+	std::vector<Base*> m_renderComponents = {}; // ë Œë”ë§í•  ì»´í¬ë„ŒíŠ¸ ë°°ì—´
 
 protected:
-	GameObjectBase* m_parent = nullptr; // ºÎ¸ğ °ÔÀÓ ¿ÀºêÁ§Æ® Æ÷ÀÎÅÍ
-	std::vector<std::unique_ptr<GameObjectBase>> m_childrens = {}; // ¼ÒÀ¯ÇÑ ÀÚ½Ä °ÔÀÓ ¿ÀºêÁ§Æ® ¹è¿­
+	GameObjectBase* m_parent = nullptr; // ë¶€ëª¨ ê²Œì„ ì˜¤ë¸Œì íŠ¸ í¬ì¸í„°
+	std::vector<std::unique_ptr<GameObjectBase>> m_childrens = {}; // ì†Œìœ í•œ ìì‹ ê²Œì„ ì˜¤ë¸Œì íŠ¸ ë°°ì—´
 
 public:
-	GameObjectBase(); // ¹«Á¶°Ç CreateGameObject·Î »ı¼º
+	GameObjectBase(); // ë¬´ì¡°ê±´ CreateGameObjectë¡œ ìƒì„±
 	virtual ~GameObjectBase() = default;
-	GameObjectBase(const GameObjectBase&) = default; // º¹»ç
-	GameObjectBase& operator=(const GameObjectBase&) = default; // º¹»ç ´ëÀÔ
-	GameObjectBase(GameObjectBase&&) = default; // ÀÌµ¿
-	GameObjectBase& operator=(GameObjectBase&&) = default; // ÀÌµ¿ ´ëÀÔ
+	GameObjectBase(const GameObjectBase&) = default; // ë³µì‚¬
+	GameObjectBase& operator=(const GameObjectBase&) = default; // ë³µì‚¬ ëŒ€ì…
+	GameObjectBase(GameObjectBase&&) = default; // ì´ë™
+	GameObjectBase& operator=(GameObjectBase&&) = default; // ì´ë™ ëŒ€ì…
 
 	UINT GetID() const { return m_id; }
 
-	// º¯È¯ °ü·Ã ÇÔ¼ö
-	// À§Ä¡ ÁöÁ¤
+	// ë³€í™˜ ê´€ë ¨ í•¨ìˆ˜
+	// ìœ„ì¹˜ ì§€ì •
 	void SetPosition(const DirectX::XMVECTOR& position) { m_position = position; SetDirty(); }
-	// À§Ä¡ ÀÌµ¿
+	// ìœ„ì¹˜ ì´ë™
 	void MovePosition(const DirectX::XMVECTOR& deltaPosition) { m_position = DirectX::XMVectorAdd(m_position, deltaPosition); SetDirty(); }
-	// ¹æÇâ ÀÌµ¿
+	// ë°©í–¥ ì´ë™
 	void MoveDirection(float distance, Direction direction);
-	// À§Ä¡ °¡Á®¿À±â
+	// ìœ„ì¹˜ ê°€ì ¸ì˜¤ê¸°
 	const DirectX::XMVECTOR& GetPosition() const { return m_position; }
 
-	// È¸Àü ÁöÁ¤
+	// íšŒì „ ì§€ì •
 	void SetRotation(const DirectX::XMVECTOR& rotation);
-	// È¸Àü ÀÌµ¿
+	// íšŒì „ ì´ë™
 	void Rotate(const DirectX::XMVECTOR& deltaRotation);
-	// Æ¯Á¤ À§Ä¡ ¹Ù¶óº¸±â
+	// íŠ¹ì • ìœ„ì¹˜ ë°”ë¼ë³´ê¸°
 	void LookAt(const DirectX::XMVECTOR& targetPosition, const DirectX::XMVECTOR& upDirection = { 0.0f, 1.0f, 0.0f, 0.0f });
-	// È¸Àü °¡Á®¿À±â
+	// íšŒì „ ê°€ì ¸ì˜¤ê¸°
 	const DirectX::XMVECTOR& GetRotation() const { return m_euler; }
-	// Á¤±ÔÈ­µÈ ¹æÇâ º¤ÅÍ °¡Á®¿À±â
+	// ì •ê·œí™”ëœ ë°©í–¥ ë²¡í„° ê°€ì ¸ì˜¤ê¸°
 	DirectX::XMVECTOR GetDirectionVector(Direction direction) const;
-	// ¿ùµå ±âÁØ Á¤±ÔÈ­µÈ ¹æÇâ º¤ÅÍ °¡Á®¿À±â
+	// ì›”ë“œ ê¸°ì¤€ ì •ê·œí™”ëœ ë°©í–¥ ë²¡í„° ê°€ì ¸ì˜¤ê¸°
 	DirectX::XMVECTOR GetWorldDirectionVector(Direction direction);
 
-	// Å©±â ÁöÁ¤
+	// í¬ê¸° ì§€ì •
 	void SetScale(const DirectX::XMVECTOR& scale) { m_scale = scale; SetDirty(); }
-	// Å©±â º¯°æ
+	// í¬ê¸° ë³€ê²½
 	void Scale(const DirectX::XMVECTOR& deltaScale) { m_scale = DirectX::XMVectorMultiply(m_scale, deltaScale); SetDirty(); }
-	// Å©±â °¡Á®¿À±â
+	// í¬ê¸° ê°€ì ¸ì˜¤ê¸°
 	const DirectX::XMVECTOR& GetScale() const { return m_scale; }
 
 	const DirectX::XMMATRIX& GetWorldMatrix() const { return m_worldMatrix; }
 
-	void CreateComponent(std::string typeName); // ÄÄÆ÷³ÍÆ® Ãß°¡ // Æ÷ÀÎÅÍ ¹İÈ¯ ¾ÈÇÔ
+	void CreateComponent(std::string typeName); // ì»´í¬ë„ŒíŠ¸ ì¶”ê°€ // í¬ì¸í„° ë°˜í™˜ ì•ˆí•¨
 	template<typename T> requires std::derived_from<T, ComponentBase>
-	T* CreateComponent(); // ÄÄÆ÷³ÍÆ® Ãß°¡ // Æ÷ÀÎÅÍ ¹İÈ¯
+	T* CreateComponent(); // ì»´í¬ë„ŒíŠ¸ ì¶”ê°€ // í¬ì¸í„° ë°˜í™˜
 
 	template<typename T> requires std::derived_from<T, ComponentBase>
-	T* GetComponent(); // ÄÄÆ÷³ÍÆ® °¡Á®¿À±â // ¾øÀ¸¸é nullptr ¹İÈ¯
+	T* GetComponent(); // ì»´í¬ë„ŒíŠ¸ ê°€ì ¸ì˜¤ê¸° // ì—†ìœ¼ë©´ nullptr ë°˜í™˜
 
-	// ÀÚ½Ä °ÔÀÓ ¿ÀºêÁ§Æ® »ı¼º // Æ÷ÀÎÅÍ ¹İÈ¯ ¾ÈÇÔ
+	// ìì‹ ê²Œì„ ì˜¤ë¸Œì íŠ¸ ìƒì„± // í¬ì¸í„° ë°˜í™˜ ì•ˆí•¨
 	void CreateChildGameObject(std::string typeName);
 	template<typename T> requires std::derived_from<T, GameObjectBase>
-	T* CreateChildGameObject(); // ÀÚ½Ä °ÔÀÓ ¿ÀºêÁ§Æ® »ı¼º // Æ÷ÀÎÅÍ ¹İÈ¯
-	// ÀÚ½Ä °ÔÀÓ ¿ÀºêÁ§Æ® Á¦°Å // Á¦°Å ¹è¿­¿¡ Ãß°¡
+	T* CreateChildGameObject(); // ìì‹ ê²Œì„ ì˜¤ë¸Œì íŠ¸ ìƒì„± // í¬ì¸í„° ë°˜í™˜
+	// ìì‹ ê²Œì„ ì˜¤ë¸Œì íŠ¸ ì œê±° // ì œê±° ë°°ì—´ì— ì¶”ê°€
 	template<typename T> requires std::derived_from<T, GameObjectBase>
-	T* CreateChildGameObject(std::string typeName); // ÀÚ½Ä °ÔÀÓ ¿ÀºêÁ§Æ® »ı¼º // Æ÷ÀÎÅÍ ¹İÈ¯
+	T* CreateChildGameObject(std::string typeName); // ìì‹ ê²Œì„ ì˜¤ë¸Œì íŠ¸ ìƒì„± // í¬ì¸í„° ë°˜í™˜
 
 private:
-	// °ÔÀÓ ¿ÀºêÁ§Æ® ÃÊ±âÈ­
+	// ê²Œì„ ì˜¤ë¸Œì íŠ¸ ì´ˆê¸°í™”
 	void BaseInitialize() override;
-	// °ÔÀÓ ¿ÀºêÁ§Æ® ¾÷µ¥ÀÌÆ®
+	// ê²Œì„ ì˜¤ë¸Œì íŠ¸ ì—…ë°ì´íŠ¸
 	void BaseUpdate() override;
-	// °ÔÀÓ ¿ÀºêÁ§Æ® ·»´õ¸µ
+	// ê²Œì„ ì˜¤ë¸Œì íŠ¸ ë Œë”ë§
 	void BaseRender() override;
-	// ImGui ·»´õ¸µ
+	// ImGui ë Œë”ë§
 	void BaseRenderImGui() override;
-	// °ÔÀÓ ¿ÀºêÁ§Æ® Á¾·á
+	// ê²Œì„ ì˜¤ë¸Œì íŠ¸ ì¢…ë£Œ
 	void BaseFinalize() override;
 
-	// °ÔÀÓ ¿ÀºêÁ§Æ® Á÷·ÄÈ­
+	// ê²Œì„ ì˜¤ë¸Œì íŠ¸ ì§ë ¬í™”
 	nlohmann::json BaseSerialize() override;
-	// °ÔÀÓ ¿ÀºêÁ§Æ® ¿ªÁ÷·ÄÈ­
+	// ê²Œì„ ì˜¤ë¸Œì íŠ¸ ì—­ì§ë ¬í™”
 	void BaseDeserialize(const nlohmann::json& jsonData) override;
 
-	// Á¦°Å ´ë±â ÁßÀÎ ÄÄÆ÷³ÍÆ® ¹× ÀÚ½Ä °ÔÀÓ ¿ÀºêÁ§Æ® Á¦°Å
+	// ì œê±° ëŒ€ê¸° ì¤‘ì¸ ì»´í¬ë„ŒíŠ¸ ë° ìì‹ ê²Œì„ ì˜¤ë¸Œì íŠ¸ ì œê±°
 	void RemovePending() override;
 
-	// À§Ä¡ °»½Å ÇÊ¿ä·Î ¼³Á¤ // ÀÚ½Ä °ÔÀÓ ¿ÀºêÁ§Æ®µµ ¼³Á¤
+	// ìœ„ì¹˜ ê°±ì‹  í•„ìš”ë¡œ ì„¤ì • // ìì‹ ê²Œì„ ì˜¤ë¸Œì íŠ¸ë„ ì„¤ì •
 	void SetDirty();
-	// ¿ùµå Çà·Ä °»½Å
+	// ì›”ë“œ í–‰ë ¬ ê°±ì‹ 
 	const DirectX::XMMATRIX& UpdateWorldMatrix();
 };
 
@@ -137,9 +132,9 @@ inline T* GameObjectBase::CreateComponent()
 	if (m_components[std::type_index(typeid(T))])
 	{
 		#ifdef _DEBUG
-		std::cerr << "¿À·ù: °ÔÀÓ ¿ÀºêÁ§Æ® '" << m_name << "'¿¡ ÀÌ¹Ì ÄÄÆ÷³ÍÆ® '" << typeid(T).name() << "'°¡ Á¸ÀçÇÕ´Ï´Ù." << std::endl;
+		std::cerr << "ì˜¤ë¥˜: ê²Œì„ ì˜¤ë¸Œì íŠ¸ '" << m_name << "'ì— ì´ë¯¸ ì»´í¬ë„ŒíŠ¸ '" << typeid(T).name() << "'ê°€ ì¡´ì¬í•©ë‹ˆë‹¤." << std::endl;
 		#else
-		MessageBoxA(nullptr, ("¿À·ù: °ÔÀÓ ¿ÀºêÁ§Æ® '" + m_name + "'¿¡ ÀÌ¹Ì ÄÄÆ÷³ÍÆ® '" + typeid(T).name() + "'°¡ Á¸ÀçÇÕ´Ï´Ù.").c_str(), "GameObjectBase Error", MB_OK | MB_ICONERROR);
+		MessageBoxA(nullptr, ("ì˜¤ë¥˜: ê²Œì„ ì˜¤ë¸Œì íŠ¸ '" + m_name + "'ì— ì´ë¯¸ ì»´í¬ë„ŒíŠ¸ '" + typeid(T).name() + "'ê°€ ì¡´ì¬í•©ë‹ˆë‹¤.").c_str(), "GameObjectBase Error", MB_OK | MB_ICONERROR);
 		#endif
 		return nullptr;
 	}
@@ -193,4 +188,4 @@ inline T* GameObjectBase::CreateChildGameObject(std::string typeName)
 
 	return childPtr;
 }
-/// GameObjectBase.hÀÇ ³¡
+/// GameObjectBase.hì˜ ë

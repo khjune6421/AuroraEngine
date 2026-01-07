@@ -13,9 +13,9 @@ unique_ptr<SceneBase> TypeRegistry::CreateScene(const string& typeName)
 	if (it != m_sceneRegistry.end()) return it->second();
 
 	#ifdef _DEBUG
-	cerr << "¿À·ù: µî·ÏµÇÁö ¾ÊÀº ¾À Å¸ÀÔ ÀÌ¸§ '" << typeName << "'ÀÔ´Ï´Ù." << endl;
+	cerr << "ì˜¤ë¥˜: ë“±ë¡ë˜ì§€ ì•Šì€ ì”¬ íƒ€ìž… ì´ë¦„ '" << typeName << "'ìž…ë‹ˆë‹¤." << endl;
 	#else
-	MessageBoxA(nullptr, ("¿À·ù: µî·ÏµÇÁö ¾ÊÀº ¾À Å¸ÀÔ ÀÌ¸§ '" + typeName + "'ÀÔ´Ï´Ù.").c_str(), "TypeRegistry Error", MB_OK | MB_ICONERROR);
+	MessageBoxA(nullptr, ("ì˜¤ë¥˜: ë“±ë¡ë˜ì§€ ì•Šì€ ì”¬ íƒ€ìž… ì´ë¦„ '" + typeName + "'ìž…ë‹ˆë‹¤.").c_str(), "TypeRegistry Error", MB_OK | MB_ICONERROR);
 	#endif
 
 	exit(EXIT_FAILURE);
@@ -28,9 +28,9 @@ unique_ptr<GameObjectBase> TypeRegistry::CreateGameObject(const string& typeName
 	if (it != m_gameObjectRegistry.end()) return it->second();
 
 	#ifdef _DEBUG
-	cerr << "¿À·ù: µî·ÏµÇÁö ¾ÊÀº °ÔÀÓ ¿ÀºêÁ§Æ® Å¸ÀÔ ÀÌ¸§ '" << typeName << "'ÀÔ´Ï´Ù." << endl;
+	cerr << "ì˜¤ë¥˜: ë“±ë¡ë˜ì§€ ì•Šì€ ê²Œìž„ ì˜¤ë¸Œì íŠ¸ íƒ€ìž… ì´ë¦„ '" << typeName << "'ìž…ë‹ˆë‹¤." << endl;
 	#else
-	MessageBoxA(nullptr, ("¿À·ù: µî·ÏµÇÁö ¾ÊÀº °ÔÀÓ ¿ÀºêÁ§Æ® Å¸ÀÔ ÀÌ¸§ '" + typeName + "'ÀÔ´Ï´Ù.").c_str(), "TypeRegistry Error", MB_OK | MB_ICONERROR);
+	MessageBoxA(nullptr, ("ì˜¤ë¥˜: ë“±ë¡ë˜ì§€ ì•Šì€ ê²Œìž„ ì˜¤ë¸Œì íŠ¸ íƒ€ìž… ì´ë¦„ '" + typeName + "'ìž…ë‹ˆë‹¤.").c_str(), "TypeRegistry Error", MB_OK | MB_ICONERROR);
 	#endif
 
 	exit(EXIT_FAILURE);
@@ -43,9 +43,9 @@ unique_ptr<ComponentBase> TypeRegistry::CreateComponent(const string& typeName)
 	if (it != m_componentRegistry.end()) return it->second();
 
 	#ifdef _DEBUG
-	cerr << "¿À·ù: µî·ÏµÇÁö ¾ÊÀº ÄÄÆ÷³ÍÆ® Å¸ÀÔ ÀÌ¸§ '" << typeName << "'ÀÔ´Ï´Ù." << endl;
+	cerr << "ì˜¤ë¥˜: ë“±ë¡ë˜ì§€ ì•Šì€ ì»´í¬ë„ŒíŠ¸ íƒ€ìž… ì´ë¦„ '" << typeName << "'ìž…ë‹ˆë‹¤." << endl;
 	#else
-	MessageBoxA(nullptr, ("¿À·ù: µî·ÏµÇÁö ¾ÊÀº ÄÄÆ÷³ÍÆ® Å¸ÀÔ ÀÌ¸§ '" + typeName + "'ÀÔ´Ï´Ù.").c_str(), "TypeRegistry Error", MB_OK | MB_ICONERROR);
+	MessageBoxA(nullptr, ("ì˜¤ë¥˜: ë“±ë¡ë˜ì§€ ì•Šì€ ì»´í¬ë„ŒíŠ¸ íƒ€ìž… ì´ë¦„ '" + typeName + "'ìž…ë‹ˆë‹¤.").c_str(), "TypeRegistry Error", MB_OK | MB_ICONERROR);
 	#endif
 
 	exit(EXIT_FAILURE);

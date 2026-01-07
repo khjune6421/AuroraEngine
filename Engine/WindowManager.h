@@ -5,8 +5,8 @@ class WindowManager : public Singleton<WindowManager>
 {
 	friend class Singleton<WindowManager>;
 
-	HWND m_hWnd = nullptr; // À©µµ¿ì ÇÚµé
-	HINSTANCE m_hInstance = GetModuleHandle(nullptr); // À©µµ¿ì ÀÎ½ºÅÏ½º ÇÚµé
+	HWND m_hWnd = nullptr; // ìœˆë„ìš° í•¸ë“¤
+	HINSTANCE m_hInstance = GetModuleHandle(nullptr); // ìœˆë„ìš° ì¸ìŠ¤í„´ìŠ¤ í•¸ë“¤
 
 	static LRESULT CALLBACK WindowProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
 
@@ -17,14 +17,14 @@ public:
 	WindowManager(WindowManager&&) = delete;
 	WindowManager& operator=(WindowManager&&) = delete;
 
-	// À©µµ¿ì ÃÊ±âÈ­
+	// ìœˆë„ìš° ì´ˆê¸°í™”
 	void Initialize(const wchar_t* windowTitle, int width = 1280, int height = 720, const wchar_t* className = L"EngineWindowClass");
-	// ¸Ş½ÃÁö Ã³¸®
+	// ë©”ì‹œì§€ ì²˜ë¦¬
 	bool ProcessMessages();
-	// À©µµ¿ì Á¾·á
+	// ìœˆë„ìš° ì¢…ë£Œ
 	void Finalize();
 
-	// À©µµ¿ì ÇÚµé ¾ò±â
+	// ìœˆë„ìš° í•¸ë“¤ ì–»ê¸°
 	HWND GetHWnd() const { return m_hWnd; }
 
 private:

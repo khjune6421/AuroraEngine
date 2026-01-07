@@ -1,4 +1,4 @@
-/// GameObjectBase.cppÀÇ ½ÃÀÛ
+/// GameObjectBase.cppì˜ ì‹œì‘
 #include "stdafx.h"
 #include "GameObjectBase.h"
 
@@ -29,7 +29,7 @@ void GameObjectBase::MoveDirection(float distance, Direction direction)
 void GameObjectBase::SetRotation(const XMVECTOR& rotation)
 {
 	m_euler = rotation;
-	m_quaternion = XMQuaternionRotationRollPitchYawFromVector(ToRadians(m_euler)); // ¶óµğ¾ÈÀ¸·Î º¯È¯
+	m_quaternion = XMQuaternionRotationRollPitchYawFromVector(ToRadians(m_euler)); // ë¼ë””ì•ˆìœ¼ë¡œ ë³€í™˜
 
 	SetDirty();
 }
@@ -37,7 +37,7 @@ void GameObjectBase::SetRotation(const XMVECTOR& rotation)
 void GameObjectBase::Rotate(const XMVECTOR& deltaRotation)
 {
 	m_euler = XMVectorAdd(m_euler, deltaRotation);
-	m_quaternion = XMQuaternionRotationRollPitchYawFromVector(ToRadians(m_euler)); // ¶óµğ¾ÈÀ¸·Î º¯È¯
+	m_quaternion = XMQuaternionRotationRollPitchYawFromVector(ToRadians(m_euler)); // ë¼ë””ì•ˆìœ¼ë¡œ ë³€í™˜
 
 	SetDirty();
 }
@@ -49,7 +49,7 @@ void GameObjectBase::LookAt(const XMVECTOR& targetPosition, const XMVECTOR& upDi
 	XMVECTOR up = XMVector3Cross(direction, right);
 
 	m_quaternion = XMQuaternionRotationMatrix({ right, up, direction, { 0.0f, 0.0f, 0.0f, 1.0f } });
-	m_euler = ToDegrees(static_cast<XMVECTOR>(static_cast<SimpleMath::Quaternion>(m_quaternion).ToEuler())); // µµ ´ÜÀ§·Î º¯È¯
+	m_euler = ToDegrees(static_cast<XMVECTOR>(static_cast<SimpleMath::Quaternion>(m_quaternion).ToEuler())); // ë„ ë‹¨ìœ„ë¡œ ë³€í™˜
 
 	SetDirty();
 }
@@ -111,9 +111,9 @@ void GameObjectBase::CreateComponent(string typeName)
 	if (m_components[type_index(typeid(*component))])
 	{
 		#ifdef _DEBUG
-		cerr << "¿À·ù: °ÔÀÓ ¿ÀºêÁ§Æ® '" << m_name << "'¿¡ ÀÌ¹Ì ÄÄÆ÷³ÍÆ® '" << typeName << "'°¡ Á¸ÀçÇÕ´Ï´Ù." << endl;
+		cerr << "ì˜¤ë¥˜: ê²Œì„ ì˜¤ë¸Œì íŠ¸ '" << m_name << "'ì— ì´ë¯¸ ì»´í¬ë„ŒíŠ¸ '" << typeName << "'ê°€ ì¡´ì¬í•©ë‹ˆë‹¤." << endl;
 		#else
-		MessageBoxA(nullptr, ("¿À·ù: °ÔÀÓ ¿ÀºêÁ§Æ® '" + m_name + "'¿¡ ÀÌ¹Ì ÄÄÆ÷³ÍÆ® '" + typeName + "'°¡ Á¸ÀçÇÕ´Ï´Ù.").c_str(), "GameObjectBase Error", MB_OK | MB_ICONERROR);
+		MessageBoxA(nullptr, ("ì˜¤ë¥˜: ê²Œì„ ì˜¤ë¸Œì íŠ¸ '" + m_name + "'ì— ì´ë¯¸ ì»´í¬ë„ŒíŠ¸ '" + typeName + "'ê°€ ì¡´ì¬í•©ë‹ˆë‹¤.").c_str(), "GameObjectBase Error", MB_OK | MB_ICONERROR);
 		#endif
 		return;
 	}
@@ -142,7 +142,7 @@ void GameObjectBase::BaseInitialize()
 	m_type = GetTypeName(*this);
 	m_name = m_type + "_" + to_string(m_id);
 
-	m_worldMatrixConstantBuffer = ResourceManager::GetInstance().GetConstantBuffer(sizeof(WorldBuffer));
+	m_worldMatrixConstantBuffer = ResourceManager::GetInstance().GetConstantBuffer(VSConstBuffers::WorldNormal);
 
 	#ifdef NDEBUG
 	Initialize();
@@ -155,17 +155,17 @@ void GameObjectBase::BaseUpdate()
 	Update();
 	//#endif
 
-	// ¿ùµå Çà·Ä ¾÷µ¥ÀÌÆ®
+	// ì›”ë“œ í–‰ë ¬ ì—…ë°ì´íŠ¸
 	UpdateWorldMatrix();
 
-	// Á¦°ÅÇÒ ÄÄÆ÷³ÍÆ® ¹× ÀÚ½Ä °ÔÀÓ ¿ÀºêÁ§Æ® Á¦°Å
+	// ì œê±°í•  ì»´í¬ë„ŒíŠ¸ ë° ìì‹ ê²Œì„ ì˜¤ë¸Œì íŠ¸ ì œê±°
 	RemovePending();
 
-	// ÄÄÆ÷³ÍÆ® ¾÷µ¥ÀÌÆ®
+	// ì»´í¬ë„ŒíŠ¸ ì—…ë°ì´íŠ¸
 	for (Base*& component : m_updateComponents) component->BaseUpdate();
 
-	// Á¦°ÅÇÒ ÀÚ½Ä °ÔÀÓ ¿ÀºêÁ§Æ® Á¦°Å;
-	// ÀÚ½Ä °ÔÀÓ ¿ÀºêÁ§Æ® ¾÷µ¥ÀÌÆ®
+	// ì œê±°í•  ìì‹ ê²Œì„ ì˜¤ë¸Œì íŠ¸ ì œê±°;
+	// ìì‹ ê²Œì„ ì˜¤ë¸Œì íŠ¸ ì—…ë°ì´íŠ¸
 	for (auto& child : m_childrens) child->BaseUpdate();
 }
 
@@ -175,20 +175,19 @@ void GameObjectBase::BaseRender()
 	Render();
 	#endif
 
-	// ÄÄÆ÷³ÍÆ® ·»´õ¸µ
+	// ì»´í¬ë„ŒíŠ¸ ë Œë”ë§
 	if (!m_renderComponents.empty())
 	{
-		// ¿ùµå ¹× WVP Çà·Ä »ó¼ö ¹öÆÛ ¾÷µ¥ÀÌÆ® ¹× ¼ÎÀÌ´õ¿¡ ¼³Á¤
+		// ì›”ë“œ ë° WVP í–‰ë ¬ ìƒìˆ˜ ë²„í¼ ì—…ë°ì´íŠ¸ ë° ì…°ì´ë”ì— ì„¤ì •
 		m_worldData.worldMatrix = XMMatrixTranspose(m_worldMatrix);
 		m_worldData.normalMatrix = XMMatrixTranspose(m_inverseScaleSquareMatrix * m_worldMatrix);
 
 		m_deviceContext->UpdateSubresource(m_worldMatrixConstantBuffer.Get(), 0, nullptr, &m_worldData, 0, 0);
-		m_deviceContext->VSSetConstantBuffers(static_cast<UINT>(VSConstBuffers::WorldNormal), 1, m_worldMatrixConstantBuffer.GetAddressOf());
 
 		for (Base*& component : m_renderComponents) component->BaseRender();
 	}
 
-	// ÀÚ½Ä °ÔÀÓ ¿ÀºêÁ§Æ® ·»´õ¸µ
+	// ìì‹ ê²Œì„ ì˜¤ë¸Œì íŠ¸ ë Œë”ë§
 	for (auto& child : m_childrens) child->BaseRender();
 }
 
@@ -201,20 +200,20 @@ void GameObjectBase::BaseRenderImGui()
 	ImGui::SameLine();
 	if (ImGui::TreeNode(m_name.c_str()))
 	{
-		// À§Ä¡
+		// ìœ„ì¹˜
 		if (ImGui::DragFloat3("Position", &m_position.m128_f32[0], 0.05f))  SetDirty();
-		// È¸Àü
+		// íšŒì „
 		if (ImGui::DragFloat3("Rotation", &m_euler.m128_f32[0], 0.5f))
 		{
-			m_quaternion = XMQuaternionRotationRollPitchYawFromVector(ToRadians(m_euler)); // ¶óµğ¾ÈÀ¸·Î º¯È¯
+			m_quaternion = XMQuaternionRotationRollPitchYawFromVector(ToRadians(m_euler)); // ë¼ë””ì•ˆìœ¼ë¡œ ë³€í™˜
 			SetDirty();
 		};
-		// Å©±â
+		// í¬ê¸°
 		if (ImGui::DragFloat3("Scale", &m_scale.m128_f32[0], 0.01f)) SetDirty();
 
 		RenderImGui();
 
-		// ÄÄÆ÷³ÍÆ® ImGui ·»´õ¸µ
+		// ì»´í¬ë„ŒíŠ¸ ImGui ë Œë”ë§
 		if (!m_components.empty())
 		{
 			ImGui::Separator();
@@ -236,7 +235,7 @@ void GameObjectBase::BaseRenderImGui()
 			ImGui::EndPopup();
 		}
 
-		// ÀÚ½Ä °ÔÀÓ ¿ÀºêÁ§Æ® ImGui ·»´õ¸µ
+		// ìì‹ ê²Œì„ ì˜¤ë¸Œì íŠ¸ ImGui ë Œë”ë§
 		if (!m_childrens.empty())
 		{
 			ImGui::Separator();
@@ -271,10 +270,10 @@ void GameObjectBase::BaseFinalize()
 	Finalize();
 	#endif
 
-	// ÄÄÆ÷³ÍÆ® Á¾·á
+	// ì»´í¬ë„ŒíŠ¸ ì¢…ë£Œ
 	for (auto& [typeIndex, component] : m_components) component->BaseFinalize();
 
-	// ÀÚ½Ä °ÔÀÓ ¿ÀºêÁ§Æ® Á¾·á
+	// ìì‹ ê²Œì„ ì˜¤ë¸Œì íŠ¸ ì¢…ë£Œ
 	for (auto& child : m_childrens) child->BaseFinalize();
 }
 
@@ -282,25 +281,25 @@ nlohmann::json GameObjectBase::BaseSerialize()
 {
 	nlohmann::json jsonData;
 
-	// °ÔÀÓ ¿ÀºêÁ§Æ® Å¸ÀÔ ÀúÀå
+	// ê²Œì„ ì˜¤ë¸Œì íŠ¸ íƒ€ì… ì €ì¥
 	jsonData["type"] = m_type;
 
-	// ±âº» °ÔÀÓ ¿ÀºêÁ§Æ® µ¥ÀÌÅÍ ÀúÀå
+	// ê¸°ë³¸ ê²Œì„ ì˜¤ë¸Œì íŠ¸ ë°ì´í„° ì €ì¥
 	jsonData["name"] = m_name;
 	jsonData["position"] = { m_position.m128_f32[0], m_position.m128_f32[1], m_position.m128_f32[2], m_position.m128_f32[3] };
 	jsonData["rotation"] = { m_quaternion.m128_f32[0], m_quaternion.m128_f32[1], m_quaternion.m128_f32[2], m_quaternion.m128_f32[3] };
 	jsonData["scale"] = { m_scale.m128_f32[0], m_scale.m128_f32[1], m_scale.m128_f32[2], m_scale.m128_f32[3] };
 
-	// ÆÄ»ı Å¬·¡½ºÀÇ Á÷·ÄÈ­ È£Ãâ
+	// íŒŒìƒ í´ë˜ìŠ¤ì˜ ì§ë ¬í™” í˜¸ì¶œ
 	nlohmann::json derivedData = Serialize();
 	if (!derivedData.is_null() && derivedData.is_object()) jsonData.merge_patch(derivedData);
 
-	// ÄÄÆ÷³ÍÆ®µé ÀúÀå
+	// ì»´í¬ë„ŒíŠ¸ë“¤ ì €ì¥
 	nlohmann::json componentsData = nlohmann::json::array();
 	for (auto& [typeIndex, component] : m_components) componentsData.push_back(component->BaseSerialize());
 	jsonData["components"] = componentsData;
 
-	// ÀÚ½Ä °ÔÀÓ ¿ÀºêÁ§Æ®µé ÀúÀå
+	// ìì‹ ê²Œì„ ì˜¤ë¸Œì íŠ¸ë“¤ ì €ì¥
 	nlohmann::json childrenData = nlohmann::json::array();
 	for (auto& child : m_childrens) childrenData.push_back(child->BaseSerialize());
 	jsonData["childGameObjects"] = childrenData;
@@ -310,7 +309,7 @@ nlohmann::json GameObjectBase::BaseSerialize()
 
 void GameObjectBase::BaseDeserialize(const nlohmann::json& jsonData)
 {
-	// ±âº» °ÔÀÓ ¿ÀºêÁ§Æ® µ¥ÀÌÅÍ ·Îµå
+	// ê¸°ë³¸ ê²Œì„ ì˜¤ë¸Œì íŠ¸ ë°ì´í„° ë¡œë“œ
 	m_name = jsonData["name"].get<string>();
 
 	m_position = XMVectorSet
@@ -335,10 +334,10 @@ void GameObjectBase::BaseDeserialize(const nlohmann::json& jsonData)
 		jsonData["scale"][3].get<float>()
 	);
 
-	// ÆÄ»ı Å¬·¡½ºÀÇ µ¥ÀÌÅÍ ·Îµå
+	// íŒŒìƒ í´ë˜ìŠ¤ì˜ ë°ì´í„° ë¡œë“œ
 	Deserialize(jsonData);
 
-	// ÄÄÆ÷³ÍÆ®µé ·Îµå
+	// ì»´í¬ë„ŒíŠ¸ë“¤ ë¡œë“œ
 	for (const auto& componentData : jsonData["components"])
 	{
 		string typeName = componentData["type"].get<string>();
@@ -355,7 +354,7 @@ void GameObjectBase::BaseDeserialize(const nlohmann::json& jsonData)
 		m_components[type_index(typeid(*componentPtr))] = move(componentPtr);
 	}
 	
-	// ÀÚ½Ä °ÔÀÓ ¿ÀºêÁ§Æ®µé ·Îµå
+	// ìì‹ ê²Œì„ ì˜¤ë¸Œì íŠ¸ë“¤ ë¡œë“œ
 	for (const auto& childData : jsonData["childGameObjects"])
 	{
 		string typeName = childData["type"].get<string>();
@@ -373,7 +372,7 @@ void GameObjectBase::BaseDeserialize(const nlohmann::json& jsonData)
 
 void GameObjectBase::RemovePending()
 {
-	// Á¦°ÅÇÒ ÀÚ½Ä °ÔÀÓ ¿ÀºêÁ§Æ® Á¦°Å
+	// ì œê±°í•  ìì‹ ê²Œì„ ì˜¤ë¸Œì íŠ¸ ì œê±°
 	erase_if
 	(
 		m_childrens, [](const unique_ptr<GameObjectBase>& gameObject)
@@ -386,7 +385,7 @@ void GameObjectBase::RemovePending()
 			return false;
 		}
 	);
-	// Á¦°ÅÇÒ ÄÄÆ÷³ÍÆ® Á¦°Å
+	// ì œê±°í•  ì»´í¬ë„ŒíŠ¸ ì œê±°
 	erase_if
 	(
 		m_components, [&](const auto& component)
@@ -395,7 +394,7 @@ void GameObjectBase::RemovePending()
 			{
 				component.second->BaseFinalize();
 				
-				// ¾÷µ¥ÀÌÆ® ¹× ·»´õ¸µ ¸ñ·Ï¿¡¼­ Á¦°Å
+				// ì—…ë°ì´íŠ¸ ë° ë Œë”ë§ ëª©ë¡ì—ì„œ ì œê±°
 				ComponentBase* compBasePtr = dynamic_cast<ComponentBase*>(component.second.get());
 				if (compBasePtr->NeedsUpdate()) erase_if(m_updateComponents, [&](Base* updateComponent) { return updateComponent == compBasePtr; });
 				if (compBasePtr->NeedsRender()) erase_if(m_renderComponents, [&](Base* renderComponent) { return renderComponent == compBasePtr; });
@@ -438,4 +437,4 @@ const XMMATRIX& GameObjectBase::UpdateWorldMatrix()
 
 	return m_worldMatrix;
 }
-/// GameObjectBase.cppÀÇ ³¡
+/// GameObjectBase.cppì˜ ë

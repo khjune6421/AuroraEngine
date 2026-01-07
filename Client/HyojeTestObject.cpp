@@ -1,4 +1,4 @@
-///HyojeTestObject.cppÀÇ ½ÃÀÛ
+///HyojeTestObject.cppì˜ ì‹œì‘
 #include "stdafx.h"
 #include "HyojeTestObject.h"
 
@@ -32,4 +32,4 @@ void HyojeTestObject::Update()
 	if (input.GetKey(E)) Rotate({ 0.0f, 0.0f, deltaTime * 45.0f });
 }
 
-///HyojeTestObject.cppÀÇ ³¡
+///HyojeTestObject.cppì˜ ë

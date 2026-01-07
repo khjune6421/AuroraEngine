@@ -7,6 +7,7 @@ vcpkg_installed/
 *.opensdf
 *.VC.db
 *.VC.VC.opendb
+*.dat
 
 # Build outputs
 #x64/

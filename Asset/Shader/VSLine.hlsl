@@ -1,32 +1,6 @@
-/// VSLine.hlslÀÇ ½ÃÀÛ
+/// VSLine.hlslì˜ ì‹œì‘
 #include "CommonVS.hlsli"
 
-//// ¸ğµÎ CommonVS.hlsliÀ» º¸³¿
-//
-
-//cbuffer ViewProjection : register(b0)
-//{
-//    matrix ViewMatrix;
-//    matrix ProjectionMatrix;
-//    matrix VPMatrix;
-//}
-
-//cbuffer World : register(b1)
-//{
-//    matrix WorldMatrix;
-//}
-
-//struct VertexInput
-//{
-//    float4 Position : POSITION;
-//};
-
-//struct VertexOutput
-//{
-//    float4 Position : SV_POSITION;
-//};
-
-//VertexOutput main(VertexInput input)
 VS_OUTPUT_POS main(VS_INPUT_POS input)
 {
     VS_OUTPUT_POS output;
@@ -36,4 +10,4 @@ VS_OUTPUT_POS main(VS_INPUT_POS input)
         
     return output;
 }
-/// VSLine.hlslÀÇ ³¡
+/// VSLine.hlslì˜ ë

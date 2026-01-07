@@ -29,10 +29,10 @@ nlohmann::json ComponentBase::BaseSerialize()
 {
 	nlohmann::json jsonData;
 
-	// ÄÄÆ÷³ÍÆ® Å¸ÀÔ ÀúÀå
+	// ì»´í¬ë„ŒíŠ¸ íƒ€ì… ì €ì¥
 	jsonData["type"] = m_type;
 
-	// ÆÄ»ı Å¬·¡½ºÀÇ Á÷·ÄÈ­ È£Ãâ
+	// íŒŒìƒ í´ë˜ìŠ¤ì˜ ì§ë ¬í™” í˜¸ì¶œ
 	nlohmann::json derivedData = Serialize();
 	if (!derivedData.is_null() && derivedData.is_object()) jsonData.merge_patch(derivedData);
 

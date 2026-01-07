@@ -20,17 +20,17 @@ public:
 	virtual nlohmann::json BaseSerialize() = 0;
 	virtual void BaseDeserialize(const nlohmann::json& jsonData) = 0;
 
-	// ¼ÒÀ¯ÇÑ °´Ã¼³ª ÀÚ¿ø Áß Á¦°Å ´ë±âÁßÀÎ Ç×¸ñÀÌ ÀÖÀ¸¸é ¸ğµÎ Á¦°Å
+	// ì†Œìœ í•œ ê°ì²´ë‚˜ ìì› ì¤‘ ì œê±° ëŒ€ê¸°ì¤‘ì¸ í•­ëª©ì´ ìˆìœ¼ë©´ ëª¨ë‘ ì œê±°
 	virtual void RemovePending() = 0;
 };
 
 class Base : public IBase
 {
-	bool m_isActive = true; // È°¼ºÈ­ ¿©ºÎ // TODO: ±â´É Ãß°¡
-	bool m_isAlive = true; // »ıÁ¸ ¿©ºÎ
+	bool m_isActive = true; // í™œì„±í™” ì—¬ë¶€ // TODO: ê¸°ëŠ¥ ì¶”ê°€
+	bool m_isAlive = true; // ìƒì¡´ ì—¬ë¶€
 
 protected:
-	std::string m_type = "Base"; // Å¸ÀÔ ÀÌ¸§
+	std::string m_type = "Base"; // íƒ€ì… ì´ë¦„
 
 public:
 	Base() = default;
@@ -48,19 +48,19 @@ public:
 	bool GetAlive() const { return m_isAlive; }
 
 protected:
-	// ÆÄ»ı Å¬·¡½ºÀÇ ÃÊ±âÈ­
+	// íŒŒìƒ í´ë˜ìŠ¤ì˜ ì´ˆê¸°í™”
 	virtual void Initialize() {}
-	// ÆÄ»ı Å¬·¡½ºÀÇ ¾÷µ¥ÀÌÆ®
+	// íŒŒìƒ í´ë˜ìŠ¤ì˜ ì—…ë°ì´íŠ¸
 	virtual void Update() {}
-	// ÆÄ»ı Å¬·¡½ºÀÇ ·»´õ¸µ
+	// íŒŒìƒ í´ë˜ìŠ¤ì˜ ë Œë”ë§
 	virtual void Render() {}
-	// ÆÄ»ı Å¬·¡½ºÀÇ ImGui ·»´õ¸µ
+	// íŒŒìƒ í´ë˜ìŠ¤ì˜ ImGui ë Œë”ë§
 	virtual void RenderImGui() {}
-	// ÆÄ»ı Å¬·¡½ºÀÇ Á¾·á
+	// íŒŒìƒ í´ë˜ìŠ¤ì˜ ì¢…ë£Œ
 	virtual void Finalize() {}
 
-	// ÆÄ»ı Å¬·¡½ºÀÇ Á÷·ÄÈ­
+	// íŒŒìƒ í´ë˜ìŠ¤ì˜ ì§ë ¬í™”
 	virtual nlohmann::json Serialize() { return nlohmann::json(); }
-	// ÆÄ»ı Å¬·¡½ºÀÇ ¿ªÁ÷·ÄÈ­
+	// íŒŒìƒ í´ë˜ìŠ¤ì˜ ì—­ì§ë ¬í™”
 	virtual void Deserialize(const nlohmann::json& jsonData) {}
 };

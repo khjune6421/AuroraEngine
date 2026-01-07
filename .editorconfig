@@ -1,0 +1,14 @@
+﻿[*.fx]
+charset = utf-8
+
+[*.hlsl]
+charset = utf-8
+
+[*.hlsli]
+charset = utf-8
+
+[*.cpp]
+charset = utf-8
+
+[*.h]
+charset = utf-8

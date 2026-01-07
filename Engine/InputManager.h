@@ -1,6 +1,6 @@
-/// InputManager.hÀÇ ½ÃÀÛ
+/// InputManager.hì˜ ì‹œì‘
 /// https://github.com/DragonT-iger/DTEngine/blob/main/DTEngine/InputManager.h
-/// 25.12.30 ±âÁØ async¸¦ HandleMessage·Î ¹Ù²Ù±â À§ÇÔÀÓ 
+/// 25.12.30 ê¸°ì¤€ asyncë¥¼ HandleMessageë¡œ ë°”ê¾¸ê¸° ìœ„í•¨ì„ 
 ///
 #pragma once
 
@@ -56,4 +56,4 @@ private:
     int MapKeyCodeToVKey(KeyCode key) const;
 };
 
-/// InputManager.hÀÇ ³¡
+/// InputManager.hì˜ ë

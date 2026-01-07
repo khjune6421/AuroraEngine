@@ -1,4 +1,4 @@
-///TestObject.hÀÇ ½ÃÀÛ
+///TestObject.hì˜ ì‹œì‘
 #pragma once
 #include "GameObjectBase.h"
 

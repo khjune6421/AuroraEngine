@@ -1,4 +1,4 @@
-///CoordinateSystemObject.hÀÇ ½ÃÀÛ
+///CoordinateSystemObject.hì˜ ì‹œì‘
 #pragma once
 #include "GameObjectBase.h"
 
@@ -17,4 +17,4 @@ private:
 	void Update() override;
 };
 
-///CoordinateSystemObject.hÀÇ ³¡
+///CoordinateSystemObject.hì˜ ë

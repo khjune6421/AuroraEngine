@@ -32,6 +32,9 @@ LRESULT CALLBACK WindowManager::WindowProc(HWND hWnd, UINT message, WPARAM wPara
 
 void WindowManager::Initialize(const wchar_t* windowTitle, int width, int height, const wchar_t* className)
 {
+	// 한글 출력 설정
+	SetConsoleOutputCP(CP_UTF8);
+
 	const WNDCLASS wc =
 	{
 		.style = CS_HREDRAW | CS_VREDRAW,

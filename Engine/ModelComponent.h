@@ -1,27 +1,17 @@
-/// ModelComponent.hÀÇ ½ÃÀÛ
+/// ModelComponent.hì˜ ì‹œì‘
 #pragma once
 #include "ComponentBase.h"
-#include "Resource.h"
 
 void ForceLink_ModelComponent();
 
 class ModelComponent : public ComponentBase
 {
-	const struct Model* m_model = nullptr;
+	com_ptr<ID3D11DeviceContext> m_deviceContext = nullptr; // ë””ë°”ì´ìŠ¤ ì»¨í…ìŠ¤íŠ¸
 
-	com_ptr<ID3D11DeviceContext> m_deviceContext = nullptr; // µğ¹ÙÀÌ½º ÄÁÅØ½ºÆ®
+	std::string m_vsShaderName = "VSModel.hlsl"; // ê¸°ë³¸ ëª¨ë¸ ì •ì  ì…°ì´ë”
+	std::string m_psShaderName = "PSModel.hlsl"; // ê¸°ë³¸ ëª¨ë¸ í”½ì…€ ì…°ì´ë”
 
-	std::pair<com_ptr<ID3D11VertexShader>, com_ptr<ID3D11InputLayout>> m_vertexShaderAndInputLayout = {}; // Á¤Á¡ ¼ÎÀÌ´õ ¹× ÀÔ·Â ·¹ÀÌ¾Æ¿ô
-	com_ptr<ID3D11PixelShader> m_pixelShader = nullptr; // ÇÈ¼¿ ¼ÎÀÌ´õ
-
-	com_ptr<ID3D11Buffer> m_materialConstantBuffer = nullptr; // ÀçÁú »ó¼ö ¹öÆÛ
-
-	std::string m_modelFileName = "box.fbx"; // ±âº» ¸ğµ¨ ÆÄÀÏ ÀÌ¸§
-
-	std::string m_vsShaderName = "VSModel.hlsl"; // ±âº» ¸ğµ¨ Á¤Á¡ ¼ÎÀÌ´õ
-	std::string m_psShaderName = "PSModel.hlsl"; // ±âº» ¸ğµ¨ ÇÈ¼¿ ¼ÎÀÌ´õ
-
-	// ÀÔ·Â ¿ä¼Ò ¹è¿­ // À§Ä¡, UV, ¹ı¼±, Á¢¼±
+	// ì…ë ¥ ìš”ì†Œ ë°°ì—´ // ìœ„ì¹˜, UV, ë²•ì„ , ì ‘ì„ 
 	std::vector<InputElement> m_inputElements =
 	{
 		InputElement::Position,
@@ -29,6 +19,16 @@ class ModelComponent : public ComponentBase
 		InputElement::Normal,
 		InputElement::Tangent
 	};
+	std::pair<com_ptr<ID3D11VertexShader>, com_ptr<ID3D11InputLayout>> m_vertexShaderAndInputLayout = {}; // ì •ì  ì…°ì´ë” ë° ì…ë ¥ ë ˆì´ì•„ì›ƒ
+	com_ptr<ID3D11PixelShader> m_pixelShader = nullptr; // í”½ì…€ ì…°ì´ë”
+
+	std::string m_modelFileName = "box.fbx"; // ê¸°ë³¸ ëª¨ë¸ íŒŒì¼ ì´ë¦„
+
+	const struct Model* m_model = nullptr;
+	com_ptr<ID3D11Buffer> m_materialConstantBuffer = nullptr; // ì¬ì§ˆ ìƒìˆ˜ ë²„í¼
+
+	BlendState m_blendState = BlendState::Opaque; // ê¸°ë³¸ ë¸”ë Œë“œ ìƒíƒœ
+	RasterState m_rasterState = RasterState::Solid; // ê¸°ë³¸ ë˜ìŠ¤í„° ìƒíƒœ
 
 public:
 	ModelComponent() = default;
@@ -38,13 +38,13 @@ public:
 	ModelComponent(ModelComponent&&) = default;
 	ModelComponent& operator=(ModelComponent&&) = default;
 
-	const std::string& GetModelFileName() const { return m_modelFileName; }
-	void SetModelFileName(const std::string& modelFileName) { m_modelFileName = modelFileName; }
-
 	const std::string& GetVertexShaderName() const { return m_vsShaderName; }
 	void SetVertexShaderName(const std::string& vsShaderName) { m_vsShaderName = vsShaderName; }
 	const std::string& GetPixelShaderName() const { return m_psShaderName; }
 	void SetPixelShaderName(const std::string& psShaderName) { m_psShaderName = psShaderName; }
+
+	const std::string& GetModelFileName() const { return m_modelFileName; }
+	void SetModelFileName(const std::string& modelFileName) { m_modelFileName = modelFileName; }
 
 	bool NeedsUpdate() const override { return false; }
 	bool NeedsRender() const override { return true; }
@@ -57,7 +57,7 @@ private:
 	nlohmann::json Serialize() override;
 	void Deserialize(const nlohmann::json& jsonData) override;
 
-	// ¼ÎÀÌ´õ »ı¼º
+	// ì…°ì´ë” ìƒì„±
 	void CreateShaders();
 };
-/// ModelComponent.hÀÇ ³¡
+/// ModelComponent.hì˜ ë

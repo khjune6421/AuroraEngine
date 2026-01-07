@@ -1,4 +1,4 @@
-/// ModelComponent.cpp¿« Ω√¿€
+/// ModelComponent.cppÏùò ÏãúÏûë
 #include "stdafx.h"
 #include "ModelComponent.h"
 
@@ -17,16 +17,17 @@ void ModelComponent::Initialize()
 
 	ResourceManager& resourceManager = ResourceManager::GetInstance();
 
-	m_materialConstantBuffer = resourceManager.GetConstantBuffer(sizeof(MaterialFactor)); // TODO: ∏≈π¯ ¿Á¡˙ ªÛºˆ πˆ∆€ ª˝º∫«œ¡ˆ ∏ª∞Ì ∞¯¿Ø«œµµ∑œ ∫Ø∞Ê
-	m_model = resourceManager.LoadModel(m_modelFileName);
-
 	CreateShaders();
+
+	m_materialConstantBuffer = resourceManager.GetConstantBuffer(PSConstBuffers::MaterialFactor);
+	m_model = resourceManager.LoadModel(m_modelFileName);
 }
 
 void ModelComponent::Render()
 {
-	constexpr UINT stride = sizeof(Vertex);
-	constexpr UINT offset = 0;
+	ResourceManager& resourceManager = ResourceManager::GetInstance();
+	resourceManager.SetBlendState(m_blendState);
+	resourceManager.SetRasterState(m_rasterState);
 
 	m_deviceContext->IASetInputLayout(m_vertexShaderAndInputLayout.second.Get());
 	m_deviceContext->VSSetShader(m_vertexShaderAndInputLayout.first.Get(), nullptr, 0);
@@ -34,22 +35,22 @@ void ModelComponent::Render()
 
 	for (const auto& mesh : m_model->meshes)
 	{
+		// ÎÇòÏ§ëÏóê Î©îÏâ¨Î≥ÑÎ°ú ÏÑ§Ï†ï Í∞ÄÎä•ÌïòÍ≤å Î≥ÄÍ≤Ω
+		m_deviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+
+		// Î©îÏâ¨ Î≤ÑÌçº ÏÑ§Ï†ï
+		constexpr UINT stride = sizeof(Vertex);
+		constexpr UINT offset = 0;
 		m_deviceContext->IASetVertexBuffers(0, 1, mesh.vertexBuffer.GetAddressOf(), &stride, &offset);
 		m_deviceContext->IASetIndexBuffer(mesh.indexBuffer.Get(), DXGI_FORMAT_R32_UINT, 0);
 
-		// ≥™¡ﬂø° ∏ﬁΩ¨∫∞∑Œ º≥¡§ ∞°¥…«œ∞‘ ∫Ø∞Ê
-		m_deviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-
-		// ¿Á¡˙ ªÛºˆ πˆ∆€ ºŒ¿Ã¥ıø° º≥¡§
+		// Ïû¨Ïßà ÏÉÅÏàò Î≤ÑÌçº ÏÖ∞Ïù¥ÎçîÏóê ÏÑ§Ï†ï
 		m_deviceContext->UpdateSubresource(m_materialConstantBuffer.Get(), 0, nullptr, &mesh.materialFactor, 0, 0);
-		m_deviceContext->PSSetConstantBuffers(static_cast<UINT>(PSConstBuffers::Material), 1, m_materialConstantBuffer.GetAddressOf());
 
-		// ¿Á¡˙ ≈ÿΩ∫√≥ ºŒ¿Ã¥ıø° º≥¡§
+		// Ïû¨Ïßà ÌÖçÏä§Ï≤ò ÏÖ∞Ïù¥ÎçîÏóê ÏÑ§Ï†ï
 		m_deviceContext->PSSetShaderResources(static_cast<UINT>(TextureSlots::Albedo), 1, mesh.materialTexture.albedoTextureSRV.GetAddressOf());
+		m_deviceContext->PSSetShaderResources(static_cast<UINT>(TextureSlots::ORM), 1, mesh.materialTexture.ORMTextureSRV.GetAddressOf());
 		m_deviceContext->PSSetShaderResources(static_cast<UINT>(TextureSlots::Normal), 1, mesh.materialTexture.normalTextureSRV.GetAddressOf());
-		m_deviceContext->PSSetShaderResources(static_cast<UINT>(TextureSlots::Metallic), 1, mesh.materialTexture.metallicTextureSRV.GetAddressOf());
-		m_deviceContext->PSSetShaderResources(static_cast<UINT>(TextureSlots::Roughness), 1, mesh.materialTexture.roughnessTextureSRV.GetAddressOf());
-		m_deviceContext->PSSetShaderResources(static_cast<UINT>(TextureSlots::AmbientOcclusion), 1, mesh.materialTexture.ambientOcclusionTextureSRV.GetAddressOf());
 
 		m_deviceContext->DrawIndexed(mesh.indexCount, 0, 0);
 	}
@@ -74,24 +75,44 @@ void ModelComponent::RenderImGui()
 		m_model = ResourceManager::GetInstance().LoadModel(m_modelFileName);
 		CreateShaders();
 	}
+
+	ImGui::Separator();
+	int blendStateInt = static_cast<int>(m_blendState);
+	if (ImGui::Combo("Blend State", &blendStateInt, "Opaque\0AlphaBlend\0AlphaToCoverage\0"))
+	{
+		m_blendState = static_cast<BlendState>(blendStateInt);
+		ResourceManager::GetInstance().SetBlendState(m_blendState);
+	}
+	int rasterStateInt = static_cast<int>(m_rasterState);
+	if (ImGui::Combo("Raster State", &rasterStateInt, "BackBuffer\0Solid\0Wireframe\0"))
+	{
+		m_rasterState = static_cast<RasterState>(rasterStateInt);
+		ResourceManager::GetInstance().SetRasterState(m_rasterState);
+	}
 }
 
 nlohmann::json ModelComponent::Serialize()
 {
 	nlohmann::json jsonData;
 
-	jsonData["modelFileName"] = m_modelFileName;
 	jsonData["vsShaderName"] = m_vsShaderName;
 	jsonData["psShaderName"] = m_psShaderName;
+	jsonData["modelFileName"] = m_modelFileName;
+
+	jsonData["blendState"] = static_cast<int>(m_blendState);
+	jsonData["rasterState"] = static_cast<int>(m_rasterState);
 
 	return jsonData;
 }
 
 void ModelComponent::Deserialize(const nlohmann::json& jsonData)
 {
-	m_modelFileName = jsonData["modelFileName"].get<string>();
 	m_vsShaderName = jsonData["vsShaderName"].get<string>();
 	m_psShaderName = jsonData["psShaderName"].get<string>();
+	m_modelFileName = jsonData["modelFileName"].get<string>();
+
+	m_blendState = static_cast<BlendState>(jsonData["blendState"].get<int>());
+	m_rasterState = static_cast<RasterState>(jsonData["rasterState"].get<int>());
 }
 
 void ModelComponent::CreateShaders()
@@ -100,4 +121,4 @@ void ModelComponent::CreateShaders()
 	m_vertexShaderAndInputLayout = resourceManager.GetVertexShaderAndInputLayout(m_vsShaderName, m_inputElements);
 	m_pixelShader = resourceManager.GetPixelShader(m_psShaderName);
 }
-/// ModelComponent.cpp¿« ≥°
+/// ModelComponent.cppÏùò ÎÅù

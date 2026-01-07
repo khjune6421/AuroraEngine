@@ -1,39 +1,128 @@
-/// Resource.hÀÇ ½ÃÀÛ
+/// Resource.hì˜ ì‹œì‘
 #pragma once
 
 struct RenderTarget
 {
-	com_ptr<ID3D11Texture2D> renderTarget = nullptr; // ·»´õ Å¸°Ù ÅØ½ºÃ³
-	com_ptr<ID3D11RenderTargetView> renderTargetView = nullptr; // ·»´õ Å¸°Ù ºä
+	com_ptr<ID3D11Texture2D> renderTarget = nullptr; // ë Œë” íƒ€ê²Ÿ í…ìŠ¤ì²˜
+	com_ptr<ID3D11RenderTargetView> renderTargetView = nullptr; // ë Œë” íƒ€ê²Ÿ ë·°
 
-	com_ptr<ID3D11Texture2D> depthStencilTexture = nullptr; // ±íÀÌ-½ºÅÙ½Ç ÅØ½ºÃ³
-	com_ptr<ID3D11DepthStencilView> depthStencilView = nullptr; // ±íÀÌ-½ºÅÙ½Ç ºä
+	com_ptr<ID3D11Texture2D> depthStencilTexture = nullptr; // ê¹Šì´-ìŠ¤í…ì‹¤ í…ìŠ¤ì²˜
+	com_ptr<ID3D11DepthStencilView> depthStencilView = nullptr; // ê¹Šì´-ìŠ¤í…ì‹¤ ë·°
 };
 
 enum class DepthStencilState
 {
+	Default,
 	Skybox,
+
 	Count
 };
 constexpr std::array<D3D11_DEPTH_STENCIL_DESC, static_cast<size_t>(DepthStencilState::Count)> DEPTH_STENCIL_DESC_TEMPLATES =
 {
+	// Default
+	D3D11_DEPTH_STENCIL_DESC
+	{
+		.DepthEnable = TRUE, // ê¹Šì´ í…ŒìŠ¤íŠ¸ í™œì„±í™”
+		.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ALL, // ê¹Šì´ ì“°ê¸° í™œì„±í™”
+		.DepthFunc = D3D11_COMPARISON_LESS, // ê¹Šì´ ë¹„êµ í•¨ìˆ˜: ì‘ìŒ
+		.StencilEnable = FALSE, // ìŠ¤í…ì‹¤ í…ŒìŠ¤íŠ¸ ë¹„í™œì„±í™”
+		.StencilReadMask = D3D11_DEFAULT_STENCIL_READ_MASK,
+		.StencilWriteMask = D3D11_DEFAULT_STENCIL_WRITE_MASK,
+		.FrontFace = {}, // ì‚¬ìš© ì•ˆ í•¨
+		.BackFace = {} // ì‚¬ìš© ì•ˆ í•¨
+	},
+
 	// Skybox
 	D3D11_DEPTH_STENCIL_DESC
 	{
-		.DepthEnable = TRUE, // ±íÀÌ Å×½ºÆ® È°¼ºÈ­
-		.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ZERO, // ±íÀÌ ¾²±â È°¼ºÈ­
-		.DepthFunc = D3D11_COMPARISON_LESS_EQUAL, // ±íÀÌ ºñ±³ ÇÔ¼ö: ÀÛ°Å³ª °°À½
-		.StencilEnable = FALSE, // ½ºÅÙ½Ç Å×½ºÆ® ºñÈ°¼ºÈ­
+		.DepthEnable = TRUE, // ê¹Šì´ í…ŒìŠ¤íŠ¸ í™œì„±í™”
+		.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ZERO, // ê¹Šì´ ì“°ê¸° í™œì„±í™”
+		.DepthFunc = D3D11_COMPARISON_LESS_EQUAL, // ê¹Šì´ ë¹„êµ í•¨ìˆ˜: ì‘ê±°ë‚˜ ê°™ìŒ
+		.StencilEnable = FALSE, // ìŠ¤í…ì‹¤ í…ŒìŠ¤íŠ¸ ë¹„í™œì„±í™”
 		.StencilReadMask = D3D11_DEFAULT_STENCIL_READ_MASK,
 		.StencilWriteMask = D3D11_DEFAULT_STENCIL_WRITE_MASK,
-		.FrontFace = {}, // »ç¿ë ¾È ÇÔ
-		.BackFace = {} // »ç¿ë ¾È ÇÔ
+		.FrontFace = {}, // ì‚¬ìš© ì•ˆ í•¨
+		.BackFace = {} // ì‚¬ìš© ì•ˆ í•¨
+	}
+};
+
+enum class BlendState
+{
+	Opaque,
+	AlphaBlend,
+	AlphaToCoverage,
+
+	Count
+};
+constexpr std::array<D3D11_BLEND_DESC, static_cast<size_t>(BlendState::Count)> BLEND_DESC_TEMPLATES =
+{
+	// Opaque
+	D3D11_BLEND_DESC
+	{
+		.AlphaToCoverageEnable = FALSE, // ì•ŒíŒŒ íˆ¬ ì»¤ë²„ë¦¬ì§€ ë¹„í™œì„±í™”
+		.IndependentBlendEnable = FALSE,
+		.RenderTarget =
+		{
+			D3D11_RENDER_TARGET_BLEND_DESC
+			{
+				.BlendEnable = FALSE,
+				.SrcBlend = D3D11_BLEND_ONE,
+				.DestBlend = D3D11_BLEND_ZERO,
+				.BlendOp = D3D11_BLEND_OP_ADD,
+				.SrcBlendAlpha = D3D11_BLEND_ONE,
+				.DestBlendAlpha = D3D11_BLEND_ZERO,
+				.BlendOpAlpha = D3D11_BLEND_OP_ADD,
+				.RenderTargetWriteMask = D3D11_COLOR_WRITE_ENABLE_ALL
+			}
+		}
+	},
+
+	// AlphaBlend
+	D3D11_BLEND_DESC
+	{
+		.AlphaToCoverageEnable = FALSE,
+		.IndependentBlendEnable = FALSE,
+		.RenderTarget =
+		{
+			D3D11_RENDER_TARGET_BLEND_DESC
+			{
+				.BlendEnable = TRUE,
+				.SrcBlend = D3D11_BLEND_SRC_ALPHA, // ì†ŒìŠ¤ ì•ŒíŒŒë¡œ ì†ŒìŠ¤ ìƒ‰ìƒ ê³±í•˜ê¸°
+				.DestBlend = D3D11_BLEND_INV_SRC_ALPHA, // (1 - ì†ŒìŠ¤ ì•ŒíŒŒ)ë¡œ ëŒ€ìƒ ìƒ‰ìƒ ê³±í•˜ê¸°
+				.BlendOp = D3D11_BLEND_OP_ADD, // ë‘ ê°’ì„ ë”í•˜ê¸°
+				.SrcBlendAlpha = D3D11_BLEND_ONE, // ì†ŒìŠ¤ ì•ŒíŒŒ ìœ ì§€
+				.DestBlendAlpha = D3D11_BLEND_INV_SRC_ALPHA, // ëŒ€ìƒ ì•ŒíŒŒ í˜¼í•©
+				.BlendOpAlpha = D3D11_BLEND_OP_ADD,
+				.RenderTargetWriteMask = D3D11_COLOR_WRITE_ENABLE_ALL
+			}
+		}
+	},
+
+	// AlphaToCoverage
+	D3D11_BLEND_DESC
+	{
+		.AlphaToCoverageEnable = TRUE, // ì•ŒíŒŒ íˆ¬ ì»¤ë²„ë¦¬ì§€ í™œì„±í™”
+		.IndependentBlendEnable = FALSE,
+		.RenderTarget =
+		{
+			D3D11_RENDER_TARGET_BLEND_DESC
+			{
+				.BlendEnable = TRUE,
+				.SrcBlend = D3D11_BLEND_ONE,
+				.DestBlend = D3D11_BLEND_INV_SRC_ALPHA,
+				.BlendOp = D3D11_BLEND_OP_ADD,
+				.SrcBlendAlpha = D3D11_BLEND_ONE,
+				.DestBlendAlpha = D3D11_BLEND_ZERO,
+				.BlendOpAlpha = D3D11_BLEND_OP_ADD,
+				.RenderTargetWriteMask = D3D11_COLOR_WRITE_ENABLE_ALL
+			}
+		}
 	}
 };
 
 enum class RasterState
 {
-	BackBuffer, // ¹é ¹öÆÛ Àü¿ë ·¡½ºÅÍ »óÅÂ // AA ¾øÀ½
+	BackBuffer, // ë°± ë²„í¼ ì „ìš© ë˜ìŠ¤í„° ìƒíƒœ // AA ì—†ìŒ
 	Solid,
 	Wireframe,
 
@@ -44,23 +133,23 @@ constexpr std::array<D3D11_RASTERIZER_DESC, static_cast<size_t>(RasterState::Cou
 	// BackBuffer
 	D3D11_RASTERIZER_DESC
 	{
-		.FillMode = D3D11_FILL_SOLID, // ½Ç¼± Ã¤¿ì±â
-		.CullMode = D3D11_CULL_NONE, // ¸é ÄÃ¸µ ¾øÀ½
-		.FrontCounterClockwise = FALSE, // ½Ã°è¹æÇâÀÌ ¾Õ¸é
-		.DepthBias = 0, // ±íÀÌ ¹ÙÀÌ¾î½º ¾øÀ½
-		.DepthBiasClamp = 0.0f, // ±íÀÌ ¹ÙÀÌ¾î½º Å¬·¥ÇÁ ¾øÀ½
-		.SlopeScaledDepthBias = 0.0f, // ±â¿ï±â ±â¹İ ±íÀÌ ¹ÙÀÌ¾î½º ¾øÀ½
-		.DepthClipEnable = TRUE, // ±íÀÌ Å¬¸®ÇÎ È°¼ºÈ­
-		.ScissorEnable = FALSE, // °¡À§ ¿µ¿ª ºñÈ°¼ºÈ­
-		.MultisampleEnable = FALSE, // ¸ÖÆ¼»ùÇÃ¸µ ºñÈ°¼ºÈ­
-		.AntialiasedLineEnable = FALSE // ¾ØÆ¼¾Ù¸®¾î½Ì ¼± ºñÈ°¼ºÈ­
+		.FillMode = D3D11_FILL_SOLID, // ì‹¤ì„  ì±„ìš°ê¸°
+		.CullMode = D3D11_CULL_NONE, // ë©´ ì»¬ë§ ì—†ìŒ
+		.FrontCounterClockwise = FALSE, // ì‹œê³„ë°©í–¥ì´ ì•ë©´
+		.DepthBias = 0, // ê¹Šì´ ë°”ì´ì–´ìŠ¤ ì—†ìŒ
+		.DepthBiasClamp = 0.0f, // ê¹Šì´ ë°”ì´ì–´ìŠ¤ í´ë¨í”„ ì—†ìŒ
+		.SlopeScaledDepthBias = 0.0f, // ê¸°ìš¸ê¸° ê¸°ë°˜ ê¹Šì´ ë°”ì´ì–´ìŠ¤ ì—†ìŒ
+		.DepthClipEnable = TRUE, // ê¹Šì´ í´ë¦¬í•‘ í™œì„±í™”
+		.ScissorEnable = FALSE, // ê°€ìœ„ ì˜ì—­ ë¹„í™œì„±í™”
+		.MultisampleEnable = FALSE, // ë©€í‹°ìƒ˜í”Œë§ ë¹„í™œì„±í™”
+		.AntialiasedLineEnable = FALSE // ì•¤í‹°ì•¨ë¦¬ì–´ì‹± ì„  ë¹„í™œì„±í™”
 	},
 
 	// Solid
 	D3D11_RASTERIZER_DESC
 	{
 		.FillMode = D3D11_FILL_SOLID,
-		.CullMode = D3D11_CULL_BACK, // µŞ¸é ÄÃ¸µ(CCW)
+		.CullMode = D3D11_CULL_BACK, // ë’·ë©´ ì»¬ë§(CCW)
 		.FrontCounterClockwise = FALSE,
 		.DepthBias = 0,
 		.DepthBiasClamp = 0.0f,
@@ -89,7 +178,7 @@ constexpr std::array<D3D11_RASTERIZER_DESC, static_cast<size_t>(RasterState::Cou
 
 enum class SamplerState
 {
-	BackBuffer, // ¹é ¹öÆÛ Àü¿ë »ùÇÃ·¯ »óÅÂ
+	BackBuffer, // ë°± ë²„í¼ ì „ìš© ìƒ˜í”ŒëŸ¬ ìƒíƒœ
 	Default,
 
 	Count
@@ -99,27 +188,27 @@ constexpr std::array<D3D11_SAMPLER_DESC, static_cast<size_t>(SamplerState::Count
 	// BackBuffer
 	D3D11_SAMPLER_DESC
 	{
-		.Filter = D3D11_FILTER_MIN_MAG_MIP_LINEAR, // ¼±Çü ÇÊÅÍ¸µ
-		.AddressU = D3D11_TEXTURE_ADDRESS_CLAMP, // U ÁÂÇ¥ Å¬·¥ÇÎ
-		.AddressV = D3D11_TEXTURE_ADDRESS_CLAMP, // V ÁÂÇ¥ Å¬·¥ÇÎ
-		.AddressW = D3D11_TEXTURE_ADDRESS_CLAMP, // W ÁÂÇ¥ Å¬·¥ÇÎ
-		.MipLODBias = 0.0f, // ¹Ó LOD ¹ÙÀÌ¾î½º ¾øÀ½
-		.MaxAnisotropy = 1, // ÀÌ¹æ¼º ÇÊÅÍ¸µ ¾øÀ½
-		.ComparisonFunc = D3D11_COMPARISON_NEVER, // ºñ±³ ÇÔ¼ö ¾øÀ½
-		.BorderColor = { 0.0f, 0.0f, 0.0f, 0.0f }, // Å×µÎ¸® »ö»ó (»ç¿ë ¾È ÇÔ)
-		.MinLOD = 0, // ÃÖ¼Ò LOD
-		.MaxLOD = D3D11_FLOAT32_MAX // ÃÖ´ë LOD
+		.Filter = D3D11_FILTER_MIN_MAG_MIP_LINEAR, // ì„ í˜• í•„í„°ë§
+		.AddressU = D3D11_TEXTURE_ADDRESS_CLAMP, // U ì¢Œí‘œ í´ë¨í•‘
+		.AddressV = D3D11_TEXTURE_ADDRESS_CLAMP, // V ì¢Œí‘œ í´ë¨í•‘
+		.AddressW = D3D11_TEXTURE_ADDRESS_CLAMP, // W ì¢Œí‘œ í´ë¨í•‘
+		.MipLODBias = 0.0f, // ë°‰ LOD ë°”ì´ì–´ìŠ¤ ì—†ìŒ
+		.MaxAnisotropy = 1, // ì´ë°©ì„± í•„í„°ë§ ì—†ìŒ
+		.ComparisonFunc = D3D11_COMPARISON_NEVER, // ë¹„êµ í•¨ìˆ˜ ì—†ìŒ
+		.BorderColor = { 0.0f, 0.0f, 0.0f, 0.0f }, // í…Œë‘ë¦¬ ìƒ‰ìƒ (ì‚¬ìš© ì•ˆ í•¨)
+		.MinLOD = 0, // ìµœì†Œ LOD
+		.MaxLOD = D3D11_FLOAT32_MAX // ìµœëŒ€ LOD
 	},
 
 	// Default
 	D3D11_SAMPLER_DESC
 	{
-		.Filter = D3D11_FILTER_ANISOTROPIC, // ÀÌ¹æ¼º ÇÊÅÍ¸µ
-		.AddressU = D3D11_TEXTURE_ADDRESS_WRAP, // U ÁÂÇ¥ ·¡ÇÎ
-		.AddressV = D3D11_TEXTURE_ADDRESS_WRAP, // V ÁÂÇ¥ ·¡ÇÎ
-		.AddressW = D3D11_TEXTURE_ADDRESS_WRAP, // W ÁÂÇ¥ ·¡ÇÎ
+		.Filter = D3D11_FILTER_ANISOTROPIC, // ì´ë°©ì„± í•„í„°ë§
+		.AddressU = D3D11_TEXTURE_ADDRESS_WRAP, // U ì¢Œí‘œ ë˜í•‘
+		.AddressV = D3D11_TEXTURE_ADDRESS_WRAP, // V ì¢Œí‘œ ë˜í•‘
+		.AddressW = D3D11_TEXTURE_ADDRESS_WRAP, // W ì¢Œí‘œ ë˜í•‘
 		.MipLODBias = 0.0f,
-		.MaxAnisotropy = 8, // ÃÖ´ë ÀÌ¹æ¼º ÇÊÅÍ¸µ
+		.MaxAnisotropy = 8, // ìµœëŒ€ ì´ë°©ì„± í•„í„°ë§
 		.ComparisonFunc = D3D11_COMPARISON_NEVER,
 		.BorderColor = { 0.0f, 0.0f, 0.0f, 0.0f },
 		.MinLOD = 0,
@@ -147,7 +236,7 @@ constexpr std::array<D3D11_INPUT_ELEMENT_DESC, static_cast<size_t>(InputElement:
 		.SemanticIndex = 0,
 		.Format = DXGI_FORMAT_R32G32B32A32_FLOAT, // float4
 		.InputSlot = 0,
-		.AlignedByteOffset = D3D11_APPEND_ALIGNED_ELEMENT, // ÀÚµ¿ ¿ÀÇÁ¼Â °è»ê
+		.AlignedByteOffset = D3D11_APPEND_ALIGNED_ELEMENT, // ìë™ ì˜¤í”„ì…‹ ê³„ì‚°
 		.InputSlotClass = D3D11_INPUT_PER_VERTEX_DATA,
 		.InstanceDataStepRate = 0
 	},
@@ -203,26 +292,133 @@ constexpr std::array<D3D11_INPUT_ELEMENT_DESC, static_cast<size_t>(InputElement:
 
 enum class VSConstBuffers
 {
-	ViewProjection,
-	SkyboxViewProjection,
-	WorldNormal
+	ViewProjection, // ViewProjectionBuffer
+	SkyboxViewProjection, // SkyboxViewProjectionBuffer
+	WorldNormal, // WorldBuffer
+
+	Count
 };
+struct ViewProjectionBuffer // ë·°-íˆ¬ì˜ ìƒìˆ˜ ë²„í¼ êµ¬ì¡°ì²´
+{
+	DirectX::XMMATRIX viewMatrix = DirectX::XMMatrixIdentity(); // ë·° í–‰ë ¬ // ì „ì¹˜ ì•ˆí•¨
+	DirectX::XMMATRIX projectionMatrix = DirectX::XMMatrixIdentity(); // íˆ¬ì˜ í–‰ë ¬ // ì „ì¹˜ ì•ˆí•¨
+	DirectX::XMMATRIX VPMatrix = DirectX::XMMatrixIdentity(); // VP í–‰ë ¬ // ì „ì¹˜í•¨
+};
+struct SkyboxViewProjectionBuffer // ìŠ¤ì¹´ì´ë°•ìŠ¤ ë·°-íˆ¬ì˜ ìƒìˆ˜ ë²„í¼ êµ¬ì¡°ì²´
+{
+	DirectX::XMMATRIX skyboxVPMatrix = DirectX::XMMatrixIdentity(); // ìŠ¤ì¹´ì´ë°•ìŠ¤ VP í–‰ë ¬(ë·°-íˆ¬ì˜ ì—­í–‰ë ¬) // ì „ì¹˜í•¨
+};
+struct WorldNormalBuffer // ì›”ë“œ ë° WVP í–‰ë ¬ ìƒìˆ˜ ë²„í¼ êµ¬ì¡°ì²´
+{
+	DirectX::XMMATRIX worldMatrix = DirectX::XMMatrixIdentity(); // ì›”ë“œ í–‰ë ¬
+	DirectX::XMMATRIX normalMatrix = DirectX::XMMatrixIdentity(); // ìŠ¤ì¼€ì¼ ì—­í–‰ë ¬ì„ ì ìš©í•œ ì›”ë“œ í–‰ë ¬
+};
+constexpr std::array<D3D11_BUFFER_DESC, static_cast<size_t>(VSConstBuffers::Count)> VS_CONST_BUFFER_DESCS =
+{
+	// ViewProjectionBuffer
+	D3D11_BUFFER_DESC
+	{
+		.ByteWidth = sizeof(ViewProjectionBuffer),
+		.Usage = D3D11_USAGE_DEFAULT,
+		.BindFlags = D3D11_BIND_CONSTANT_BUFFER,
+		.CPUAccessFlags = 0,
+		.MiscFlags = 0,
+		.StructureByteStride = 0
+	},
+
+	// SkyboxViewProjectionBuffer
+	D3D11_BUFFER_DESC
+	{
+		.ByteWidth = sizeof(SkyboxViewProjectionBuffer),
+		.Usage = D3D11_USAGE_DEFAULT,
+		.BindFlags = D3D11_BIND_CONSTANT_BUFFER,
+		.CPUAccessFlags = 0,
+		.MiscFlags = 0,
+		.StructureByteStride = 0
+	},
+
+	// WorldBuffer
+	D3D11_BUFFER_DESC
+	{
+		.ByteWidth = sizeof(WorldNormalBuffer),
+		.Usage = D3D11_USAGE_DEFAULT,
+		.BindFlags = D3D11_BIND_CONSTANT_BUFFER,
+		.CPUAccessFlags = 0,
+		.MiscFlags = 0,
+		.StructureByteStride = 0
+	}
+};
+
 enum class PSConstBuffers
 {
-	CameraPosition,
-	DirectionalLight,
-	Material,
-	MaterialLegacy
+	CameraPosition, // CameraPositionBuffer
+	DirectionalLight, // DirectionalLightBuffer
+	MaterialFactor, // MaterialFactorBuffer
+
+	Count
 };
+struct CameraPositionBuffer // ì¹´ë©”ë¼ ìœ„ì¹˜ ìƒìˆ˜ ë²„í¼ êµ¬ì¡°ì²´
+{
+	DirectX::XMVECTOR cameraPosition = DirectX::XMVectorSet(0.0f, 0.0f, 0.0f, 1.0f); // ì¹´ë©”ë¼ ì›”ë“œ ì¢Œí‘œ ìœ„ì¹˜
+};
+struct DirectionalLightBuffer // ë°©í–¥ê´‘ ìƒìˆ˜ ë²„í¼ êµ¬ì¡°ì²´
+{
+	DirectX::XMVECTOR lightDirection = DirectX::XMVectorSet(-0.5f, -1.0f, -0.5f, 0.0f); // ë°©í–¥ê´‘ ë°©í–¥
+	DirectX::XMFLOAT4 lightColor = { 1.0f, 1.0f, 1.0f, 1.0f }; // ë°©í–¥ê´‘ ìƒ‰ìƒ
+};
+struct MaterialFactorBuffer
+{
+	DirectX::XMFLOAT4 albedoFactor = { 1.0f, 1.0f, 1.0f, 1.0f }; // í…ìŠ¤ì²˜ ìƒ‰ìƒì´ ì–¼ë§ˆë‚˜ ì ìš©ë˜ëŠ”ì§€
+
+	float ambientOcclusionFactor = 1.0f; // í™˜ê²½ê´‘ ì°¨í í…ìŠ¤ì²˜ê°€ ì–¼ë§ˆë‚˜ ì ìš©ë˜ëŠ”ì§€
+	float roughnessFactor = 1.0f; // ê±°ì¹ ê¸° í…ìŠ¤ì²˜ê°€ ì–¼ë§ˆë‚˜ ì ìš©ë˜ëŠ”ì§€
+	float metallicFactor = 1.0f; // ê¸ˆì†ì„± í…ìŠ¤ì²˜ê°€ ì–¼ë§ˆë‚˜ ì ìš©ë˜ëŠ”ì§€
+	float iorFactor = 1.5f; // êµ´ì ˆë¥  íŒ©í„° // ì¼ë°˜ì ìœ¼ë¡œ 1.5f ì—¬ì•¼ í•¨
+
+	DirectX::XMFLOAT4 emissionFactor = { 0.0f, 0.0f, 0.0f, 0.0f }; // ìê°€ ë°œê´‘ ìƒ‰ìƒ íŒ©í„°
+};
+constexpr std::array<D3D11_BUFFER_DESC, static_cast<size_t>(PSConstBuffers::Count)> PS_CONST_BUFFER_DESCS =
+{
+	// CameraPositionBuffer
+	D3D11_BUFFER_DESC
+	{
+		.ByteWidth = sizeof(CameraPositionBuffer),
+		.Usage = D3D11_USAGE_DEFAULT,
+		.BindFlags = D3D11_BIND_CONSTANT_BUFFER,
+		.CPUAccessFlags = 0,
+		.MiscFlags = 0,
+		.StructureByteStride = 0
+	},
+	// DirectionalLightBuffer
+	D3D11_BUFFER_DESC
+	{
+		.ByteWidth = sizeof(DirectionalLightBuffer),
+		.Usage = D3D11_USAGE_DEFAULT,
+		.BindFlags = D3D11_BIND_CONSTANT_BUFFER,
+		.CPUAccessFlags = 0,
+		.MiscFlags = 0,
+		.StructureByteStride = 0
+	},
+	// MaterialFactorBuffer
+	D3D11_BUFFER_DESC
+	{
+		.ByteWidth = sizeof(MaterialFactorBuffer),
+		.Usage = D3D11_USAGE_DEFAULT,
+		.BindFlags = D3D11_BIND_CONSTANT_BUFFER,
+		.CPUAccessFlags = 0,
+		.MiscFlags = 0,
+		.StructureByteStride = 0
+	}
+};
+
 enum class TextureSlots
 {
 	BackBuffer,
 	Environment,
-	Albedo,
-	Normal,
-	Metallic,
-	Roughness,
-	AmbientOcclusion,
+
+	Albedo, // RGBA
+	ORM, // ambient occlusion(R) + roughness(G) + metallic(B)
+	Normal, // X(R) + Y(G) + Z(B)
 
 	Count
 };
@@ -240,31 +436,20 @@ struct Vertex_Pos
 	DirectX::XMFLOAT4 position = {};
 };
 
-struct MaterialFactor
-{
-	DirectX::XMFLOAT4 albedoFactor = { 1.0f, 1.0f, 1.0f, 1.0f }; // ÅØ½ºÃ³ »ö»óÀÌ ¾ó¸¶³ª Àû¿ëµÇ´ÂÁö
-	float metallicFactor = 1.0f; // ±İ¼Ó¼º ÅØ½ºÃ³°¡ ¾ó¸¶³ª Àû¿ëµÇ´ÂÁö
-	float roughnessFactor = 1.0f; // °ÅÄ¥±â ÅØ½ºÃ³°¡ ¾ó¸¶³ª Àû¿ëµÇ´ÂÁö
-	float ambientOcclusionFactor = 1.0f; // È¯°æ±¤ Â÷Æó ÅØ½ºÃ³°¡ ¾ó¸¶³ª Àû¿ëµÇ´ÂÁö
-	float lightFactor = 1.0f; // Á¶¸í ¿µÇâµµ // ÀÏ¹İÀûÀ¸·Î 1.0f ¿©¾ß ÇÔ
-	DirectX::XMFLOAT4 emissionFactor = { 0.0f, 0.0f, 0.0f, 0.0f }; // ÀÚ°¡ ¹ß±¤ »ö»ó ÆÑÅÍ
-};
 
-/// ºí¸°-Æş ÇßÀ» ¶§ÀÇ ±×°Í°ú µ¿ÀÏÇÔ.
-/// ¸ñÀû: ¶óÀÎ ±×¸±·Á°í ¸¸µë
+/// ë¸”ë¦°-í í–ˆì„ ë•Œì˜ ê·¸ê²ƒê³¼ ë™ì¼í•¨.
+/// ëª©ì : ë¼ì¸ ê·¸ë¦´ë ¤ê³  ë§Œë“¬
 struct MaterialLegacy
 {
-	DirectX::XMFLOAT4 Diffuse;
+	DirectX::XMFLOAT4 Diffuse = { 1.0f, 1.0f, 1.0f, 1.0f };
 };
 
 
 struct MaterialTexture
 {
 	com_ptr<ID3D11ShaderResourceView> albedoTextureSRV = nullptr;
+	com_ptr<ID3D11ShaderResourceView> ORMTextureSRV = nullptr;
 	com_ptr<ID3D11ShaderResourceView> normalTextureSRV = nullptr;
-	com_ptr<ID3D11ShaderResourceView> metallicTextureSRV = nullptr;
-	com_ptr<ID3D11ShaderResourceView> roughnessTextureSRV = nullptr;
-	com_ptr<ID3D11ShaderResourceView> ambientOcclusionTextureSRV = nullptr;
 };
 
 struct Mesh
@@ -278,7 +463,7 @@ struct Mesh
 	com_ptr<ID3D11Buffer> vertexBuffer = nullptr;
 	com_ptr<ID3D11Buffer> indexBuffer = nullptr;
 
-	MaterialFactor materialFactor = {};
+	MaterialFactorBuffer materialFactor = {};
 	MaterialTexture materialTexture = {};
 };
 
@@ -287,4 +472,4 @@ struct Model
 	std::vector<Mesh> meshes = {};
 };
 
-/// Resource.hÀÇ ³¡
+/// Resource.hì˜ ë

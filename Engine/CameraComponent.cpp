@@ -18,9 +18,9 @@ void CameraComponent::UpdateViewMatrix()
 {
 	m_viewMatrix = XMMatrixLookAtLH
 	(
-		*m_position, // Ä«¸Ş¶ó À§Ä¡
-		XMVectorAdd(*m_position, m_owner->GetWorldDirectionVector(Direction::Forward)), // Ä«¸Ş¶ó ¾Õ ¹æÇâ
-		m_owner->GetWorldDirectionVector(Direction::Up) // Ä«¸Ş¶ó À§ ¹æÇâ
+		*m_position, // ì¹´ë©”ë¼ ìœ„ì¹˜
+		XMVectorAdd(*m_position, m_owner->GetWorldDirectionVector(Direction::Forward)), // ì¹´ë©”ë¼ ì• ë°©í–¥
+		m_owner->GetWorldDirectionVector(Direction::Up) // ì¹´ë©”ë¼ ìœ„ ë°©í–¥
 	);
 }
 

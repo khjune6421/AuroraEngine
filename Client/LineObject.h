@@ -1,4 +1,4 @@
-///LineObject.hÀÇ ½ÃÀÛ
+///LineObject.hì˜ ì‹œì‘
 #pragma once
 #include "GameObjectBase.h"
 
@@ -17,4 +17,4 @@ private:
 	void Update() override;
 };
 
-///LineObject.hÀÇ ³¡
+///LineObject.hì˜ ë

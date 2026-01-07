@@ -1,4 +1,4 @@
-///TestObject.cppÀÇ ½ÃÀÛ
+///TestObject.cppì˜ ì‹œì‘
 #include "stdafx.h"
 #include "TestObject.h"
 
@@ -19,4 +19,4 @@ void TestObject::Update()
 {
 }
 
-///TestObject.cppÀÇ ³¡
+///TestObject.cppì˜ ë

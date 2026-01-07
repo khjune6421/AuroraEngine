@@ -4,25 +4,21 @@
 class ComponentBase : public Base
 {
 protected:
-	class GameObjectBase* m_owner = nullptr; // ¼ÒÀ¯ °ÔÀÓ ¿ÀºêÁ§Æ® Æ÷ÀÎÅÍ
+	class GameObjectBase* m_owner = nullptr; // ì†Œìœ  ê²Œì„ ì˜¤ë¸Œì íŠ¸ í¬ì¸í„°
 
 public:
 	ComponentBase() = default;
 	virtual ~ComponentBase() = default;
-	ComponentBase(const ComponentBase&) = default; // º¹»ç
-	ComponentBase& operator=(const ComponentBase&) = default; // º¹»ç ´ëÀÔ
-	ComponentBase(ComponentBase&&) = default; // ÀÌµ¿
-	ComponentBase& operator=(ComponentBase&&) = default; // ÀÌµ¿ ´ëÀÔ
+	ComponentBase(const ComponentBase&) = default; // ë³µì‚¬
+	ComponentBase& operator=(const ComponentBase&) = default; // ë³µì‚¬ ëŒ€ì…
+	ComponentBase(ComponentBase&&) = default; // ì´ë™
+	ComponentBase& operator=(ComponentBase&&) = default; // ì´ë™ ëŒ€ì…
 
 	void SetOwner(GameObjectBase* owner) { m_owner = owner; }
 	GameObjectBase* GetOwner() const { return m_owner; }
 	virtual bool NeedsUpdate() const = 0;
 	virtual bool NeedsRender() const = 0;
-
-	// ÄÄÆ÷³ÍÆ® Á÷·ÄÈ­
-	nlohmann::json BaseSerialize() override;
-	// ÄÄÆ÷³ÍÆ® ¿ªÁ÷·ÄÈ­
-	void BaseDeserialize(const nlohmann::json& jsonData) override { Deserialize(jsonData); }
+  
 private:
 	void BaseInitialize() override;
 	void BaseUpdate() override { Update(); }
@@ -30,8 +26,11 @@ private:
 	void BaseRenderImGui() override;
 	void BaseFinalize() override { Finalize(); }
 
-	
+	// ì»´í¬ë„ŒíŠ¸ ì§ë ¬í™”
+	nlohmann::json BaseSerialize() override;
+	// ì»´í¬ë„ŒíŠ¸ ì—­ì§ë ¬í™”
+	void BaseDeserialize(const nlohmann::json& jsonData) override { Deserialize(jsonData); }
 
-	// ÄÄÆ÷³ÍÆ®´Â Á¦°Å ´ë±â Ã³¸®°¡ ÇÊ¿ä ¾øÀ¸¹Ç·Î ºó ±¸Çö
+	// ì»´í¬ë„ŒíŠ¸ëŠ” ì œê±° ëŒ€ê¸° ì²˜ë¦¬ê°€ í•„ìš” ì—†ìœ¼ë¯€ë¡œ ë¹ˆ êµ¬í˜„
 	void RemovePending() override {};
 };

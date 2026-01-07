@@ -3,7 +3,7 @@
 
 class DebugCamera : public GameObjectBase
 {
-	float m_moveSpeed = 10.0f; // ÀÌµ¿ ¼Óµµ
+	float m_moveSpeed = 10.0f; // ì´ë™ ì†ë„
 
 public:
 	DebugCamera() = default;

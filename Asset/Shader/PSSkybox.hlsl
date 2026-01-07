@@ -1,4 +1,4 @@
-/// PSSkybox.hlslÀÇ ½ÃÀÛ
+/// PSSkybox.hlslì˜ ì‹œì‘
 #include "CommonPS.hlsli"
 
 struct PSInput
@@ -11,4 +11,4 @@ float4 main(PSInput input) : SV_TARGET
 {
     return environmentMapTexture.Sample(SamplerLinearWrap, normalize(input.ViewDir));
 }
-/// PSSkybox.hlslÀÇ ³¡
+/// PSSkybox.hlslì˜ ë
