@@ -267,11 +267,12 @@ void SceneBase::UpdateConstantBuffers()
 
 	// 스카이박스 뷰-투영 역행렬 상수 버퍼 업데이트 및 셰이더에 설정 // m_viewProjectionData 재활용
 	m_viewProjectionData.viewMatrix.r[3] = XMVectorSet(0.0f, 0.0f, 0.0f, 1.0f); // 뷰 행렬의 위치 성분 제거
-	m_viewProjectionData.VPMatrix = XMMatrixTranspose(XMMatrixInverse(nullptr, m_viewProjectionData.viewMatrix * m_viewProjectionData.projectionMatrix));
-	m_deviceContext->UpdateSubresource(m_skyboxViewProjectionConstantBuffer.Get(), 0, nullptr, &m_viewProjectionData.VPMatrix, 0, 0);
+	m_skyboxViewProjectionData.skyboxVPMatrix = XMMatrixTranspose(XMMatrixInverse(nullptr, m_viewProjectionData.viewMatrix * m_viewProjectionData.projectionMatrix));
+	m_deviceContext->UpdateSubresource(m_skyboxViewProjectionConstantBuffer.Get(), 0, nullptr, &m_skyboxViewProjectionData, 0, 0);
 
 	// 카메라 위치 상수 버퍼 업데이트 및 셰이더에 설정
-	m_deviceContext->UpdateSubresource(m_cameraPositionConstantBuffer.Get(), 0, nullptr, &m_mainCamera->GetPosition(), 0, 0);
+	m_cameraPositionData.cameraPosition = m_mainCamera->GetPosition();
+	m_deviceContext->UpdateSubresource(m_cameraPositionConstantBuffer.Get(), 0, nullptr, &m_cameraPositionData, 0, 0);
 
 	// 방향광 상수 버퍼 업데이트 및 셰이더에 설정
 	m_directionalLightData.lightDirection = -XMVector3Normalize(m_directionalLightDirection);

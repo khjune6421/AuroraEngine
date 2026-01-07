@@ -25,6 +25,8 @@ class SceneBase : public Base
 	// 정점 셰이더용 상수 버퍼
 	ViewProjectionBuffer m_viewProjectionData = {}; // 뷰-투영 상수 버퍼 데이터
 	com_ptr<ID3D11Buffer> m_viewProjectionConstantBuffer = nullptr; // 뷰-투영 상수 버퍼
+
+	SkyboxViewProjectionBuffer m_skyboxViewProjectionData = {}; // 스카이박스 뷰-투영 역행렬 상수 버퍼 데이터
 	com_ptr<ID3D11Buffer> m_skyboxViewProjectionConstantBuffer = nullptr; // 스카이박스 뷰-투영 역행렬 상수 버퍼
 
 	// 픽셀 셰이더용 상수 버퍼
