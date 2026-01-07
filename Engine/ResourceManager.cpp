@@ -13,7 +13,10 @@ void ResourceManager::Initialize(com_ptr<ID3D11Device> device, com_ptr<ID3D11Dev
 	CreateDepthStencilStates();
 	CreateBlendStates();
 	CreateRasterStates();
+
+	CreateAndSetConstantBuffers();
 	CreateAndSetSamplerStates();
+
 	CacheAllTexture();
 }
 
@@ -40,26 +43,6 @@ void ResourceManager::SetRasterState(RasterState state)
 
 	m_deviceContext->RSSetState(m_rasterStates[static_cast<size_t>(state)].Get());
 	m_currentRasterState = state;
-}
-
-com_ptr<ID3D11Buffer> ResourceManager::GetConstantBuffer(UINT bufferSize)
-{
-	HRESULT hr = S_OK;
-
-	com_ptr<ID3D11Buffer> constantBuffer = nullptr;
-	const D3D11_BUFFER_DESC bufferDesc =
-	{
-		.ByteWidth = bufferSize,
-		.Usage = D3D11_USAGE_DEFAULT,
-		.BindFlags = D3D11_BIND_CONSTANT_BUFFER,
-		.CPUAccessFlags = 0,
-		.MiscFlags = 0,
-		.StructureByteStride = 0
-	};
-	hr = m_device->CreateBuffer(&bufferDesc, nullptr, constantBuffer.GetAddressOf());
-	CheckResult(hr, "상수 버퍼 생성 실패.");
-
-	return constantBuffer;
 }
 
 com_ptr<ID3D11Buffer> ResourceManager::CreateVertexBuffer(const void* data, UINT stride, UINT count, bool isDynamic)
@@ -314,6 +297,39 @@ void ResourceManager::CreateRasterStates()
 	}
 }
 
+void ResourceManager::CreateAndSetConstantBuffers()
+{
+	HRESULT hr = S_OK;
+
+	// 정점 셰이더용 상수 버퍼 생성 및 설정
+	// 뷰-투영 상수 버퍼
+	hr = m_device->CreateBuffer(&VS_CONST_BUFFER_DESCS[static_cast<size_t>(VSConstBuffers::ViewProjection)], nullptr, m_vsConstantBuffers[static_cast<size_t>(VSConstBuffers::ViewProjection)].GetAddressOf());
+	CheckResult(hr, "ViewProjection 상수 버퍼 생성 실패.");
+	m_deviceContext->VSSetConstantBuffers(static_cast<UINT>(VSConstBuffers::ViewProjection), 1, m_vsConstantBuffers[static_cast<size_t>(VSConstBuffers::ViewProjection)].GetAddressOf());
+	// 스카이박스 뷰-투영 역행렬 상수 버퍼
+	hr = m_device->CreateBuffer(&VS_CONST_BUFFER_DESCS[static_cast<size_t>(VSConstBuffers::SkyboxViewProjection)], nullptr, m_vsConstantBuffers[static_cast<size_t>(VSConstBuffers::SkyboxViewProjection)].GetAddressOf());
+	CheckResult(hr, "Object 상수 버퍼 생성 실패.");
+	m_deviceContext->VSSetConstantBuffers(static_cast<UINT>(VSConstBuffers::SkyboxViewProjection), 1, m_vsConstantBuffers[static_cast<size_t>(VSConstBuffers::SkyboxViewProjection)].GetAddressOf());
+	// 객체 월드, 스케일 역행렬 적용한 월드 상수 버퍼
+	hr = m_device->CreateBuffer(&VS_CONST_BUFFER_DESCS[static_cast<size_t>(VSConstBuffers::WorldNormal)], nullptr, m_vsConstantBuffers[static_cast<size_t>(VSConstBuffers::WorldNormal)].GetAddressOf());
+	CheckResult(hr, "WorldNormal 상수 버퍼 생성 실패.");
+	m_deviceContext->VSSetConstantBuffers(static_cast<UINT>(VSConstBuffers::WorldNormal), 1, m_vsConstantBuffers[static_cast<size_t>(VSConstBuffers::WorldNormal)].GetAddressOf());
+
+	// 픽셀 셰이더용 상수 버퍼 생성 및 설정
+	// 카메라 위치 상수 버퍼
+	hr = m_device->CreateBuffer(&PS_CONST_BUFFER_DESCS[static_cast<size_t>(PSConstBuffers::CameraPosition)], nullptr, m_psConstantBuffers[static_cast<size_t>(PSConstBuffers::CameraPosition)].GetAddressOf());
+	CheckResult(hr, "CameraPosition 상수 버퍼 생성 실패.");
+	m_deviceContext->PSSetConstantBuffers(static_cast<UINT>(PSConstBuffers::CameraPosition), 1, m_psConstantBuffers[static_cast<size_t>(PSConstBuffers::CameraPosition)].GetAddressOf());
+	// 방향광 상수 버퍼
+	hr = m_device->CreateBuffer(&PS_CONST_BUFFER_DESCS[static_cast<size_t>(PSConstBuffers::DirectionalLight)], nullptr, m_psConstantBuffers[static_cast<size_t>(PSConstBuffers::DirectionalLight)].GetAddressOf());
+	CheckResult(hr, "DirectionalLight 상수 버퍼 생성 실패.");
+	m_deviceContext->PSSetConstantBuffers(static_cast<UINT>(PSConstBuffers::DirectionalLight), 1, m_psConstantBuffers[static_cast<size_t>(PSConstBuffers::DirectionalLight)].GetAddressOf());
+	// 재질 팩터 상수 버퍼
+	hr = m_device->CreateBuffer(&PS_CONST_BUFFER_DESCS[static_cast<size_t>(PSConstBuffers::MaterialFactor)], nullptr, m_psConstantBuffers[static_cast<size_t>(PSConstBuffers::MaterialFactor)].GetAddressOf());
+	CheckResult(hr, "MaterialFactor 상수 버퍼 생성 실패.");
+	m_deviceContext->PSSetConstantBuffers(static_cast<UINT>(PSConstBuffers::MaterialFactor), 1, m_psConstantBuffers[static_cast<size_t>(PSConstBuffers::MaterialFactor)].GetAddressOf());
+}
+
 void ResourceManager::CreateAndSetSamplerStates()
 {
 	HRESULT hr = S_OK;
@@ -431,9 +447,9 @@ Mesh ResourceManager::ProcessMesh(const aiMesh* mesh, const aiScene* scene)
 	return resultMesh;
 }
 
-MaterialFactor ResourceManager::ProcessMaterialFactor(aiMaterial* material)
+MaterialFactorBuffer ResourceManager::ProcessMaterialFactor(aiMaterial* material)
 {
-	MaterialFactor resultMaterialFactor;
+	MaterialFactorBuffer resultMaterialFactor;
 
 	// Albedo/Diffuse 색상 팩터
 	aiColor4D albedoColor;

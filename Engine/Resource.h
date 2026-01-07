@@ -292,17 +292,125 @@ constexpr std::array<D3D11_INPUT_ELEMENT_DESC, static_cast<size_t>(InputElement:
 
 enum class VSConstBuffers
 {
-	ViewProjection,
-	SkyboxViewProjection,
-	WorldNormal
+	ViewProjection, // ViewProjectionBuffer
+	SkyboxViewProjection, // SkyboxViewProjectionBuffer
+	WorldNormal, // WorldBuffer
+
+	Count
 };
+struct ViewProjectionBuffer // 뷰-투영 상수 버퍼 구조체
+{
+	DirectX::XMMATRIX viewMatrix = DirectX::XMMatrixIdentity(); // 뷰 행렬 // 전치 안함
+	DirectX::XMMATRIX projectionMatrix = DirectX::XMMatrixIdentity(); // 투영 행렬 // 전치 안함
+	DirectX::XMMATRIX VPMatrix = DirectX::XMMatrixIdentity(); // VP 행렬 // 전치함
+};
+struct SkyboxViewProjectionBuffer // 스카이박스 뷰-투영 상수 버퍼 구조체
+{
+	DirectX::XMMATRIX skyboxVPMatrix = DirectX::XMMatrixIdentity(); // 스카이박스 VP 행렬(뷰-투영 역행렬) // 전치함
+};
+struct WorldNormalBuffer // 월드 및 WVP 행렬 상수 버퍼 구조체
+{
+	DirectX::XMMATRIX worldMatrix = DirectX::XMMatrixIdentity(); // 월드 행렬
+	DirectX::XMMATRIX normalMatrix = DirectX::XMMatrixIdentity(); // 스케일 역행렬을 적용한 월드 행렬
+};
+constexpr std::array<D3D11_BUFFER_DESC, static_cast<size_t>(VSConstBuffers::Count)> VS_CONST_BUFFER_DESCS =
+{
+	// ViewProjectionBuffer
+	D3D11_BUFFER_DESC
+	{
+		.ByteWidth = sizeof(ViewProjectionBuffer),
+		.Usage = D3D11_USAGE_DEFAULT,
+		.BindFlags = D3D11_BIND_CONSTANT_BUFFER,
+		.CPUAccessFlags = 0,
+		.MiscFlags = 0,
+		.StructureByteStride = 0
+	},
+
+	// SkyboxViewProjectionBuffer
+	D3D11_BUFFER_DESC
+	{
+		.ByteWidth = sizeof(SkyboxViewProjectionBuffer),
+		.Usage = D3D11_USAGE_DEFAULT,
+		.BindFlags = D3D11_BIND_CONSTANT_BUFFER,
+		.CPUAccessFlags = 0,
+		.MiscFlags = 0,
+		.StructureByteStride = 0
+	},
+
+	// WorldBuffer
+	D3D11_BUFFER_DESC
+	{
+		.ByteWidth = sizeof(WorldNormalBuffer),
+		.Usage = D3D11_USAGE_DEFAULT,
+		.BindFlags = D3D11_BIND_CONSTANT_BUFFER,
+		.CPUAccessFlags = 0,
+		.MiscFlags = 0,
+		.StructureByteStride = 0
+	}
+};
+
 enum class PSConstBuffers
 {
-	CameraPosition,
-	DirectionalLight,
-	Material,
-	MaterialLegacy
+	CameraPosition, // CameraPositionBuffer
+	DirectionalLight, // DirectionalLightBuffer
+	MaterialFactor, // MaterialFactorBuffer
+
+	Count
 };
+struct CameraPositionBuffer // 카메라 위치 상수 버퍼 구조체
+{
+	DirectX::XMVECTOR cameraPosition = DirectX::XMVectorSet(0.0f, 0.0f, 0.0f, 1.0f); // 카메라 월드 좌표 위치
+};
+struct DirectionalLightBuffer // 방향광 상수 버퍼 구조체
+{
+	DirectX::XMVECTOR lightDirection = DirectX::XMVectorSet(-0.5f, -1.0f, -0.5f, 0.0f); // 방향광 방향
+	DirectX::XMFLOAT4 lightColor = { 1.0f, 1.0f, 1.0f, 1.0f }; // 방향광 색상
+};
+struct MaterialFactorBuffer
+{
+	DirectX::XMFLOAT4 albedoFactor = { 1.0f, 1.0f, 1.0f, 1.0f }; // 텍스처 색상이 얼마나 적용되는지
+
+	float ambientOcclusionFactor = 1.0f; // 환경광 차폐 텍스처가 얼마나 적용되는지
+	float roughnessFactor = 1.0f; // 거칠기 텍스처가 얼마나 적용되는지
+	float metallicFactor = 1.0f; // 금속성 텍스처가 얼마나 적용되는지
+	float iorFactor = 1.5f; // 굴절률 팩터 // 일반적으로 1.5f 여야 함
+
+	DirectX::XMFLOAT4 emissionFactor = { 0.0f, 0.0f, 0.0f, 0.0f }; // 자가 발광 색상 팩터
+};
+constexpr std::array<D3D11_BUFFER_DESC, static_cast<size_t>(PSConstBuffers::Count)> PS_CONST_BUFFER_DESCS =
+{
+	// CameraPositionBuffer
+	D3D11_BUFFER_DESC
+	{
+		.ByteWidth = sizeof(CameraPositionBuffer),
+		.Usage = D3D11_USAGE_DEFAULT,
+		.BindFlags = D3D11_BIND_CONSTANT_BUFFER,
+		.CPUAccessFlags = 0,
+		.MiscFlags = 0,
+		.StructureByteStride = 0
+	},
+	// DirectionalLightBuffer
+	D3D11_BUFFER_DESC
+	{
+		.ByteWidth = sizeof(DirectionalLightBuffer),
+		.Usage = D3D11_USAGE_DEFAULT,
+		.BindFlags = D3D11_BIND_CONSTANT_BUFFER,
+		.CPUAccessFlags = 0,
+		.MiscFlags = 0,
+		.StructureByteStride = 0
+	},
+	// MaterialFactorBuffer
+	D3D11_BUFFER_DESC
+	{
+		.ByteWidth = sizeof(MaterialFactorBuffer),
+		.Usage = D3D11_USAGE_DEFAULT,
+		.BindFlags = D3D11_BIND_CONSTANT_BUFFER,
+		.CPUAccessFlags = 0,
+		.MiscFlags = 0,
+		.StructureByteStride = 0
+	}
+};
+
 enum class TextureSlots
 {
 	BackBuffer,
@@ -328,17 +436,6 @@ struct Vertex_Pos
 	DirectX::XMFLOAT4 position = {};
 };
 
-struct MaterialFactor
-{
-	DirectX::XMFLOAT4 albedoFactor = { 1.0f, 1.0f, 1.0f, 1.0f }; // 텍스처 색상이 얼마나 적용되는지
-
-	float ambientOcclusionFactor = 1.0f; // 환경광 차폐 텍스처가 얼마나 적용되는지
-	float roughnessFactor = 1.0f; // 거칠기 텍스처가 얼마나 적용되는지
-	float metallicFactor = 1.0f; // 금속성 텍스처가 얼마나 적용되는지
-	float iorFactor = 1.5f; // 굴절률 팩터 // 일반적으로 1.5f 여야 함
-
-	DirectX::XMFLOAT4 emissionFactor = { 0.0f, 0.0f, 0.0f, 0.0f }; // 자가 발광 색상 팩터
-};
 
 /// 블린-퐁 했을 때의 그것과 동일함.
 /// 목적: 라인 그릴려고 만듬
@@ -366,7 +463,7 @@ struct Mesh
 	com_ptr<ID3D11Buffer> vertexBuffer = nullptr;
 	com_ptr<ID3D11Buffer> indexBuffer = nullptr;
 
-	MaterialFactor materialFactor = {};
+	MaterialFactorBuffer materialFactor = {};
 	MaterialTexture materialTexture = {};
 };
 

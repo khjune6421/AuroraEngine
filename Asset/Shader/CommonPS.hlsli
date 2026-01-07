@@ -29,11 +29,6 @@ cbuffer MaterialFactor : register(b2)
     float4 EmissionFactor;
 };
 
-cbuffer LineColor : register(b3)
-{
-    float4 LineColor;
-};
-
 // --------------------------------------------------------
 // Sampler States
 // --------------------------------------------------------

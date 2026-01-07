@@ -17,7 +17,7 @@ void ModelComponent::Initialize()
 
 	CreateShaders();
 
-	m_materialConstantBuffer = resourceManager.GetConstantBuffer(sizeof(MaterialFactor)); // TODO: 매번 재질 상수 버퍼 생성하지 말고 공유하도록 변경
+	m_materialConstantBuffer = resourceManager.GetConstantBuffer(PSConstBuffers::MaterialFactor);
 	m_model = resourceManager.LoadModel(m_modelFileName);
 }
 
@@ -40,7 +40,6 @@ void ModelComponent::Render()
 
 		// 재질 상수 버퍼 셰이더에 설정
 		m_deviceContext->UpdateSubresource(m_materialConstantBuffer.Get(), 0, nullptr, &mesh.materialFactor, 0, 0);
-		m_deviceContext->PSSetConstantBuffers(static_cast<UINT>(PSConstBuffers::Material), 1, m_materialConstantBuffer.GetAddressOf());
 
 		// 재질 텍스처 셰이더에 설정
 		m_deviceContext->PSSetShaderResources(static_cast<UINT>(TextureSlots::Albedo), 1, mesh.materialTexture.albedoTextureSRV.GetAddressOf());

@@ -97,3 +97,6 @@ constexpr void CheckResult(HRESULT hr, const char* msg)
 		exit(EXIT_FAILURE);
 	}
 }
+
+// 사용자 정의 헤더
+#include "Resource.h"

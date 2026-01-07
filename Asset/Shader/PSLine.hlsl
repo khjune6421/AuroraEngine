@@ -3,6 +3,6 @@
 
 float4 main(PS_INPUT_POS input) : SV_TARGET
 {   
-    return LineColor;
+    return float4(0.0f, 0.0f, 1.0f, 1.0f);
 }
 /// PSLine.hlsl의 끝

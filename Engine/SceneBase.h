@@ -16,32 +16,23 @@ class SceneBase : public Base
 
 	std::vector<std::unique_ptr<Base>> m_gameObjects = {}; // 게임 오브젝트 배열
 
-	struct ViewProjectionBuffer // 뷰-투영 상수 버퍼 구조체
-	{
-		DirectX::XMMATRIX viewMatrix = DirectX::XMMatrixIdentity(); // 뷰 행렬 // 전치 안함
-		DirectX::XMMATRIX projectionMatrix = DirectX::XMMatrixIdentity(); // 투영 행렬 // 전치 안함
-		DirectX::XMMATRIX VPMatrix = DirectX::XMMatrixIdentity(); // VP 행렬 // 전치함
-	};
-	ViewProjectionBuffer m_viewProjectionData = {}; // 뷰-투영 상수 버퍼 데이터
-	com_ptr<ID3D11Buffer> m_viewProjectionConstantBuffer = nullptr; // 뷰-투영 상수 버퍼
+	std::pair<com_ptr<ID3D11VertexShader>, com_ptr<ID3D11InputLayout>> m_skyboxVertexShaderAndInputLayout = {}; // 스카이박스 정점 셰이더
+	com_ptr<ID3D11PixelShader> m_skyboxPixelShader = nullptr; // 스카이박스 픽셀 셰이더
 
 	std::string m_environmentMapFileName = "Skybox.dds"; // 환경 맵 파일 이름
 	com_ptr<ID3D11ShaderResourceView> m_environmentMapSRV = nullptr; // 환경 맵 셰이더 리소스 뷰
+
+	// 정점 셰이더용 상수 버퍼
+	ViewProjectionBuffer m_viewProjectionData = {}; // 뷰-투영 상수 버퍼 데이터
+	com_ptr<ID3D11Buffer> m_viewProjectionConstantBuffer = nullptr; // 뷰-투영 상수 버퍼
 	com_ptr<ID3D11Buffer> m_skyboxViewProjectionConstantBuffer = nullptr; // 스카이박스 뷰-투영 역행렬 상수 버퍼
 
-	DirectX::XMVECTOR m_cameraPosition = DirectX::XMVectorSet(0.0f, 0.0f, 0.0f, 1.0f); // 카메라 위치
+	// 픽셀 셰이더용 상수 버퍼
+	CameraPositionBuffer m_cameraPositionData = {}; // 카메라 위치 상수 버퍼 데이터
 	com_ptr<ID3D11Buffer> m_cameraPositionConstantBuffer = nullptr; // 카메라 위치 상수 버퍼
 
-	struct DirectionalLightBuffer // 방향광 상수 버퍼 구조체
-	{
-		DirectX::XMVECTOR lightDirection = DirectX::XMVectorSet(-0.5f, -1.0f, -0.5f, 0.0f); // 방향광 방향
-		DirectX::XMFLOAT4 lightColor = { 1.0f, 1.0f, 1.0f, 1.0f }; // 방향광 색상
-	};
 	DirectionalLightBuffer m_directionalLightData = {}; // 방향광 상수 버퍼 데이터
 	com_ptr<ID3D11Buffer> m_directionalLightConstantBuffer = nullptr; // 방향광 상수 버퍼
-
-	std::pair<com_ptr<ID3D11VertexShader>, com_ptr<ID3D11InputLayout>> m_skyboxVertexShaderAndInputLayout = {}; // 스카이박스 정점 셰이더
-	com_ptr<ID3D11PixelShader> m_skyboxPixelShader = nullptr; // 스카이박스 픽셀 셰이더
 
 protected:
 	class CameraComponent* m_mainCamera = nullptr; // 메인 카메라 컴포넌트 포인터

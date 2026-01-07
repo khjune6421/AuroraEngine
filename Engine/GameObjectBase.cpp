@@ -142,7 +142,7 @@ void GameObjectBase::BaseInitialize()
 	m_type = GetTypeName(*this);
 	m_name = m_type + "_" + to_string(m_id);
 
-	m_worldMatrixConstantBuffer = ResourceManager::GetInstance().GetConstantBuffer(sizeof(WorldBuffer));
+	m_worldMatrixConstantBuffer = ResourceManager::GetInstance().GetConstantBuffer(VSConstBuffers::WorldNormal);
 
 	#ifdef NDEBUG
 	Initialize();
@@ -183,7 +183,6 @@ void GameObjectBase::BaseRender()
 		m_worldData.normalMatrix = XMMatrixTranspose(m_inverseScaleSquareMatrix * m_worldMatrix);
 
 		m_deviceContext->UpdateSubresource(m_worldMatrixConstantBuffer.Get(), 0, nullptr, &m_worldData, 0, 0);
-		m_deviceContext->VSSetConstantBuffers(static_cast<UINT>(VSConstBuffers::WorldNormal), 1, m_worldMatrixConstantBuffer.GetAddressOf());
 
 		for (Base*& component : m_renderComponents) component->BaseRender();
 	}

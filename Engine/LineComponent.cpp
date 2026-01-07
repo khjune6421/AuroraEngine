@@ -18,7 +18,6 @@ void LineComponent::Initialize()
 	m_deviceContext = Renderer::GetInstance().GetDeviceContext();
 
 	ResourceManager& resourceManager = ResourceManager::GetInstance();
-	m_materialConstantBuffer = resourceManager.GetConstantBuffer(sizeof(MaterialLegacy)); // TODO: 매번 재질 상수 버퍼 생성하지 말고 공유하도록 변경
 
 	CreateShaders();
 }
@@ -30,10 +29,6 @@ void LineComponent::Render()
 
 	m_deviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_LINELIST);
 
-	m_deviceContext->UpdateSubresource(m_materialConstantBuffer.Get(), 0, nullptr, &m_color, 0, 0);
-	m_deviceContext->PSSetConstantBuffers(static_cast<UINT>(PSConstBuffers::MaterialLegacy), 1, m_materialConstantBuffer.GetAddressOf());
-
-
 	m_deviceContext->IASetInputLayout(m_vertexShaderAndInputLayout.second.Get());
 	m_deviceContext->VSSetShader(m_vertexShaderAndInputLayout.first.Get(), nullptr, 0);
 	m_deviceContext->PSSetShader(m_pixelShader.Get(), nullptr, 0);
@@ -41,7 +36,6 @@ void LineComponent::Render()
 	m_deviceContext->IASetVertexBuffers(0, 1, m_vertexBuffer.GetAddressOf(), &stride, &offset);
 
 	m_deviceContext->Draw(2, 0);
-
 }
 
 void LineComponent::RenderImGui()

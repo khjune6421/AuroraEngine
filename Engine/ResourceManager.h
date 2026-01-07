@@ -1,7 +1,6 @@
 ///ResourceManager.h의 시작
 #pragma once
 #include "Singleton.h"
-#include "Resource.h"
 
 class ResourceManager : public Singleton<ResourceManager>
 {
@@ -18,6 +17,9 @@ class ResourceManager : public Singleton<ResourceManager>
 
 	std::array<com_ptr<ID3D11RasterizerState>, static_cast<size_t>(RasterState::Count)> m_rasterStates = {}; // 래스터 상태 배열
 	RasterState m_currentRasterState = RasterState::Count; // 현재 래스터 상태
+
+	std::array<com_ptr<ID3D11Buffer>, static_cast<size_t>(VSConstBuffers::Count)> m_vsConstantBuffers = {}; // 정점 셰이더용 상수 버퍼 배열
+	std::array<com_ptr<ID3D11Buffer>, static_cast<size_t>(PSConstBuffers::Count)> m_psConstantBuffers = {}; // 픽셀 셰이더용 상수 버퍼 배열
 
 	std::array<com_ptr<ID3D11SamplerState>, static_cast<size_t>(SamplerState::Count)> m_samplerStates = {}; // 샘플러 상태 배열
 
@@ -49,13 +51,13 @@ public:
 	// 블렌드 상태 설정
 	void SetBlendState(BlendState state);
 
-	// 래스터 상태 얻기
-	com_ptr<ID3D11RasterizerState> GetRasterState(RasterState state) { return m_rasterStates[static_cast<size_t>(state)]; }
+	// 상수 버퍼 얻기 // UpdateSubresource만 써야함 // Set는 리소스 매니저가 함
+	com_ptr<ID3D11Buffer> GetConstantBuffer(VSConstBuffers buffer) { return m_vsConstantBuffers[static_cast<size_t>(buffer)]; }
+	com_ptr<ID3D11Buffer> GetConstantBuffer(PSConstBuffers buffer) { return m_psConstantBuffers[static_cast<size_t>(buffer)]; }
+
 	// 래스터 상태 설정
 	void SetRasterState(RasterState state);
 
-	// 상수 버퍼 얻기 // 이미 생성된 버퍼가 있으면 재사용 // 없으면 새로 생성
-	com_ptr<ID3D11Buffer> GetConstantBuffer(UINT bufferSize);
 	// 버텍스 버퍼를 만들어서 리턴하는 함수 : 라인을 그리기 위함임
 	com_ptr<ID3D11Buffer> CreateVertexBuffer(const void* data, UINT stride, UINT count, bool isDynamic = false);
 	// 정점 셰이더 및 입력 레이아웃 얻기
@@ -76,8 +78,12 @@ private:
 	void CreateBlendStates();
 	// 래스터 상태 생성 함수
 	void CreateRasterStates();
+
+	// 상수 버퍼 생성 및 설정 함수
+	void CreateAndSetConstantBuffers();
 	// 샘플러 상태 생성 및 설정 함수
 	void CreateAndSetSamplerStates();
+
 	// 텍스처 데이터 캐싱 함수
 	void CacheAllTexture();
 
@@ -87,7 +93,7 @@ private:
 	// 메쉬 처리 함수
 	Mesh ProcessMesh(const aiMesh* mesh, const aiScene* scene);
 	// 재질 처리 함수
-	MaterialFactor ProcessMaterialFactor(aiMaterial* material);
+	MaterialFactorBuffer ProcessMaterialFactor(aiMaterial* material);
 	// 메쉬 버퍼(GPU) 생성 함수
 	void CreateMeshBuffers(Mesh& mesh);
 

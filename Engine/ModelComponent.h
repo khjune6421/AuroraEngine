@@ -1,7 +1,6 @@
 /// ModelComponent.h의 시작
 #pragma once
 #include "ComponentBase.h"
-#include "Resource.h"
 
 class ModelComponent : public ComponentBase
 {

@@ -32,12 +32,7 @@ class GameObjectBase : public Base
 
 	com_ptr<ID3D11DeviceContext> m_deviceContext = nullptr; // 디바이스 컨텍스트 포인터
 
-	struct WorldBuffer // 월드 및 WVP 행렬 상수 버퍼 구조체
-	{
-		DirectX::XMMATRIX worldMatrix = DirectX::XMMatrixIdentity(); // 월드 행렬
-		DirectX::XMMATRIX normalMatrix = DirectX::XMMatrixIdentity(); // 스케일 역행렬을 적용한 월드 행렬
-	};
-	WorldBuffer m_worldData = {}; // 월드 및 WVP 행렬 상수 버퍼 데이터
+	WorldNormalBuffer m_worldData = {}; // 월드 및 WVP 행렬 상수 버퍼 데이터
 	com_ptr<ID3D11Buffer> m_worldMatrixConstantBuffer = nullptr; // 월드, WVP 행렬 상수 버퍼
 
 	std::unordered_map<std::type_index, std::unique_ptr<Base>> m_components = {}; // 컴포넌트 맵
