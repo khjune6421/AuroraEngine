@@ -17,46 +17,17 @@
             "childGameObjects": [],
             "components": [
                 {
+                    "blendState": 1,
                     "modelFileName": "box.fbx",
                     "psShaderName": "PSModel.hlsl",
+                    "rasterState": 1,
                     "type": "ModelComponent",
                     "vsShaderName": "VSModel.hlsl"
                 }
             ],
             "name": "GameObjectBase_1",
             "position": [
-                -3.1500000953674316,
                 0.0,
-                0.0,
-                0.0
-            ],
-            "rotation": [
-                0.0,
-                0.0,
-                0.0,
-                1.0
-            ],
-            "scale": [
-                1.0,
-                1.0,
-                1.0,
-                1.0
-            ],
-            "type": "GameObjectBase"
-        },
-        {
-            "childGameObjects": [],
-            "components": [
-                {
-                    "modelFileName": "box.fbx",
-                    "psShaderName": "PSModel.hlsl",
-                    "type": "ModelComponent",
-                    "vsShaderName": "VSModel.hlsl"
-                }
-            ],
-            "name": "GameObjectBase_2",
-            "position": [
-                2.4000000953674316,
                 0.0,
                 0.0,
                 0.0

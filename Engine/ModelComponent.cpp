@@ -23,6 +23,10 @@ void ModelComponent::Initialize()
 
 void ModelComponent::Render()
 {
+	ResourceManager& resourceManager = ResourceManager::GetInstance();
+	resourceManager.SetBlendState(m_blendState);
+	resourceManager.SetRasterState(m_rasterState);
+
 	m_deviceContext->IASetInputLayout(m_vertexShaderAndInputLayout.second.Get());
 	m_deviceContext->VSSetShader(m_vertexShaderAndInputLayout.first.Get(), nullptr, 0);
 	m_deviceContext->PSSetShader(m_pixelShader.Get(), nullptr, 0);
@@ -69,24 +73,44 @@ void ModelComponent::RenderImGui()
 		m_model = ResourceManager::GetInstance().LoadModel(m_modelFileName);
 		CreateShaders();
 	}
+
+	ImGui::Separator();
+	int blendStateInt = static_cast<int>(m_blendState);
+	if (ImGui::Combo("Blend State", &blendStateInt, "Opaque\0AlphaBlend\0AlphaToCoverage\0"))
+	{
+		m_blendState = static_cast<BlendState>(blendStateInt);
+		ResourceManager::GetInstance().SetBlendState(m_blendState);
+	}
+	int rasterStateInt = static_cast<int>(m_rasterState);
+	if (ImGui::Combo("Raster State", &rasterStateInt, "BackBuffer\0Solid\0Wireframe\0"))
+	{
+		m_rasterState = static_cast<RasterState>(rasterStateInt);
+		ResourceManager::GetInstance().SetRasterState(m_rasterState);
+	}
 }
 
 nlohmann::json ModelComponent::Serialize()
 {
 	nlohmann::json jsonData;
 
-	jsonData["modelFileName"] = m_modelFileName;
 	jsonData["vsShaderName"] = m_vsShaderName;
 	jsonData["psShaderName"] = m_psShaderName;
+	jsonData["modelFileName"] = m_modelFileName;
+
+	jsonData["blendState"] = static_cast<int>(m_blendState);
+	jsonData["rasterState"] = static_cast<int>(m_rasterState);
 
 	return jsonData;
 }
 
 void ModelComponent::Deserialize(const nlohmann::json& jsonData)
 {
-	m_modelFileName = jsonData["modelFileName"].get<string>();
 	m_vsShaderName = jsonData["vsShaderName"].get<string>();
 	m_psShaderName = jsonData["psShaderName"].get<string>();
+	m_modelFileName = jsonData["modelFileName"].get<string>();
+
+	m_blendState = static_cast<BlendState>(jsonData["blendState"].get<int>());
+	m_rasterState = static_cast<RasterState>(jsonData["rasterState"].get<int>());
 }
 
 void ModelComponent::CreateShaders()

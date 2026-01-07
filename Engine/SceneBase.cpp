@@ -285,6 +285,9 @@ void SceneBase::RenderSkybox()
 	ResourceManager& resourceManager = ResourceManager::GetInstance();
 	resourceManager.SetDepthStencilState(DepthStencilState::Skybox);
 
+	resourceManager.SetBlendState(BlendState::Opaque);
+	resourceManager.SetRasterState(RasterState::Solid);
+
 	m_deviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
 	m_deviceContext->IASetInputLayout(m_skyboxVertexShaderAndInputLayout.second.Get());
