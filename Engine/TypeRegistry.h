@@ -31,4 +31,10 @@ private:
 	TypeRegistry() = default;
 };
 
-#define REGISTER_TYPE(Type) namespace { bool s_##Type##_registered = []() { TypeRegistry::GetInstance().Register<Type>(); return true; }(); }
+
+#define REGISTER_TYPE(Type) \
+	namespace \
+	{ \
+		struct Type##_AutoRegister { Type##_AutoRegister() { TypeRegistry::GetInstance().Register<Type>(); } }; \
+		inline Type##_AutoRegister s_##Type##_registered; \
+	}

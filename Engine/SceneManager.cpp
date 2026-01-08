@@ -8,7 +8,7 @@
 #include "NetworkTestComponent.h"
 #include "NetworkIdentityComponent.h"
 #include "NetworkWorld.h"
-#include "ModelComponent.h"
+
 using namespace std;
 
 void SceneManager::Initialize()
@@ -16,10 +16,6 @@ void SceneManager::Initialize()
 	TimeManager::GetInstance().Initialize();
 	NetManager::GetInstance().Initialize();
 	NetworkWorld::Initialize();
-
-	ForceLink_ModelComponent();
-	ForceLink_NetworkIdentityComponent();
-	ForceLink_NetworkTestComponent();//링커드랍 해결용 // 컴포넌트 타입 모아서 생성 한번 해주도록 변경하기
 }
 
 void SceneManager::Run()
