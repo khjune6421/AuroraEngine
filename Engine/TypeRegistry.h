@@ -31,7 +31,6 @@ private:
 	TypeRegistry() = default;
 };
 
-
 #define REGISTER_TYPE(Type) \
 	namespace \
 	{ \

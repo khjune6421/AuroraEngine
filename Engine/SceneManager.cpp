@@ -29,7 +29,7 @@ void SceneManager::Run()
 		m_currentScene = move(m_nextScene);
 		m_currentScene->BaseInitialize();
 
-		NetworkWorld::SetScene(static_cast<SceneBase*>(m_currentScene.get()));
+		NetworkWorld::SetScene(dynamic_cast<SceneBase*>(m_currentScene.get()));
 	}
 
 	TimeManager::GetInstance().UpdateTime();
