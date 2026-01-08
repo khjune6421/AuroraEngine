@@ -29,13 +29,13 @@ static void WriteU16LE(uint8_t* p, uint16_t v)
     p[1] = uint8_t((v >> 8) & 0xFF);
 }
 
-//ReadU32LE, WriteU32LE, ReadU16LE, WriteU16LE      <- ¸®Æ²¿£µğ¾ÈÀ¸·Î º¯°æÇÏ´Â ÇÔ¼ö(memcpy ¿£µğ¾È ¹®Á¦ ¹æÁö¿ë)
+//ReadU32LE, WriteU32LE, ReadU16LE, WriteU16LE      <- ë¦¬í‹€ì—”ë””ì•ˆìœ¼ë¡œ ë³€ê²½í•˜ëŠ” í•¨ìˆ˜(memcpy ì—”ë””ì•ˆ ë¬¸ì œ ë°©ì§€ìš©)
 
 void NetManager::Initialize()
 {
     if (m_running.load()) return;
 
-    m_workGuard.emplace(boost::asio::make_work_guard(m_io)); // »ı¼º(´ëÀÔ ¾Æ´Ô)
+    m_workGuard.emplace(boost::asio::make_work_guard(m_io)); // ìƒì„±(ëŒ€ì… ì•„ë‹˜)
     m_running.store(true);
 
     StartIoThread();
@@ -54,7 +54,7 @@ void NetManager::Finalize()
 
 void NetManager::StartIoThread()
 {   
-    m_ioThread = std::thread([this]()//³×Æ®¿öÅ©¿ë º°µµ ½º·¹µå ºĞ¸®
+    m_ioThread = std::thread([this]()//ë„¤íŠ¸ì›Œí¬ìš© ë³„ë„ ìŠ¤ë ˆë“œ ë¶„ë¦¬
         {
             try
             {
@@ -74,13 +74,13 @@ void NetManager::StopIoThread()
 {
     if (!m_running.exchange(false)) return;
 
-    m_workGuard.reset();   // runÀÌ ³¡³¯ Á¶°ÇÀ» ¸¸µç´Ù
-    m_io.stop();           // ´ë±âÁßÀÎ ºñµ¿±â ÀÛ¾÷ ±ú¿ö¼­ Á¾·á
+    m_workGuard.reset();   // runì´ ëë‚  ì¡°ê±´ì„ ë§Œë“ ë‹¤
+    m_io.stop();           // ëŒ€ê¸°ì¤‘ì¸ ë¹„ë™ê¸° ì‘ì—… ê¹¨ì›Œì„œ ì¢…ë£Œ
 
-    if (m_ioThread.joinable())//½º·¹µå°¡ ³¡³¯¶§±îÁö ±â´Ù¸° ÈÄ Á¤¸®
+    if (m_ioThread.joinable())//ìŠ¤ë ˆë“œê°€ ëë‚ ë•Œê¹Œì§€ ê¸°ë‹¤ë¦° í›„ ì •ë¦¬
         m_ioThread.join();
 
-    m_io.restart(); // Àç»ç¿ë °¡´ÉÇÏ°Ô
+    m_io.restart(); // ì¬ì‚¬ìš© ê°€ëŠ¥í•˜ê²Œ
 }
 
 
@@ -99,7 +99,7 @@ bool NetManager::StartHost(uint16_t port)
         m_acceptor->listen();
 
         printf("[NET] Hosting started. Listening on port %u...\n", port);
-        //¼­¹ö ¿ÀÇÂ ¹× ¿¬°á ÁØºñ
+        //ì„œë²„ ì˜¤í”ˆ ë° ì—°ê²° ì¤€ë¹„
         DoAccept();
         return true;
     }
@@ -123,14 +123,14 @@ void NetManager::DoAccept()
                 return;
             }
 
-            // ´ÜÀÏ ¿¬°á¸¸ Áö¿ø: ±âÁ¸ ¿¬°áÀÌ ÀÖÀ¸¸é ²÷°í ±³Ã¼
+            // ë‹¨ì¼ ì—°ê²°ë§Œ ì§€ì›: ê¸°ì¡´ ì—°ê²°ì´ ìˆìœ¼ë©´ ëŠê³  êµì²´
             m_socket = std::make_unique<tcp::socket>(std::move(*sock));
             m_connected.store(true);
 
             PushEvent(NetEvent{ .type = NetEvent::Type::Connected, .peerId = 2 });
             BeginReadHeader();
 
-            // ´ÙÀ½ ¿¬°áµµ °è¼Ó ¹ŞÀ¸·Á¸é:
+            // ë‹¤ìŒ ì—°ê²°ë„ ê³„ì† ë°›ìœ¼ë ¤ë©´:
             // DoAccept();
         });
 }
@@ -222,7 +222,7 @@ void NetManager::BeginReadHeader()
             }
 
             uint32_t bodyLen = ReadU32LE(m_readLenBuf.data());
-            if (bodyLen < 2 || bodyLen >(1024u * 1024u)) // ÃÖ¼Ò msgId 2¹ÙÀÌÆ®, 1MB Á¦ÇÑ(ÀÓÀÇ)
+            if (bodyLen < 2 || bodyLen >(1024u * 1024u)) // ìµœì†Œ msgId 2ë°”ì´íŠ¸, 1MB ì œí•œ(ì„ì˜)
             {
                 m_connected.store(false);
                 PushEvent(NetEvent{ .type = NetEvent::Type::Error, .errorMessage = "Invalid body length" });
@@ -234,10 +234,10 @@ void NetManager::BeginReadHeader()
 }
 /*
 BeginReadHeader()
-4¹ÙÀÌÆ®(length) ÀĞ´Â´Ù
-ÀĞ°í ³ª¼­ bodyLen °è»ê
-bodyLen °ËÁõ(ÃÖ¼Ò 2, ÃÖ´ë 1MB)
-BeginReadBody(bodyLen) È£Ãâ
+4ë°”ì´íŠ¸(length) ì½ëŠ”ë‹¤
+ì½ê³  ë‚˜ì„œ bodyLen ê³„ì‚°
+bodyLen ê²€ì¦(ìµœì†Œ 2, ìµœëŒ€ 1MB)
+BeginReadBody(bodyLen) í˜¸ì¶œ
 */
 void NetManager::BeginReadBody(std::size_t bodyLen)
 {
@@ -271,35 +271,35 @@ void NetManager::BeginReadBody(std::size_t bodyLen)
                 .payload = std::move(payload)
                 });
 
-            BeginReadHeader(); // °è¼Ó ÀĞ±â
+            BeginReadHeader(); // ê³„ì† ì½ê¸°
         });
 }
 /*
 BeginReadBody(bodyLen)
-bodyLen ¹ÙÀÌÆ® ÀĞ´Â´Ù
-Ã¹ 2¹ÙÀÌÆ®¿¡¼­ msgId ÆÄ½Ì
-³ª¸ÓÁö¸¦ payload·Î ºĞ¸®
-NetEvent(Message)¸¦ Å¥¿¡ push
-´Ù½Ã BeginReadHeader() È£ÃâÇØ¼­ ´ÙÀ½ ¸Ş½ÃÁö ¹ŞÀ½
+bodyLen ë°”ì´íŠ¸ ì½ëŠ”ë‹¤
+ì²« 2ë°”ì´íŠ¸ì—ì„œ msgId íŒŒì‹±
+ë‚˜ë¨¸ì§€ë¥¼ payloadë¡œ ë¶„ë¦¬
+NetEvent(Message)ë¥¼ íì— push
+ë‹¤ì‹œ BeginReadHeader() í˜¸ì¶œí•´ì„œ ë‹¤ìŒ ë©”ì‹œì§€ ë°›ìŒ
 */
 
-//Äİ¹éÃ¼ÀÎ
+//ì½œë°±ì²´ì¸
 void NetManager::PushEvent(NetEvent&& ev)
 {
-    std::lock_guard lock(m_eventMtx); //mutex·Î º¸È£ÇØ¼­ Å¥¿¡ push
+    std::lock_guard lock(m_eventMtx); //mutexë¡œ ë³´í˜¸í•´ì„œ íì— push
     m_events.push(std::move(ev));
 }
 
 void NetManager::Update()
 {
-    //³×Æ®¿öÅ© ¾÷µ¥ÀÌÆ® µğ¹ö±ë
+    //ë„¤íŠ¸ì›Œí¬ ì—…ë°ì´íŠ¸ ë””ë²„ê¹…
     //static int tick = 0;
     //if (++tick % 60 == 0) printf("[NET] NetManager::Update tick\n");
-    // ¸ŞÀÎ ½º·¹µå¿¡¼­ È£Ãâ
+    // ë©”ì¸ ìŠ¤ë ˆë“œì—ì„œ í˜¸ì¶œ
     std::queue<NetEvent> local;
     {
         std::lock_guard lock(m_eventMtx);
-        std::swap(local, m_events);     //Å¥ ÅëÂ°·Î »©¼­ ¶ô Ç®°í °è»ê
+        std::swap(local, m_events);     //í í†µì§¸ë¡œ ë¹¼ì„œ ë½ í’€ê³  ê³„ì‚°
     }
 
     while (!local.empty())
@@ -342,7 +342,7 @@ void NetManager::UnregisterHandler(MsgId msgId)
 
 std::vector<uint8_t> NetManager::BuildFrame(MsgId msgId, const uint8_t* payload, size_t payloadSize)
 {
-    // [u32 len][u16 msgId][payload...] <- ±æÀÌ, IDÅ¸ÀÔ , ½ÇÁ¦µ¥ÀÌÅÍ
+    // [u32 len][u16 msgId][payload...] <- ê¸¸ì´, IDíƒ€ì… , ì‹¤ì œë°ì´í„°
     uint32_t bodyLen = uint32_t(2 + payloadSize);
     std::vector<uint8_t> buf;
     buf.resize(4 + bodyLen);
