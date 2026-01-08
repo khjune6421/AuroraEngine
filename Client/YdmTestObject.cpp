@@ -14,7 +14,7 @@ REGISTER_TYPE(YdmTestObject)
 
 void YdmTestObject::Initialize()
 {
-	//CreateComponent<NetworkTestComponent>();
+	CreateComponent<NetworkTestComponent>();
 	SetScale({ 1.0f, 1.0f, 1.0f });
 }
 
