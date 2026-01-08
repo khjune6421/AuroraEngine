@@ -2,7 +2,6 @@
 #include "ClientTestScene.h"
 
 #include "YdmTestObject.h"
-#include "CoordinateSystemObject.h"
 #include "TestCameraObject.h"
 #include "CamRotObject.h"
 
@@ -14,7 +13,6 @@ REGISTER_TYPE(ClientTestScene)
 void ClientTestScene::Initialize()
 {
 	CreateRootGameObject("YdmTestObject");
-	CreateRootGameObject("CoordinateSystemObject");
 }
 
 GameObjectBase* ClientTestScene::CreateCameraObject()

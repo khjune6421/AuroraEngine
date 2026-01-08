@@ -157,10 +157,8 @@
     </ClCompile>
     <ClCompile Include="CamRotObject.cpp" />
     <ClCompile Include="ClientTestScene.cpp" />
-    <ClCompile Include="CoordinateSystemObject.cpp" />
     <ClCompile Include="HostTestScene.cpp" />
     <ClCompile Include="HyojeTestObject.cpp" />
-    <ClCompile Include="LineObject.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="HyojeTestScene.cpp" />
     <ClCompile Include="TestCameraObject.cpp" />
@@ -174,11 +172,9 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
     </ClInclude>
     <ClInclude Include="CamRotObject.h" />
-    <ClInclude Include="CoordinateSystemObject.h" />
     <ClInclude Include="HostTestScene.h" />
     <ClInclude Include="HyojeTestScene.h" />
     <ClInclude Include="HyojeTestObject.h" />
-    <ClInclude Include="LineObject.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="TestCameraObject.h" />
     <ClInclude Include="TestObject.h" />

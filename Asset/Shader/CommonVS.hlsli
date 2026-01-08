@@ -64,10 +64,5 @@ struct VS_OUTPUT_POS_UV
     float2 UV : TEXCOORD0;
 };
 
-struct VS_OUTPUT_POS
-{
-    float4 Position : SV_POSITION;
-};
-
 #endif // __COMMON_VS_HLSLI__
 /// CommonVS.hlsli의 끝

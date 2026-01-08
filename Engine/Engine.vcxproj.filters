@@ -54,9 +54,6 @@
     <ClCompile Include="InputManager.cpp">
       <Filter>Manager\Input</Filter>
     </ClCompile>
-    <ClCompile Include="LineComponent.cpp">
-      <Filter>Base\Component</Filter>
-    </ClCompile>
     <ClCompile Include="TypeRegistry.cpp">
       <Filter>Manager</Filter>
     </ClCompile>
@@ -123,9 +120,6 @@
     <ClInclude Include="KeyCode.h">
       <Filter>Manager\Input</Filter>
     </ClInclude>
-    <ClInclude Include="LineComponent.h">
-      <Filter>Base\Component</Filter>
-    </ClInclude>
     <ClInclude Include="TypeRegistry.h">
       <Filter>Manager</Filter>
     </ClInclude>
@@ -176,10 +170,10 @@
     <FxCompile Include="..\Asset\Shader\VSSkybox.hlsl">
       <Filter>Shader</Filter>
     </FxCompile>
-    <FxCompile Include="..\Asset\Shader\PSLine.hlsl">
+    <FxCompile Include="..\Asset\Shader\VSCoordinateLine.hlsl">
       <Filter>Shader</Filter>
     </FxCompile>
-    <FxCompile Include="..\Asset\Shader\VSLine.hlsl">
+    <FxCompile Include="..\Asset\Shader\PSCoordinateLine.hlsl">
       <Filter>Shader</Filter>
     </FxCompile>
   </ItemGroup>

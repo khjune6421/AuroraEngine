@@ -24,7 +24,7 @@ cbuffer MaterialFactor : register(b2)
     float ambientOcclusionFactor;
     float RoughnessFactor;
     float MetallicFactor;
-    float iorFactor;
+    float IorFactor;
     
     float4 EmissionFactor;
 };
@@ -65,12 +65,6 @@ struct PS_INPUT_POS_UV
     float4 Position : SV_POSITION;
     float2 UV : TEXCOORD;
 };
-
-struct PS_INPUT_POS
-{
-    float4 Position : SV_POSITION;
-};
-
 
 #endif // __COMMON_PS_HLSLI__
 /// CommonPS.hlsli의 끝

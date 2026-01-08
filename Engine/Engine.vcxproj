@@ -146,7 +146,6 @@
     <ClInclude Include="Base.h" />
     <ClInclude Include="InputManager.h" />
     <ClInclude Include="KeyCode.h" />
-    <ClInclude Include="LineComponent.h" />
     <ClInclude Include="ModelComponent.h" />
     <ClInclude Include="NetManager.h" />
     <ClInclude Include="NetworkIdentityComponent.h" />
@@ -170,7 +169,6 @@
     <ClCompile Include="GameObjectBase.cpp" />
     <ClCompile Include="Base.cpp" />
     <ClCompile Include="InputManager.cpp" />
-    <ClCompile Include="LineComponent.cpp" />
     <ClCompile Include="ModelComponent.cpp" />
     <ClCompile Include="NetManager.cpp" />
     <ClCompile Include="NetworkIdentityComponent.cpp" />
@@ -187,9 +185,17 @@
     <ClCompile Include="WindowManager.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <FxCompile Include="..\Asset\Shader\PSLine.hlsl">
+    <FxCompile Include="..\Asset\Shader\PSCoordinateLine.hlsl">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
+    </FxCompile>
+    <FxCompile Include="..\Asset\Shader\VSCoordinateLine.hlsl">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
     </FxCompile>
     <FxCompile Include="..\Asset\Shader\PSPostProcessing.hlsl">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
@@ -206,10 +212,6 @@
     <FxCompile Include="..\Asset\Shader\PSSkybox.hlsl">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
-    </FxCompile>
-    <FxCompile Include="..\Asset\Shader\VSLine.hlsl">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
     </FxCompile>

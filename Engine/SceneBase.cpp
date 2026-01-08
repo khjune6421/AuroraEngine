@@ -87,6 +87,7 @@ void SceneBase::BaseUpdate()
 		cout << "씬: " << m_type << " 저장 중..." << endl;
 
 		const filesystem::path sceneFilePath = "../Asset/Scene/" + m_type + ".json";
+
 		ofstream file(sceneFilePath);
 		file << BaseSerialize().dump(4);
 		file.close();
@@ -107,7 +108,10 @@ void SceneBase::BaseRender()
 	// 스카이박스 렌더링
 	RenderSkybox();
 
-	#ifdef NDEBUG
+	#ifdef _DEBUG
+	// 디버그 좌표축 렌더링 (디버그 모드에서만)
+	RenderDebugCoordinates();
+	#else
 	Render();
 	#endif
 
@@ -250,6 +254,9 @@ void SceneBase::GetResources()
 	m_skyboxVertexShaderAndInputLayout = resourceManager.GetVertexShaderAndInputLayout("VSSkybox.hlsl"); // 스카이박스 정점 셰이더 얻기
 	m_skyboxPixelShader = resourceManager.GetPixelShader("PSSkybox.hlsl"); // 스카이박스 픽셀 셰이더 얻기
 
+	m_debugCoordinateVertexShaderAndInputLayout = resourceManager.GetVertexShaderAndInputLayout("VSCoordinateLine.hlsl"); // 디버그 좌표 정점 셰이더 얻기
+	m_debugCoordinatePixelShader = resourceManager.GetPixelShader("PSCoordinateLine.hlsl"); // 디버그 좌표 픽셀 셰이더 얻기
+
 	m_environmentMapSRV = resourceManager.GetTexture(m_environmentMapFileName); // 환경 맵 로드
 
 	m_viewProjectionConstantBuffer = resourceManager.GetConstantBuffer(VSConstBuffers::ViewProjection); // 뷰-투영 상수 버퍼 생성
@@ -290,9 +297,8 @@ void SceneBase::RenderSkybox()
 	resourceManager.SetBlendState(BlendState::Opaque);
 	resourceManager.SetRasterState(RasterState::Solid);
 
-	m_deviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-
 	m_deviceContext->IASetInputLayout(m_skyboxVertexShaderAndInputLayout.second.Get());
+	m_deviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 	m_deviceContext->VSSetShader(m_skyboxVertexShaderAndInputLayout.first.Get(), nullptr, 0);
 	m_deviceContext->PSSetShader(m_skyboxPixelShader.Get(), nullptr, 0);
 
@@ -305,4 +311,18 @@ void SceneBase::RenderSkybox()
 
 	resourceManager.SetDepthStencilState(DepthStencilState::Default);
 }
-///SceneBase.cpp의 끝
+
+void SceneBase::RenderDebugCoordinates()
+{
+	m_deviceContext->IASetInputLayout(m_debugCoordinateVertexShaderAndInputLayout.second.Get());
+	m_deviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_LINELIST);
+	m_deviceContext->VSSetShader(m_debugCoordinateVertexShaderAndInputLayout.first.Get(), nullptr, 0);
+	m_deviceContext->PSSetShader(m_debugCoordinatePixelShader.Get(), nullptr, 0);
+
+	constexpr UINT stride = 0;
+	constexpr UINT offset = 0;
+	constexpr ID3D11Buffer* nullBuffer = nullptr;
+	m_deviceContext->IASetVertexBuffers(0, 1, &nullBuffer, &stride, &offset);
+
+	m_deviceContext->DrawInstanced(2, 204, 0, 0);
+}

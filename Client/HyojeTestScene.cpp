@@ -4,8 +4,6 @@
 
 
 #include "HyojeTestObject.h"
-#include "CoordinateSystemObject.h"
-//#include "BlenderCameraObject.h"
 #include "TestCameraObject.h"
 #include "CamRotObject.h"
 
@@ -17,7 +15,6 @@ REGISTER_TYPE(HyojeTestScene)
 void HyojeTestScene::Initialize()
 {
 	CreateRootGameObject("HyojeTestObject");
-	CreateRootGameObject("CoordinateSystemObject");
 }
 
 GameObjectBase* HyojeTestScene::CreateCameraObject()
