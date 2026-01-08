@@ -125,7 +125,7 @@ void NetworkWorld::OnSpawn(const NetManager::NetEvent& ev)
             // 지금은 ModelComponent만 처리(1단계)
             if (ct == "ModelComponent")
             {
-                obj->CreateComponent("ModelComponent");
+                obj->CreateComponent<ModelComponent>();
                 auto* model = obj->GetComponent<ModelComponent>();
                 printf("[NET] After CreateComponent(ModelComponent): %p\n", model);
                 if (Base* model = obj->GetComponent<ModelComponent>())
