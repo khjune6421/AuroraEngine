@@ -1,0 +1,83 @@
+{
+    "directionalLightDirection": [
+        -0.41200000047683716,
+        -1.0,
+        -0.5,
+        0.0
+    ],
+    "environmentMapFileName": "Skybox.dds",
+    "lightColor": [
+        1.0,
+        1.0,
+        1.0,
+        1.0
+    ],
+    "rootGameObjects": [
+        {
+            "childGameObjects": [],
+            "components": [
+                {
+                    "blendState": 1,
+                    "modelFileName": "Aurora.gltf",
+                    "psShaderName": "PSModel.hlsl",
+                    "rasterState": 0,
+                    "type": "ModelComponent",
+                    "vsShaderName": "VSModel.hlsl"
+                }
+            ],
+            "name": "GameObjectBase_0",
+            "position": [
+                0.0,
+                -6.949999809265137,
+                0.0,
+                0.0
+            ],
+            "rotation": [
+                0.0,
+                -0.908143162727356,
+                0.0,
+                0.4186597466468811
+            ],
+            "scale": [
+                0.10000000149011612,
+                0.10000000149011612,
+                0.10000000149011612,
+                1.0
+            ],
+            "type": "GameObjectBase"
+        },
+        {
+            "childGameObjects": [],
+            "components": [
+                {
+                    "blendState": 1,
+                    "modelFileName": "Aurora.gltf",
+                    "psShaderName": "PSModel.hlsl",
+                    "rasterState": 1,
+                    "type": "ModelComponent",
+                    "vsShaderName": "VSModel.hlsl"
+                }
+            ],
+            "name": "GameObjectBase_1",
+            "position": [
+                10.0,
+                0.0,
+                0.0,
+                0.0
+            ],
+            "rotation": [
+                0.0,
+                0.0,
+                0.0,
+                1.0
+            ],
+            "scale": [
+                0.10000000149011612,
+                0.10000000149011612,
+                0.10000000149011612,
+                1.0
+            ],
+            "type": "GameObjectBase"
+        }
+    ]
+}

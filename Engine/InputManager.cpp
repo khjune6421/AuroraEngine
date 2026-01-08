@@ -36,21 +36,15 @@ void InputManager::EndFrame()
 
 void InputManager::HandleMessage(UINT msg, WPARAM wParam, LPARAM lParam)
 {
-    unsigned int vKey = static_cast<unsigned int>(wParam);
-    if (vKey >= 256)
-    {
-        return;
-    }
-
     switch (msg)
     {
     case WM_KEYDOWN:
     case WM_SYSKEYDOWN:
     {
-        if (!m_keyState[vKey])
-        {
-            m_keyDownState[vKey] = true;
-        }
+        unsigned int vKey = static_cast<unsigned int>(wParam);
+        if (vKey >= 256) return; 
+
+        if (!m_keyState[vKey]) { m_keyDownState[vKey] = true; }
         m_keyState[vKey] = true;
         break;
     }
@@ -58,6 +52,9 @@ void InputManager::HandleMessage(UINT msg, WPARAM wParam, LPARAM lParam)
     case WM_KEYUP:
     case WM_SYSKEYUP:
     {
+        unsigned int vKey = static_cast<unsigned int>(wParam);
+        if (vKey >= 256) return; 
+
         m_keyUpState[vKey] = true;
         m_keyState[vKey] = false;
         break;

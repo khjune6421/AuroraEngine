@@ -13,7 +13,8 @@ REGISTER_TYPE(HyojeTestObject)
 
 void HyojeTestObject::Initialize()
 {
-	CreateComponent("ModelComponent");
+	//CreateComponent("ModelComponent");
+	CreateComponent<ModelComponent>();
 	SetScale({ 1.0f, 1.0f, 1.0f });
 }
 

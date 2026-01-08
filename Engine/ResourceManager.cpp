@@ -432,11 +432,62 @@ Mesh ResourceManager::ProcessMesh(const aiMesh* mesh, const aiScene* scene)
 	};
 
 	// 재질 처리
+	//if (mesh->mMaterialIndex >= 0)
+	//{
+	//	aiMaterial* material = scene->mMaterials[mesh->mMaterialIndex];
+	//	resultMesh.materialFactor = ProcessMaterialFactor(material);
+
+	//	resultMesh.materialTexture.albedoTextureSRV = GetTexture("SampleAlbedo.dds");
+	//	resultMesh.materialTexture.ORMTextureSRV = GetTexture("SampleORM.dds");
+	//	resultMesh.materialTexture.normalTextureSRV = GetTexture("SampleNormal.dds");
+	//}
+
+	// [재질 및 텍스처 처리 수정]
 	if (mesh->mMaterialIndex >= 0)
 	{
 		aiMaterial* material = scene->mMaterials[mesh->mMaterialIndex];
 		resultMesh.materialFactor = ProcessMaterialFactor(material);
 
+		aiString texturePath;
+		std::string textureFileName;
+
+		// 1. Albedo (Base Color) 처리
+		// glTF는 BASE_COLOR, FBX는 DIFFUSE를 주로 씁니다. 둘 다 확인합니다.
+		if (material->GetTexture(aiTextureType_DIFFUSE, 0, &texturePath) == AI_SUCCESS ||
+			material->GetTexture(aiTextureType_BASE_COLOR, 0, &texturePath) == AI_SUCCESS)
+		{
+			// 텍스처가 있다! (Aurora.gltf -> Base.png)
+			// 경로가 포함되어 있을 수 있으니 파일명만 딱 떼어냅니다.
+			textureFileName = std::filesystem::path(texturePath.C_Str()).filename().string();
+			resultMesh.materialTexture.albedoTextureSRV = GetTexture(textureFileName);
+		}
+		else
+		{
+			// 텍스처가 없다! (일반 FBX -> 샘플 사용)
+			resultMesh.materialTexture.albedoTextureSRV = GetTexture("SampleAlbedo.dds");
+		}
+
+		// 2. Normal Map 처리
+		if (material->GetTexture(aiTextureType_NORMALS, 0, &texturePath) == AI_SUCCESS)
+		{
+			// 텍스처가 있다! (Aurora.gltf -> Weapon.png or similar)
+			textureFileName = std::filesystem::path(texturePath.C_Str()).filename().string();
+			resultMesh.materialTexture.normalTextureSRV = GetTexture(textureFileName);
+		}
+		else
+		{
+			// 텍스처가 없다!
+			//resultMesh.materialTexture.normalTextureSRV = GetTexture("SampleNormal.dds");
+		}
+
+		// 3. ORM (Occlusion, Roughness, Metallic) 처리
+		// glTF 표준은 PBR 정보를 텍스처로 주지만, Assimp 파싱이 복잡할 수 있으니 
+		// 일단은 ORM 맵은 샘플로 고정하거나 필요시 분기 추가 (지금은 샘플 유지 추천)
+		//resultMesh.materialTexture.ORMTextureSRV = GetTexture("SampleORM.dds");
+	}
+	else
+	{
+		// 재질 자체가 없는 경우 (완전 깡통)
 		resultMesh.materialTexture.albedoTextureSRV = GetTexture("SampleAlbedo.dds");
 		resultMesh.materialTexture.ORMTextureSRV = GetTexture("SampleORM.dds");
 		resultMesh.materialTexture.normalTextureSRV = GetTexture("SampleNormal.dds");

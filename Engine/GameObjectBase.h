@@ -56,6 +56,7 @@ public:
 	// 변환 관련 함수
 	// 위치 지정
 	void SetPosition(const DirectX::XMVECTOR& position) { m_position = position; SetDirty(); }
+	const DirectX::XMVECTOR GetPosition() { return m_position; }
 	// 위치 이동
 	void MovePosition(const DirectX::XMVECTOR& deltaPosition) { m_position = DirectX::XMVectorAdd(m_position, deltaPosition); SetDirty(); }
 	// 방향 이동
