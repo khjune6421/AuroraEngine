@@ -207,7 +207,7 @@ void GameObjectBase::BaseRenderImGui()
 	if (ImGui::TreeNode(m_name.c_str()))
 	{
 		// 위치
-		if (ImGui::DragFloat3("Position", &m_position.m128_f32[0], 0.05f))  SetDirty();
+		if (ImGui::DragFloat3("Position", &m_position.m128_f32[0], 0.05f)) SetDirty();
 		// 회전
 		if (ImGui::DragFloat3("Rotation", &m_euler.m128_f32[0], 0.5f))
 		{
@@ -220,13 +220,12 @@ void GameObjectBase::BaseRenderImGui()
 		RenderImGui();
 
 		// 컴포넌트 ImGui 렌더링
+		ImGui::Separator();
 		if (!m_components.empty())
 		{
-			ImGui::Separator();
 			ImGui::Text("Components:");
 			for (auto& [typeIndex, component] : m_components) component->BaseRenderImGui();
 		}
-		ImGui::Separator();
 		if (ImGui::Button("Add Component")) ImGui::OpenPopup("Select Component Type");
 		if (ImGui::BeginPopup("Select Component Type"))
 		{
@@ -242,13 +241,12 @@ void GameObjectBase::BaseRenderImGui()
 		}
 
 		// 자식 게임 오브젝트 ImGui 렌더링
+		ImGui::Separator();
 		if (!m_childrens.empty())
 		{
-			ImGui::Separator();
 			ImGui::Text("Children:");
 			for (unique_ptr<GameObjectBase>& child : m_childrens) child->BaseRenderImGui();
 		}
-		ImGui::Separator();
 		if (ImGui::Button("Add GameObject")) ImGui::OpenPopup("Select GameObject Type");
 		if (ImGui::BeginPopup("Select GameObject Type"))
 		{

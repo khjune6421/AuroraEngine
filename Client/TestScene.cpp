@@ -12,7 +12,7 @@ REGISTER_TYPE(TestScene)
 
 void TestScene::Initialize()
 {
-	CreateRootGameObject<TestObject>("TestObject");
+	CreateRootGameObject<TestObject>();
 }
 
 GameObjectBase* TestScene::CreateCameraObject()

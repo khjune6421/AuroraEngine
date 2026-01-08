@@ -352,7 +352,7 @@ constexpr std::array<D3D11_BUFFER_DESC, static_cast<size_t>(VSConstBuffers::Coun
 enum class PSConstBuffers
 {
 	CameraPosition, // CameraPositionBuffer
-	DirectionalLight, // DirectionalLightBuffer
+	GlobalLight, // GlobalLightBuffer
 	MaterialFactor, // MaterialFactorBuffer
 
 	Count
@@ -361,10 +361,10 @@ struct CameraPositionBuffer // 카메라 위치 상수 버퍼 구조체
 {
 	DirectX::XMVECTOR cameraPosition = DirectX::XMVectorSet(0.0f, 0.0f, 0.0f, 1.0f); // 카메라 월드 좌표 위치
 };
-struct DirectionalLightBuffer // 방향광 상수 버퍼 구조체
+struct GlobalLightBuffer // 방향광 상수 버퍼 구조체
 {
+	DirectX::XMFLOAT4 lightColor = { 1.0f, 1.0f, 1.0f, 0.2f }; // 방향광 색상 // w는 앰비언트 강도
 	DirectX::XMVECTOR lightDirection = DirectX::XMVectorSet(-0.5f, -1.0f, -0.5f, 0.0f); // 방향광 방향
-	DirectX::XMFLOAT4 lightColor = { 1.0f, 1.0f, 1.0f, 1.0f }; // 방향광 색상
 };
 struct MaterialFactorBuffer
 {
@@ -389,16 +389,18 @@ constexpr std::array<D3D11_BUFFER_DESC, static_cast<size_t>(PSConstBuffers::Coun
 		.MiscFlags = 0,
 		.StructureByteStride = 0
 	},
+
 	// DirectionalLightBuffer
 	D3D11_BUFFER_DESC
 	{
-		.ByteWidth = sizeof(DirectionalLightBuffer),
+		.ByteWidth = sizeof(GlobalLightBuffer),
 		.Usage = D3D11_USAGE_DEFAULT,
 		.BindFlags = D3D11_BIND_CONSTANT_BUFFER,
 		.CPUAccessFlags = 0,
 		.MiscFlags = 0,
 		.StructureByteStride = 0
 	},
+
 	// MaterialFactorBuffer
 	D3D11_BUFFER_DESC
 	{
@@ -435,15 +437,6 @@ struct Vertex_Pos
 {
 	DirectX::XMFLOAT4 position = {};
 };
-
-
-/// 블린-퐁 했을 때의 그것과 동일함.
-/// 목적: 라인 그릴려고 만듬
-struct MaterialLegacy
-{
-	DirectX::XMFLOAT4 Diffuse = { 1.0f, 1.0f, 1.0f, 1.0f };
-};
-
 
 struct MaterialTexture
 {

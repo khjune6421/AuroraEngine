@@ -1,38 +1,31 @@
 {
-    "directionalLightDirection": [
-        -0.5,
-        -1.0,
-        -0.5,
-        0.0
-    ],
     "environmentMapFileName": "Skybox.dds",
     "lightColor": [
         1.0,
         1.0,
         1.0,
-        1.0
+        0.20000000298023224
+    ],
+    "lightDirection": [
+        -0.5,
+        -1.0,
+        -0.5,
+        0.0
     ],
     "rootGameObjects": [
         {
             "childGameObjects": [],
             "components": [
                 {
-                    "blendState": 1,
+                    "blendState": 0,
                     "modelFileName": "box.fbx",
                     "psShaderName": "PSModel.hlsl",
                     "rasterState": 1,
                     "type": "ModelComponent",
                     "vsShaderName": "VSModel.hlsl"
-                },
-                {
-                    "autoConnect": false,
-                    "hostIp": "127.0.0.1",
-                    "isHost": false,
-                    "port": 7777,
-                    "type": "NetworkTestComponent"
                 }
             ],
-            "name": "GameObjectBase_0",
+            "name": "GameObjectBase_1",
             "position": [
                 0.0,
                 0.0,

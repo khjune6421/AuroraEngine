@@ -321,9 +321,9 @@ void ResourceManager::CreateAndSetConstantBuffers()
 	CheckResult(hr, "CameraPosition 상수 버퍼 생성 실패.");
 	m_deviceContext->PSSetConstantBuffers(static_cast<UINT>(PSConstBuffers::CameraPosition), 1, m_psConstantBuffers[static_cast<size_t>(PSConstBuffers::CameraPosition)].GetAddressOf());
 	// 방향광 상수 버퍼
-	hr = m_device->CreateBuffer(&PS_CONST_BUFFER_DESCS[static_cast<size_t>(PSConstBuffers::DirectionalLight)], nullptr, m_psConstantBuffers[static_cast<size_t>(PSConstBuffers::DirectionalLight)].GetAddressOf());
+	hr = m_device->CreateBuffer(&PS_CONST_BUFFER_DESCS[static_cast<size_t>(PSConstBuffers::GlobalLight)], nullptr, m_psConstantBuffers[static_cast<size_t>(PSConstBuffers::GlobalLight)].GetAddressOf());
 	CheckResult(hr, "DirectionalLight 상수 버퍼 생성 실패.");
-	m_deviceContext->PSSetConstantBuffers(static_cast<UINT>(PSConstBuffers::DirectionalLight), 1, m_psConstantBuffers[static_cast<size_t>(PSConstBuffers::DirectionalLight)].GetAddressOf());
+	m_deviceContext->PSSetConstantBuffers(static_cast<UINT>(PSConstBuffers::GlobalLight), 1, m_psConstantBuffers[static_cast<size_t>(PSConstBuffers::GlobalLight)].GetAddressOf());
 	// 재질 팩터 상수 버퍼
 	hr = m_device->CreateBuffer(&PS_CONST_BUFFER_DESCS[static_cast<size_t>(PSConstBuffers::MaterialFactor)], nullptr, m_psConstantBuffers[static_cast<size_t>(PSConstBuffers::MaterialFactor)].GetAddressOf());
 	CheckResult(hr, "MaterialFactor 상수 버퍼 생성 실패.");

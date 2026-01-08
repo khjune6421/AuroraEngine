@@ -11,10 +11,10 @@ cbuffer CameraPosition : register(b0)
     float4 CameraPosition;
 };
 
-cbuffer DirectionalLight : register(b1)
+cbuffer GlobalLight : register(b1)
 {
-    float4 LightDirection;
-    float4 LightColor;
+    float4 LightColor; // w는 앰비언트 강도
+    float4 LightDirection; // 정규화된 방향 벡터, w는 사용 안함
 };
 
 cbuffer MaterialFactor : register(b2)
