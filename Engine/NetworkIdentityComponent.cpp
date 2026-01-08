@@ -5,8 +5,6 @@
 
 REGISTER_TYPE(NetworkIdentityComponent)
 
-void ForceLink_NetworkIdentityComponent() {}//¸µÄ¿µå¶ø ÇØ°á¿ë
-
 void NetworkIdentityComponent::Initialize()
 {
     GameObjectBase* owner = static_cast<GameObjectBase*>(GetOwner());
@@ -18,7 +16,7 @@ void NetworkIdentityComponent::Initialize()
     if (m_netId != 0)
         NetworkWorld::Register(m_netId, owner);
 
-    // Authority¸é ½ºÆùÀ» º¸³»¼­ »ó´ë¿¡ µ¿ÀÏ ¿ÀºêÁ§Æ®°¡ »ı±â°Ô ÇÔ
+    // Authorityë©´ ìŠ¤í°ì„ ë³´ë‚´ì„œ ìƒëŒ€ì— ë™ì¼ ì˜¤ë¸Œì íŠ¸ê°€ ìƒê¸°ê²Œ í•¨
     if (m_isAuthority && m_autoSpawn && !m_spawnSent && m_netId != 0 && !m_typeName.empty())
     {
         NetworkWorld::SendSpawn(static_cast<GameObjectBase*>(m_owner), m_netId, m_typeName);
@@ -33,17 +31,17 @@ void NetworkIdentityComponent::Update()
     GameObjectBase* owner = static_cast<GameObjectBase*>(GetOwner());
     if (!owner) return;
 
-    // typeNameÀÌ ¼¼ÆÃµÇ¾î ÀÖ°í, netId°¡ Á¤»óÀÏ ¶§¸¸ µ¿ÀÛ
+    // typeNameì´ ì„¸íŒ…ë˜ì–´ ìˆê³ , netIdê°€ ì •ìƒì¼ ë•Œë§Œ ë™ì‘
     if (m_netId == 0) return;
 
-    // ¾ÆÁ÷ ½ºÆùÀ» ¾È º¸³Â´Âµ¥ Á¶°ÇÀÌ ¸ÂÀ¸¸é º¸³¿
+    // ì•„ì§ ìŠ¤í°ì„ ì•ˆ ë³´ëƒˆëŠ”ë° ì¡°ê±´ì´ ë§ìœ¼ë©´ ë³´ëƒ„
     if (m_autoSpawn && !m_spawnSent && !m_typeName.empty())
     {
         NetworkWorld::SendSpawn(static_cast<GameObjectBase*>(m_owner), m_netId, m_typeName);
         m_spawnSent = true;
     }
 
-    // »óÅÂ ¼Û½Å(Å×½ºÆ®¿ë)
+    // ìƒíƒœ ì†¡ì‹ (í…ŒìŠ¤íŠ¸ìš©)
     m_sendAccum += TimeManager::GetInstance().GetDeltaTime();
     if (m_sendAccum >= m_sendInterval)
     {

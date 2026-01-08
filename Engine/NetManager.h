@@ -1,13 +1,13 @@
 #pragma once
 
-// NetManager ³»ºÎ¿¡¼­ »ç¿ëÇÏ´Â boost::asio Å¸ÀÔµé
+// NetManager ë‚´ë¶€ì—ì„œ ì‚¬ìš©í•˜ëŠ” boost::asio íƒ€ì…ë“¤
 #include <boost/asio.hpp>
 #include <boost/asio/executor_work_guard.hpp>
 
 // json
 #include <nlohmann/json.hpp>
 
-// std Å¸ÀÔµé
+// std íƒ€ì…ë“¤
 #include <array>            // std::array
 #include <atomic>           // std::atomic
 #include <cstdint>          // uint16_t, uint32_t, uint8_t
@@ -19,7 +19,7 @@
 #include <string>           // std::string
 #include <thread>           // std::thread
 #include <unordered_map>    // std::unordered_map
-#include <utility>          // std::move (SetOnConnected µî¿¡¼­)
+#include <utility>          // std::move (SetOnConnected ë“±ì—ì„œ)
 #include <vector>           // std::vector
 ///////////////////////////////////////////////////////////////////////
 #include "Singleton.h"
@@ -54,23 +54,23 @@ public:
 
 public:
 
-    // ----- lifecycle (¿£Áø ·çÇÁ¿¡¼­ È£Ãâ) -----
-    void Initialize();      // io_context ÁØºñ
-    void Update();          // ¸ŞÀÎ ½º·¹µå¿¡¼­ ÀÌº¥Æ® Ã³¸®(Áß¿ä)
-    void Finalize();        // ½º·¹µå Á¤¸® ¹× ¿¬°á Á¾·á
+    // ----- lifecycle (ì—”ì§„ ë£¨í”„ì—ì„œ í˜¸ì¶œ) -----
+    void Initialize();      // io_context ì¤€ë¹„
+    void Update();          // ë©”ì¸ ìŠ¤ë ˆë“œì—ì„œ ì´ë²¤íŠ¸ ì²˜ë¦¬(ì¤‘ìš”)
+    void Finalize();        // ìŠ¤ë ˆë“œ ì •ë¦¬ ë° ì—°ê²° ì¢…ë£Œ
 
     // ----- host/client -----
     bool StartHost(uint16_t port);                 // Listen server
     bool Connect(const std::string& host, uint16_t port); // Client connect
-    void Disconnect();                              // ¿¬°á Á¾·á(Å¬¶ó ±âÁØ)
+    void Disconnect();                              // ì—°ê²° ì¢…ë£Œ(í´ë¼ ê¸°ì¤€)
     bool IsRunning() const { return m_running.load(); }
     bool IsConnected() const { return m_connected.load(); }
 
     // ----- send -----
-    // °£´Ü JSON ¼Û½Å (ÅÏÁ¦¿¡ ¸Å¿ì ÆíÇÔ)
+    // ê°„ë‹¨ JSON ì†¡ì‹  (í„´ì œì— ë§¤ìš° í¸í•¨)
     bool SendJson(MsgId msgId, const nlohmann::json& j);
 
-    // raw payload ¼Û½Å (msgId + payload)
+    // raw payload ì†¡ì‹  (msgId + payload)
     bool SendRaw(MsgId msgId, const void* data, size_t size);
     bool SendRaw(MsgId msgId, const std::vector<uint8_t>& bytes);
 
@@ -78,17 +78,17 @@ public:
     void RegisterHandler(MsgId msgId, Handler handler);
     void UnregisterHandler(MsgId msgId);
 
-    // ±âº» ÀÌº¥Æ®(Connected/Disconnected/Error)µµ ¹Ş°í ½ÍÀ¸¸é msgId ¾øÀÌ º°µµ Äİ¹é µÎ´Â °Ô ÆíÇÔ
+    // ê¸°ë³¸ ì´ë²¤íŠ¸(Connected/Disconnected/Error)ë„ ë°›ê³  ì‹¶ìœ¼ë©´ msgId ì—†ì´ ë³„ë„ ì½œë°± ë‘ëŠ” ê²Œ í¸í•¨
     void SetOnConnected(std::function<void(PeerId)> cb) { m_onConnected = std::move(cb); }
     void SetOnDisconnected(std::function<void(PeerId)> cb) { m_onDisconnected = std::move(cb); }
     void SetOnError(std::function<void(const std::string&)> cb) { m_onError = std::move(cb); }
 
-    // payload json ÇïÆÛ
+    // payload json í—¬í¼
     static std::vector<uint8_t> JsonToBytes(const nlohmann::json& j);
     static nlohmann::json BytesToJson(const std::vector<uint8_t>& bytes);
 private:
     NetManager() = default;
-    ~NetManager() = default;
+	~NetManager() { Finalize(); }
 
     NetManager(const NetManager&) = delete;
     NetManager& operator=(const NetManager&) = delete;
@@ -96,11 +96,11 @@ private:
     NetManager& operator=(NetManager&&) = delete;
 
 private:
-    // ----- internal session (´ÜÀÏ ¿¬°á ±âÁØ) -----
+    // ----- internal session (ë‹¨ì¼ ì—°ê²° ê¸°ì¤€) -----
     void StartIoThread();
     void StopIoThread();
 
-    void DoAccept();    // host¿ë
+    void DoAccept();    // hostìš©
     void DoConnect(const std::string& host, uint16_t port);
 
     void BeginReadHeader();
@@ -109,7 +109,7 @@ private:
 
     void DoWrite(std::vector<uint8_t>&& framedPacket);
 
-    // ÇÁ·¹ÀÓ: [u32 length][u16 msgId][payload...]
+    // í”„ë ˆì„: [u32 length][u16 msgId][payload...]
     static std::vector<uint8_t> BuildFrame(MsgId msgId, const uint8_t* payload, size_t payloadSize);
 
 private:
@@ -123,20 +123,20 @@ private:
     // host acceptor
     std::unique_ptr<boost::asio::ip::tcp::acceptor> m_acceptor{};
 
-    // single session socket (LAN ÅÏÁ¦¸é ÀÌ°Í¸¸À¸·Î ½ÃÀÛ °¡´É)
+    // single session socket (LAN í„´ì œë©´ ì´ê²ƒë§Œìœ¼ë¡œ ì‹œì‘ ê°€ëŠ¥)
     std::unique_ptr<boost::asio::ip::tcp::socket> m_socket{};
 
-    // »óÅÂ
+    // ìƒíƒœ
     std::atomic<bool> m_running{ false };
     std::atomic<bool> m_connected{ false };
     bool m_isHost = false;
-    PeerId m_peerIdSelf = 1; // ÀÏ´Ü 1·Î µÎ°í, ³ªÁß¿¡ ÇÚµå¼ÎÀÌÅ©·Î ¹èÁ¤
+    PeerId m_peerIdSelf = 1; // ì¼ë‹¨ 1ë¡œ ë‘ê³ , ë‚˜ì¤‘ì— í•¸ë“œì…°ì´í¬ë¡œ ë°°ì •
 
     // read buffers
     std::array<uint8_t, 4> m_readLenBuf{};    // length (u32)
     std::vector<uint8_t> m_readBodyBuf{};     // body = [msgId][payload]
 
-    // write queue (asio ½º·¹µå¿¡¼­ Á÷·ÄÈ­)
+    // write queue (asio ìŠ¤ë ˆë“œì—ì„œ ì§ë ¬í™”)
     std::mutex m_writeMtx;
     std::queue<std::vector<uint8_t>> m_writeQueue;
     bool m_writing = false;
@@ -145,7 +145,7 @@ private:
     std::mutex m_eventMtx;
     std::queue<NetEvent> m_events;
 
-    // handlers (main thread¿¡¼­¸¸ Á¢±Ù)
+    // handlers (main threadì—ì„œë§Œ ì ‘ê·¼)
     std::unordered_map<MsgId, Handler> m_handlers;
 
     // callbacks

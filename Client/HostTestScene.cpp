@@ -1,10 +1,8 @@
-/// HostTestScene.cpp¿« Ω√¿€
 #include "stdafx.h"
 #include "HostTestScene.h"
 
 #include "YdmTestObject.h"
 #include "CoordinateSystemObject.h"
-//#include "BlenderCameraObject.h"
 #include "TestCameraObject.h"
 #include "CamRotObject.h"
 

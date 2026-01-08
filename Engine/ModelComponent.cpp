@@ -9,8 +9,6 @@ using namespace std;
 
 REGISTER_TYPE(ModelComponent)
 
-void ForceLink_ModelComponent() {}
-
 void ModelComponent::Initialize()
 {
 	m_deviceContext = Renderer::GetInstance().GetDeviceContext();

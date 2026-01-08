@@ -1,4 +1,3 @@
-///YdmTestObject.h의 시작
 #pragma once
 #include "GameObjectBase.h"
 
@@ -16,5 +15,3 @@ private:
 	void Initialize() override;
 	void Update() override;
 };
-
-///YdmTestObject.h의 끝

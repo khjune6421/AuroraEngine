@@ -5,8 +5,6 @@
 #include "Renderer.h"
 #include "TimeManager.h"
 #include "NetManager.h"
-#include "NetworkTestComponent.h"
-#include "NetworkIdentityComponent.h"
 #include "NetworkWorld.h"
 
 using namespace std;
@@ -50,4 +48,3 @@ void SceneManager::Run()
 	m_renderer.EndFrame();
 	inputManager.EndFrame();
 }
-///SceneManager.cpp???

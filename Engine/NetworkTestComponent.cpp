@@ -3,11 +3,9 @@
 
 REGISTER_TYPE(NetworkTestComponent)
 
-void ForceLink_NetworkTestComponent() {}//¸µÄ¿µå¶ø ÇØ°á¿ë
-
 void NetworkTestComponent::Initialize()
 {
-    // ÇÚµé·¯ µî·Ï
+	// í•¸ë“¤ëŸ¬ ë“±ë¡
     RegisterHandlers();
 
     if (m_autoConnect)
@@ -82,7 +80,7 @@ void NetworkTestComponent::RenderImGui()
     ImGui::Checkbox("Auto Connect on Initialize", &m_autoConnect);
     ImGui::Checkbox("Host (Listen Server)", &m_isHost);
 
-    // IP / Port ÀÔ·Â
+	// IP / Port ì…ë ¥
     char ipBuf[256];
     strcpy_s(ipBuf, m_hostIp.c_str());
     if (ImGui::InputText("Host IP", ipBuf, sizeof(ipBuf)))
@@ -92,11 +90,11 @@ void NetworkTestComponent::RenderImGui()
     if (m_port < 1) m_port = 1;
     if (m_port > 65535) m_port = 65535;
 
-    // »óÅÂ Ç¥½Ã
+	// ìƒíƒœ í‘œì‹œ
     ImGui::Text("Running: %s", net.IsRunning() ? "true" : "false");
     ImGui::Text("Connected: %s", net.IsConnected() ? "true" : "false");
 
-    // ¹öÆ°µé
+	// ë²„íŠ¼ë“¤
     if (ImGui::Button("Initialize Net"))
     {
         net.Initialize();

@@ -2,8 +2,6 @@
 #pragma once
 #include "ComponentBase.h"
 
-void ForceLink_ModelComponent();
-
 class ModelComponent : public ComponentBase
 {
 	com_ptr<ID3D11DeviceContext> m_deviceContext = nullptr; // 디바이스 컨텍스트

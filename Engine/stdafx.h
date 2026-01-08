@@ -120,5 +120,3 @@ constexpr void CheckResult(HRESULT hr, const char* msg)
 
 // 사용자 정의 헤더
 #include "Resource.h"
-#include "Singleton.h"
-#include "TypeRegistry.h"

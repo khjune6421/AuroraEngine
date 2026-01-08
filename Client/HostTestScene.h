@@ -1,4 +1,3 @@
-/// HostTestScene.h의 시작
 #pragma once
 #include "SceneBase.h"
 
@@ -17,4 +16,3 @@ protected:
 	virtual void Initialize() override;
 	GameObjectBase* CreateCameraObject() override;
 };
-/// HostTestScene.h의 끝

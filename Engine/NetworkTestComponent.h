@@ -2,11 +2,9 @@
 #include "ComponentBase.h"
 #include "NetManager.h"
 
-void ForceLink_NetworkTestComponent();
-
 class NetworkTestComponent : public ComponentBase
 {
-    // UI¿ë »óÅÂ
+	// ë„¤íŠ¸ì›Œí¬ ì‹ë³„ì
     uint32_t m_netId = 0;
     bool m_autoConnect = false;
     bool m_isHost = false;
@@ -17,7 +15,7 @@ class NetworkTestComponent : public ComponentBase
     float m_sendAccum = 0.0f;
     float m_sendInterval = 0.05f;
 
-    // ÇÚµé·¯ µî·Ï ¿©ºÎ(Áßº¹µî·Ï ¹æÁö)
+	// í•¸ë“¤ëŸ¬ ë“±ë¡ ì—¬ë¶€
     bool m_handlersRegistered = false;
 
 public:
@@ -30,7 +28,7 @@ public:
 private:
     void Initialize() override;
     void RenderImGui() override;
-    void Finalize() override;                 // ComponentBase¿¡ ¾øÀ¸¸é Á¦°ÅÇØµµ µÊ
+    void Finalize() override;
 
     nlohmann::json Serialize() override;
     void Deserialize(const nlohmann::json& jsonData) override;

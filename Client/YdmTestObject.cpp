@@ -1,4 +1,3 @@
-///YdmTestObject.cpp의 시작
 #include "stdafx.h"
 #include "YdmTestObject.h"
 
@@ -42,5 +41,3 @@ void YdmTestObject::Update()
 	if (input.GetKey(Q)) Rotate({ 0.0f, 0.0f, -deltaTime * 45.0f });
 	if (input.GetKey(E)) Rotate({ 0.0f, 0.0f, deltaTime * 45.0f });
 }
-
-///YdmTestObject.cpp의 끝

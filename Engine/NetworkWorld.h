@@ -13,16 +13,16 @@ class NetworkWorld
 public:
     // msg id
     static constexpr NetManager::MsgId MSG_SPAWN = 100;
-    static constexpr NetManager::MsgId MSG_STATE = 101; // ´ÙÀ½ ´Ü°è(»óÅÂ µ¿±âÈ­)
+    static constexpr NetManager::MsgId MSG_STATE = 101; // ë‹¤ìŒ ë‹¨ê³„(ìƒíƒœ ë™ê¸°í™”)
 
 public:
     // lifecycle
-    static void Initialize();          // ÇÚµé·¯ µî·Ï(ÇÑ ¹ø¸¸)
-    static void Finalize();            // ÇÚµé·¯ ÇØÁ¦ + ¸Ê Á¤¸®
+    static void Initialize();          // í•¸ë“¤ëŸ¬ ë“±ë¡(í•œ ë²ˆë§Œ)
+    static void Finalize();            // í•¸ë“¤ëŸ¬ í•´ì œ + ë§µ ì •ë¦¬
 
     // scene binding
-    static void SetScene(SceneBase* scene); // ¾À ½ÃÀÛ/ÀüÈ¯ ½Ã È£Ãâ
-    static void Clear();                    // ¾À Á¾·á ½Ã È£Ãâ(¶Ç´Â SetScene ³»ºÎ¿¡¼­)
+    static void SetScene(SceneBase* scene); // ì”¬ ì‹œì‘/ì „í™˜ ì‹œ í˜¸ì¶œ
+    static void Clear();                    // ì”¬ ì¢…ë£Œ ì‹œ í˜¸ì¶œ(ë˜ëŠ” SetScene ë‚´ë¶€ì—ì„œ)
 
     // registry
     static void Register(uint32_t netId, GameObjectBase* obj);

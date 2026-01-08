@@ -31,24 +31,24 @@ private:
     void Deserialize(const nlohmann::json& jsonData) override;
 
 private:
-    // °øÀ¯ ¿ÀºêÁ§Æ® ½Äº°ÀÚ
+    // ê³µìœ  ì˜¤ë¸Œì íŠ¸ ì‹ë³„ì
     uint32_t m_netId = 0;
 
-    // ³»°¡ ÀÌ ¿ÀºêÁ§Æ®ÀÇ »óÅÂ¸¦ ¼Û½ÅÇÒ ±ÇÇÑÀÌ ÀÖ´Â°¡(Host ¶Ç´Â ¼ÒÀ¯ Client)
+    // ë‚´ê°€ ì´ ì˜¤ë¸Œì íŠ¸ì˜ ìƒíƒœë¥¼ ì†¡ì‹ í•  ê¶Œí•œì´ ìˆëŠ”ê°€(Host ë˜ëŠ” ì†Œìœ  Client)
     bool m_isAuthority = false;
 
-    // Initialize ½Ã ÀÚµ¿À¸·Î Spawn º¸³»±â (Å×½ºÆ® ÆíÀÇ)
+    // Initialize ì‹œ ìë™ìœ¼ë¡œ Spawn ë³´ë‚´ê¸° (í…ŒìŠ¤íŠ¸ í¸ì˜)
     bool m_autoSpawn = true;
 
-    // Spawn 1È¸¸¸ º¸³»±â
+    // Spawn 1íšŒë§Œ ë³´ë‚´ê¸°
     bool m_spawnSent = false;
 
-    // »óÅÂ Àü¼Û ÁÖ±â(Å×½ºÆ®¿ë: 20Hz)
+    // ìƒíƒœ ì „ì†¡ ì£¼ê¸°(í…ŒìŠ¤íŠ¸ìš©: 20Hz)
     float m_sendAccum = 0.0f;
     float m_sendInterval = 0.05f;
 
     std::vector<std::string> m_replicateComponents = { "ModelComponent" };
-    // ½ºÆùÇÒ Å¸ÀÔ ÀÌ¸§(»ó´ë°¡ TypeRegistry·Î »ı¼ºÇÒ ¶§ ÇÊ¿ä)
-    // º¸ÅëÀº owner->GetType() °°Àº °Ô ÀÖÀ¸¸é ±×°É ¾²´Â °Ô ¸ÂÀ½
+    // ìŠ¤í°í•  íƒ€ì… ì´ë¦„(ìƒëŒ€ê°€ TypeRegistryë¡œ ìƒì„±í•  ë•Œ í•„ìš”)
+    // ë³´í†µì€ owner->GetType() ê°™ì€ ê²Œ ìˆìœ¼ë©´ ê·¸ê±¸ ì“°ëŠ” ê²Œ ë§ìŒ
     std::string m_typeName = "";
 };
