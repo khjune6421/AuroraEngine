@@ -1,4 +1,3 @@
-///SceneBase.h의 시작
 #pragma once
 #include "Base.h"
 #include "GameObjectBase.h"
@@ -37,9 +36,9 @@ class SceneBase : public Base
 	com_ptr<ID3D11Buffer> m_directionalLightConstantBuffer = nullptr; // 방향광 상수 버퍼
 
 protected:
-	class CameraComponent* m_mainCamera = nullptr; // 메인 카메라 컴포넌트 포인터
-	DirectX::XMVECTOR m_directionalLightDirection = DirectX::XMVectorSet(-0.5f, -1.0f, -0.5f, 0.0f); // 방향광 방향
-	DirectX::XMFLOAT4 m_lightColor = { 1.0f, 1.0f, 1.0f, 1.0f }; // 환경광, 방향광
+	class CameraComponent* m_mainCamera = nullptr; // 硫붿씤 移대찓??而댄룷?뚰듃 ?ъ씤??
+	DirectX::XMVECTOR m_directionalLightDirection = DirectX::XMVectorSet(-0.5f, -1.0f, -0.5f, 0.0f); // 諛⑺뼢愿?諛⑺뼢
+	DirectX::XMFLOAT4 m_lightColor = { 1.0f, 1.0f, 1.0f, 1.0f }; // ?섍꼍愿? 諛⑺뼢愿?
 
 public:
 	SceneBase();
@@ -49,16 +48,15 @@ public:
 	SceneBase(SceneBase&&) = delete; // 이동 금지
 	SceneBase& operator=(SceneBase&&) = delete; // 이동 대입 금지
 
-	// 루트 게임 오브젝트 생성 // 포인터 반환 안함
-	void CreateRootGameObject(std::string typeName);
+	// 루트 게임 오브젝트 생성 // 게임 오브젝트 포인터 반환
+	GameObjectBase* CreateRootGameObject(const std::string& typeName);
 
 	template<typename T> requires std::derived_from<T, GameObjectBase>
 	T* CreateRootGameObject(); // 루트 게임 오브젝트 생성 // 포인터 반환
 
 	template<typename T> requires std::derived_from<T, GameObjectBase>
-	T* CreateRootGameObject(std::string typeName); // 루트 게임 오브젝트 생성 // 포인터 반환
+	T* CreateRootGameObject(const std::string& typeName); // 루트 게임 오브젝트 생성 // 포인터 반환
 
-	GameObjectBase* CreateRootGameObjectPtr(const std::string& typeName);//��Ÿ�� Ÿ�԰��� �� ������ ��ȯ��
 protected:
 	// 메인 카메라 게임 오브젝트 설정
 	virtual GameObjectBase* CreateCameraObject();
@@ -104,7 +102,7 @@ inline T* SceneBase::CreateRootGameObject()
 }
 
 template<typename T> requires std::derived_from<T, GameObjectBase>
-inline T* SceneBase::CreateRootGameObject(std::string typeName)
+inline T* SceneBase::CreateRootGameObject(const std::string& typeName)
 {
 	std::unique_ptr<Base> gameObject = TypeRegistry::GetInstance().CreateGameObject(typeName);
 
@@ -114,4 +112,3 @@ inline T* SceneBase::CreateRootGameObject(std::string typeName)
 
 	return gameObjectPtr;
 }
-///SceneBase.h의 끝

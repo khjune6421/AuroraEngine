@@ -85,7 +85,7 @@ public:
 
 	const DirectX::XMMATRIX& GetWorldMatrix() const { return m_worldMatrix; }
 
-	void CreateComponent(std::string typeName); // 컴포넌트 추가 // 포인터 반환 안함
+	void CreateComponent(const std::string& typeName); // 컴포넌트 추가 // 포인터 반환 안함
 	template<typename T> requires std::derived_from<T, ComponentBase>
 	T* CreateComponent(); // 컴포넌트 추가 // 포인터 반환
 
@@ -93,12 +93,12 @@ public:
 	T* GetComponent(); // 컴포넌트 가져오기 // 없으면 nullptr 반환
 
 	// 자식 게임 오브젝트 생성 // 포인터 반환 안함
-	void CreateChildGameObject(std::string typeName);
+	void CreateChildGameObject(const std::string& typeName);
 	template<typename T> requires std::derived_from<T, GameObjectBase>
 	T* CreateChildGameObject(); // 자식 게임 오브젝트 생성 // 포인터 반환
 	// 자식 게임 오브젝트 제거 // 제거 배열에 추가
 	template<typename T> requires std::derived_from<T, GameObjectBase>
-	T* CreateChildGameObject(std::string typeName); // 자식 게임 오브젝트 생성 // 포인터 반환
+	T* CreateChildGameObject(const std::string& typeName); // 자식 게임 오브젝트 생성 // 포인터 반환
 
 private:
 	// 게임 오브젝트 초기화
@@ -177,7 +177,7 @@ inline T* GameObjectBase::CreateChildGameObject()
 }
 
 template<typename T> requires std::derived_from<T, GameObjectBase>
-inline T* GameObjectBase::CreateChildGameObject(std::string typeName)
+inline T* GameObjectBase::CreateChildGameObject(const std::string& typeName)
 {
 	std::unique_ptr<GameObjectBase> childGameObjectPtr = TypeRegistry::GetInstance().CreateGameObject(typeName);
 

@@ -27,7 +27,7 @@ void NetworkWorld::Finalize()
 void NetworkWorld::SetScene(SceneBase* scene)
 {
     s_scene = scene;
-    // ¾À ¹Ù²ğ ¶§ ±âÁ¸ ¸ÊÀº ³¯¸®´Â °Ô ¾ÈÀü (¾À ¿ÀºêÁ§Æ® Æ÷ÀÎÅÍ°¡ ¹«È¿È­µÉ ¼ö ÀÖÀ½)
+    // ì”¬ ë°”ë€” ë•Œ ê¸°ì¡´ ë§µì€ ë‚ ë¦¬ëŠ” ê²Œ ì•ˆì „ (ì”¬ ì˜¤ë¸Œì íŠ¸ í¬ì¸í„°ê°€ ë¬´íš¨í™”ë  ìˆ˜ ìˆìŒ)
     Clear();
 }
 
@@ -96,11 +96,11 @@ void NetworkWorld::OnSpawn(const NetManager::NetEvent& ev)
     const uint32_t netId = j["netId"].get<uint32_t>();
     const std::string typeName = j["type"].get<std::string>();
 
-    // ÀÌ¹Ì Á¸ÀçÇÏ¸é ¹«½Ã(Áßº¹ ½ºÆù ¹æÁö)
+    // ì´ë¯¸ ì¡´ì¬í•˜ë©´ ë¬´ì‹œ(ì¤‘ë³µ ìŠ¤í° ë°©ì§€)
     if (Find(netId))
         return;
 
-    GameObjectBase* obj = s_scene->CreateRootGameObjectPtr(typeName);
+    GameObjectBase* obj = s_scene->CreateRootGameObject(typeName);
     if (!obj) return;
 
     // transform (optional)
@@ -114,7 +114,7 @@ void NetworkWorld::OnSpawn(const NetManager::NetEvent& ev)
     idc->SetNetId(netId);
     idc->SetAuthority(false);
 
-    // components º¹¿ø
+    // components ë³µì›
     if (j.contains("components") && j["components"].is_array())
     {
         for (auto& c : j["components"])
@@ -122,18 +122,18 @@ void NetworkWorld::OnSpawn(const NetManager::NetEvent& ev)
             std::string ct = c.value("type", "");
             if (ct.empty() || !c.contains("data")) continue;
 
-            // Áö±İÀº ModelComponent¸¸ Ã³¸®(1´Ü°è)
+            // ì§€ê¸ˆì€ ModelComponentë§Œ ì²˜ë¦¬(1ë‹¨ê³„)
             if (ct == "ModelComponent")
             {
                 obj->CreateComponent("ModelComponent");
                 auto* model = obj->GetComponent<ModelComponent>();
                 printf("[NET] After CreateComponent(ModelComponent): %p\n", model);
-                if (auto* model = obj->GetComponent<ModelComponent>())
+                if (Base* model = obj->GetComponent<ModelComponent>())
                 {
                     model->BaseDeserialize(c["data"]);
                 }
             }
-            // ³ªÁß¿¡ ´Ù¸¥ ÄÄÆ÷³ÍÆ®µµ ¿©±â¿¡ Ãß°¡
+            // ë‚˜ì¤‘ì— ë‹¤ë¥¸ ì»´í¬ë„ŒíŠ¸ë„ ì—¬ê¸°ì— ì¶”ê°€
         }
     }
 
@@ -172,12 +172,12 @@ void NetworkWorld::SendSpawn(GameObjectBase* obj, uint32_t netId, const std::str
 
     j["components"] = nlohmann::json::array();
 
-    // ModelComponent º¹Á¦ (Áö±İÀº 1´Ü°è·Î ÀÌ°Í¸¸)
-    if (auto* model = obj->GetComponent<ModelComponent>())
+    // ModelComponent ë³µì œ (ì§€ê¸ˆì€ 1ë‹¨ê³„ë¡œ ì´ê²ƒë§Œ)
+    if (Base* model = obj->GetComponent<ModelComponent>())
     {
         nlohmann::json c;
         c["type"] = "ModelComponent";
-        c["data"] = model->BaseSerialize();   // Serialize °á°ú(json)
+        c["data"] = model->BaseSerialize();   // Serialize ê²°ê³¼(json)
         j["components"].push_back(c);
     }
 

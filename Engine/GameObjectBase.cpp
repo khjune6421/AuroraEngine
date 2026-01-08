@@ -104,7 +104,7 @@ XMVECTOR GameObjectBase::GetWorldDirectionVector(Direction direction)
 	}
 }
 
-void GameObjectBase::CreateComponent(string typeName)
+void GameObjectBase::CreateComponent(const string& typeName)
 {
 	unique_ptr<ComponentBase> component = TypeRegistry::GetInstance().CreateComponent(typeName);
 
@@ -128,7 +128,7 @@ void GameObjectBase::CreateComponent(string typeName)
 	m_components[type_index(typeid(*component))] = move(component);
 }
 
-void GameObjectBase::CreateChildGameObject(string typeName)
+void GameObjectBase::CreateChildGameObject(const string& typeName)
 {
 	unique_ptr<GameObjectBase> childGameObjectPtr = TypeRegistry::GetInstance().CreateGameObject(typeName);
 	childGameObjectPtr->m_parent = this;

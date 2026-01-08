@@ -19,7 +19,7 @@ void SceneManager::Initialize()
 
 	ForceLink_ModelComponent();
 	ForceLink_NetworkIdentityComponent();
-	ForceLink_NetworkTestComponent();//¸µÄ¿µå¶ø ÇØ°á¿ë // ÄÄÆ÷³ÍÆ® Å¸ÀÔ ¸ğ¾Æ¼­ »ı¼º ÇÑ¹ø ÇØÁÖµµ·Ï º¯°æÇÏ±â
+	ForceLink_NetworkTestComponent();//ë§ì»¤ë“œë í•´ê²°ìš© // ì»´í¬ë„ŒíŠ¸ íƒ€ì… ëª¨ì•„ì„œ ìƒì„± í•œë²ˆ í•´ì£¼ë„ë¡ ë³€ê²½í•˜ê¸°
 }
 
 void SceneManager::Run()
@@ -54,4 +54,4 @@ void SceneManager::Run()
 	m_renderer.EndFrame();
 	inputManager.EndFrame();
 }
-///SceneManager.cppì˜ ë
+///SceneManager.cpp???
