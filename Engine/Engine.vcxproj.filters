@@ -7,43 +7,37 @@
     <Filter Include="Shader">
       <UniqueIdentifier>{ed1a30db-b46d-4a43-bd79-ed355a225eda}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Scene">
-      <UniqueIdentifier>{cf7d56b7-51bf-4646-a63f-11327a933aec}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Scene\GameObject">
-      <UniqueIdentifier>{f03bcef5-616c-4bf6-897d-ed1300e98a76}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Scene\GameObject\Component">
-      <UniqueIdentifier>{8a46f177-3617-43fa-ab1a-28387589cd92}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Manager">
       <UniqueIdentifier>{b704db7d-9366-450b-908e-d5b7607566e6}</UniqueIdentifier>
     </Filter>
     <Filter Include="Manager\Input">
       <UniqueIdentifier>{6751b606-7ad5-4d02-95fa-9b35d5cff09b}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Scene\GameObject\Component\Network">
+    <Filter Include="Base">
+      <UniqueIdentifier>{f4bd1636-e572-48af-9d74-71e93541c0c5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Base\Component">
+      <UniqueIdentifier>{8a46f177-3617-43fa-ab1a-28387589cd92}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Base\Component\Network">
       <UniqueIdentifier>{1bc52dc4-7856-44ba-b4e2-7d1f08d88cf7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Base\GameObject">
+      <UniqueIdentifier>{f03bcef5-616c-4bf6-897d-ed1300e98a76}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Base\Scene">
+      <UniqueIdentifier>{cf7d56b7-51bf-4646-a63f-11327a933aec}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Renderer.cpp">
       <Filter>Render</Filter>
     </ClCompile>
-    <ClCompile Include="GameObjectBase.cpp">
-      <Filter>Scene\GameObject</Filter>
-    </ClCompile>
-    <ClCompile Include="SceneBase.cpp">
-      <Filter>Scene</Filter>
-    </ClCompile>
-    <ClCompile Include="ComponentBase.cpp">
-      <Filter>Scene\GameObject\Component</Filter>
-    </ClCompile>
     <ClCompile Include="ModelComponent.cpp">
-      <Filter>Scene\GameObject\Component</Filter>
+      <Filter>Base\Component</Filter>
     </ClCompile>
     <ClCompile Include="CameraComponent.cpp">
-      <Filter>Scene\GameObject\Component</Filter>
+      <Filter>Base\Component</Filter>
     </ClCompile>
     <ClCompile Include="TimeManager.cpp">
       <Filter>Manager</Filter>
@@ -61,28 +55,37 @@
       <Filter>Manager\Input</Filter>
     </ClCompile>
     <ClCompile Include="LineComponent.cpp">
-      <Filter>Scene\GameObject\Component</Filter>
-    </ClCompile>
-    <ClCompile Include="Base.cpp">
-      <Filter>Scene</Filter>
+      <Filter>Base\Component</Filter>
     </ClCompile>
     <ClCompile Include="TypeRegistry.cpp">
       <Filter>Manager</Filter>
     </ClCompile>
     <ClCompile Include="DebugCamera.cpp">
-      <Filter>Scene\GameObject</Filter>
+      <Filter>Base\GameObject</Filter>
     </ClCompile>
     <ClCompile Include="NetManager.cpp">
       <Filter>Manager</Filter>
     </ClCompile>
     <ClCompile Include="NetworkTestComponent.cpp">
-      <Filter>Scene\GameObject\Component\Network</Filter>
+      <Filter>Base\Component\Network</Filter>
     </ClCompile>
     <ClCompile Include="NetworkWorld.cpp">
-      <Filter>Scene\GameObject\Component\Network</Filter>
+      <Filter>Base\Component\Network</Filter>
     </ClCompile>
     <ClCompile Include="NetworkIdentityComponent.cpp">
-      <Filter>Scene\GameObject\Component\Network</Filter>
+      <Filter>Base\Component\Network</Filter>
+    </ClCompile>
+    <ClCompile Include="Base.cpp">
+      <Filter>Base</Filter>
+    </ClCompile>
+    <ClCompile Include="GameObjectBase.cpp">
+      <Filter>Base</Filter>
+    </ClCompile>
+    <ClCompile Include="SceneBase.cpp">
+      <Filter>Base</Filter>
+    </ClCompile>
+    <ClCompile Include="ComponentBase.cpp">
+      <Filter>Base</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -90,20 +93,11 @@
       <Filter>Render</Filter>
     </ClInclude>
     <ClInclude Include="stdafx.h" />
-    <ClInclude Include="GameObjectBase.h">
-      <Filter>Scene\GameObject</Filter>
-    </ClInclude>
-    <ClInclude Include="SceneBase.h">
-      <Filter>Scene</Filter>
-    </ClInclude>
-    <ClInclude Include="ComponentBase.h">
-      <Filter>Scene\GameObject\Component</Filter>
-    </ClInclude>
     <ClInclude Include="ModelComponent.h">
-      <Filter>Scene\GameObject\Component</Filter>
+      <Filter>Base\Component</Filter>
     </ClInclude>
     <ClInclude Include="CameraComponent.h">
-      <Filter>Scene\GameObject\Component</Filter>
+      <Filter>Base\Component</Filter>
     </ClInclude>
     <ClInclude Include="Resource.h">
       <Filter>Render</Filter>
@@ -120,9 +114,6 @@
     <ClInclude Include="ResourceManager.h">
       <Filter>Manager</Filter>
     </ClInclude>
-    <ClInclude Include="Base.h">
-      <Filter>Scene</Filter>
-    </ClInclude>
     <ClInclude Include="Singleton.h">
       <Filter>Manager</Filter>
     </ClInclude>
@@ -133,25 +124,37 @@
       <Filter>Manager\Input</Filter>
     </ClInclude>
     <ClInclude Include="LineComponent.h">
-      <Filter>Scene\GameObject\Component</Filter>
+      <Filter>Base\Component</Filter>
     </ClInclude>
     <ClInclude Include="TypeRegistry.h">
       <Filter>Manager</Filter>
     </ClInclude>
     <ClInclude Include="DebugCamera.h">
-      <Filter>Scene\GameObject</Filter>
+      <Filter>Base\GameObject</Filter>
     </ClInclude>
     <ClInclude Include="NetManager.h">
       <Filter>Manager</Filter>
     </ClInclude>
     <ClInclude Include="NetworkTestComponent.h">
-      <Filter>Scene\GameObject\Component\Network</Filter>
+      <Filter>Base\Component\Network</Filter>
     </ClInclude>
     <ClInclude Include="NetworkWorld.h">
-      <Filter>Scene\GameObject\Component\Network</Filter>
+      <Filter>Base\Component\Network</Filter>
     </ClInclude>
     <ClInclude Include="NetworkIdentityComponent.h">
-      <Filter>Scene\GameObject\Component\Network</Filter>
+      <Filter>Base\Component\Network</Filter>
+    </ClInclude>
+    <ClInclude Include="Base.h">
+      <Filter>Base</Filter>
+    </ClInclude>
+    <ClInclude Include="GameObjectBase.h">
+      <Filter>Base</Filter>
+    </ClInclude>
+    <ClInclude Include="SceneBase.h">
+      <Filter>Base</Filter>
+    </ClInclude>
+    <ClInclude Include="ComponentBase.h">
+      <Filter>Base</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
