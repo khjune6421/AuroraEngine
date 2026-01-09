@@ -39,7 +39,7 @@ void DebugCamera::Update()
 	{
 		float zoomSpeed = m_distance * 0.1f;
 		if (zoomSpeed < 0.5f) zoomSpeed = 0.5f; 
-		m_distance -= (float)wheel / 120.0f * m_wheelSensitivity * zoomSpeed;
+		m_distance -= static_cast<float>(wheel) / 120.0f * m_wheelSensitivity * zoomSpeed;
 
 		if (m_distance < 0.1f) m_distance = 0.1f;
 	}
@@ -51,8 +51,8 @@ void DebugCamera::Update()
 	{
 		// === [Orbit] 그냥 드래그 : 회전 ===
 		// 마우스 좌우 -> Yaw(Y축 회전), 상하 -> Pitch(X축 회전)
-		m_yaw += delta.x * m_orbitSensitivity;
-		m_pitch += delta.y * m_orbitSensitivity;
+		m_yaw += static_cast<float>(delta.x) * m_orbitSensitivity;
+		m_pitch += static_cast<float>(delta.y) * m_orbitSensitivity;
 
 		// 고개를 너무 젖혀서 뒤집히지 않게 제한 (짐벌락 방지)
 		// -89도 ~ 89도 사이로 제한 (라디안 변환)
@@ -72,7 +72,7 @@ void DebugCamera::Update()
 
 		float panSpeed = m_distance * m_panSensitivity * 0.1f;
 
-		XMVECTOR moveVector = (camRight * -delta.x * panSpeed) + (camUp * delta.y * panSpeed);
+		XMVECTOR moveVector = (camRight * static_cast<float>(-delta.x) * panSpeed) + (camUp * static_cast<float>(delta.y) * panSpeed);
 
 		XMVECTOR currentTarget = XMLoadFloat3(&m_targetPosition);
 		currentTarget += moveVector;
@@ -91,7 +91,6 @@ void DebugCamera::Update()
 
 	SetPosition(finalPos);
 	LookAt(targetPos);
-
 }
 
 //이건 피킹 구현할 때 개발할 예정
