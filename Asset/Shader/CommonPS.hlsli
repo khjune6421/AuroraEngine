@@ -14,7 +14,7 @@ cbuffer CameraPosition : register(b0)
 cbuffer GlobalLight : register(b1)
 {
     float4 LightColor; // w는 앰비언트 강도
-    float4 LightDirection; // 정규화된 방향 벡터, w는 사용 안함
+    float4 LightDirection; // 정규화된 방향 벡터 // w는 방향광 강도
 };
 
 cbuffer MaterialFactor : register(b2)
@@ -46,7 +46,7 @@ TextureCube environmentMapTexture : register(t1); // 나중에 반사광에 사�
 // PBR 재질
 Texture2D albedoTexture : register(t2);
 Texture2D ORMTexture : register(t3); // ambient occlusion(R) + roughness(G) + metallic(B)
-Texture2D normalTexture : register(t4);
+Texture2D normalTexture : register(t4); // normal map(rgb) + height map(a)
 
 // --------------------------------------------------------
 // Input Structures (VS 출력과 매칭되어야 함)

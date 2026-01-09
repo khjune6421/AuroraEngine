@@ -51,13 +51,6 @@ float3 UnpackNormal(float3 packedNormal, float intensity = 1.0f)
     return localNormal;
 }
 
-// 탄젠트 공간의 노말을 월드 공간으로 변환
-float3 TransformTangentToWorld(float3 tangentNormal, float3x3 TBN)
-{
-    // TBN 행렬을 곱해서 월드 공간으로 변환 및 정규화
-    return normalize(mul(tangentNormal, TBN));
-}
-
 // --------------------------------------------------------
 // 4. 기타 유틸리티 (Misc Utils)
 // [효제] 여기다가 만들것인가... 따로 만들 것이가...
@@ -70,10 +63,52 @@ float Remap(float value, float iMin, float iMax, float oMin, float oMax)
     return oMin + (value - iMin) * (oMax - oMin) / (iMax - iMin);
 }
 
-// 프레넬 효과 (Schlick 근사) - PBR이나 림 라이트 계산에 필수
+// --------------------------------------------------------
+// 5. PBR 관련 수학 함수 (PBR Math Functions)
+// --------------------------------------------------------
+
+// 프레넬 효과 (Schlick 근사)
 float3 FresnelSchlick(float cosTheta, float3 F0)
 {
     return F0 + (1.0f - F0) * pow(saturate(1.0f - cosTheta), 5.0f);
+}
+
+// GGX 분포 함수 (Trowbridge-Reitz)
+float DistributionGGX(float3 N, float3 H, float roughness)
+{
+    float a = roughness * roughness;
+    float a2 = a * a;
+    float NdotH = max(dot(N, H), 0.0);
+    float NdotH2 = NdotH * NdotH;
+    
+    float nom = a2;
+    float denom = (NdotH2 * (a2 - 1.0) + 1.0);
+    denom = PI * denom * denom;
+    
+    return nom / denom;
+}
+
+// 지오메트리 함수 (Schlick-GGX 근사)
+float GeometrySchlickGGX(float NdotV, float roughness)
+{
+    float r = (roughness + 1.0);
+    float k = (r * r) / 8.0;
+    
+    float nom = NdotV;
+    float denom = NdotV * (1.0 - k) + k;
+    
+    return nom / denom;
+}
+
+// 지오메트리 함수 (Smith)
+float GeometrySmith(float3 N, float3 V, float3 L, float roughness)
+{
+    float NdotV = max(dot(N, V), 0.0);
+    float NdotL = max(dot(N, L), 0.0);
+    float ggx2 = GeometrySchlickGGX(NdotV, roughness);
+    float ggx1 = GeometrySchlickGGX(NdotL, roughness);
+    
+    return ggx1 * ggx2;
 }
 
 #endif // __COMMON_MATH_HLSLI__

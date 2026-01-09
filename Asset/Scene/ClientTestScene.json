@@ -4,13 +4,13 @@
         1.0,
         1.0,
         1.0,
-        0.20000000298023224
+        0.0
     ],
     "lightDirection": [
-        -0.5,
-        -1.0,
-        -0.5,
-        0.0
+        -0.40824830532073975,
+        -0.8164966106414795,
+        -0.40824830532073975,
+        1.0
     ],
     "rootGameObjects": [
         {
@@ -25,7 +25,7 @@
                     "vsShaderName": "VSModel.hlsl"
                 }
             ],
-            "name": "GameObjectBase_1",
+            "name": "GameObjectBase_0",
             "position": [
                 0.0,
                 0.0,

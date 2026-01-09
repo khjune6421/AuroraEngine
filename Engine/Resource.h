@@ -363,8 +363,8 @@ struct CameraPositionBuffer // 카메라 위치 상수 버퍼 구조체
 };
 struct GlobalLightBuffer // 방향광 상수 버퍼 구조체
 {
-	DirectX::XMFLOAT4 lightColor = { 1.0f, 1.0f, 1.0f, 0.2f }; // 방향광 색상 // w는 앰비언트 강도
-	DirectX::XMVECTOR lightDirection = DirectX::XMVectorSet(-0.5f, -1.0f, -0.5f, 0.0f); // 방향광 방향
+	DirectX::XMFLOAT4 lightColor = { 1.0f, 1.0f, 1.0f, 0.0f }; // 방향광 색상 // w는 앰비언트 강도
+	DirectX::XMVECTOR lightDirection = DirectX::XMVectorSet(-0.5f, -1.0f, -0.5f, 1.0f); // 방향광 방향 // w는 방향광 강도
 };
 struct MaterialFactorBuffer
 {

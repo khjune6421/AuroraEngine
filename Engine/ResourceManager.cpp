@@ -441,6 +441,9 @@ Mesh ResourceManager::ProcessMesh(const aiMesh* mesh, const aiScene* scene)
 	//	resultMesh.materialTexture.ORMTextureSRV = GetTexture("SampleORM.dds");
 	//	resultMesh.materialTexture.normalTextureSRV = GetTexture("SampleNormal.dds");
 	//}
+	resultMesh.materialTexture.albedoTextureSRV = GetTexture("SampleAlbedo.dds");
+	resultMesh.materialTexture.ORMTextureSRV = GetTexture("SampleORM.dds");
+	resultMesh.materialTexture.normalTextureSRV = GetTexture("SampleBump.dds");
 
 	// [재질 및 텍스처 처리 수정]
 	if (mesh->mMaterialIndex >= 0)
