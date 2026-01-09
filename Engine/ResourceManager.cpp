@@ -441,15 +441,11 @@ Mesh ResourceManager::ProcessMesh(const aiMesh* mesh, const aiScene* scene)
 	//	resultMesh.materialTexture.ORMTextureSRV = GetTexture("SampleORM.dds");
 	//	resultMesh.materialTexture.normalTextureSRV = GetTexture("SampleNormal.dds");
 	//}
-	resultMesh.materialTexture.albedoTextureSRV = GetTexture("SampleAlbedo.dds");
-	resultMesh.materialTexture.ORMTextureSRV = GetTexture("SampleORM.dds");
-	resultMesh.materialTexture.normalTextureSRV = GetTexture("SampleBump.dds");
 
 	// [재질 및 텍스처 처리 수정]
 	if (mesh->mMaterialIndex >= 0)
 	{
 		aiMaterial* material = scene->mMaterials[mesh->mMaterialIndex];
-		resultMesh.materialFactor = ProcessMaterialFactor(material);
 
 		aiString texturePath;
 		std::string textureFileName;
@@ -468,6 +464,8 @@ Mesh ResourceManager::ProcessMesh(const aiMesh* mesh, const aiScene* scene)
 		{
 			// 텍스처가 없다! (일반 FBX -> 샘플 사용)
 			resultMesh.materialTexture.albedoTextureSRV = GetTexture("SampleAlbedo.dds");
+			resultMesh.materialTexture.ORMTextureSRV = GetTexture("SampleORM.dds");
+			resultMesh.materialTexture.normalTextureSRV = GetTexture("SampleBump.dds");
 		}
 
 		// 2. Normal Map 처리
@@ -499,29 +497,6 @@ Mesh ResourceManager::ProcessMesh(const aiMesh* mesh, const aiScene* scene)
 	CreateMeshBuffers(resultMesh);
 
 	return resultMesh;
-}
-
-MaterialFactorBuffer ResourceManager::ProcessMaterialFactor(aiMaterial* material)
-{
-	MaterialFactorBuffer resultMaterialFactor;
-
-	// Albedo/Diffuse 색상 팩터
-	aiColor4D albedoColor;
-	if (AI_SUCCESS == material->Get(AI_MATKEY_COLOR_DIFFUSE, albedoColor)) resultMaterialFactor.albedoFactor = { albedoColor.r, albedoColor.g, albedoColor.b, albedoColor.a };
-
-	// PBR 메탈릭 팩터
-	float metallicFactor = 1.0f;
-	if (AI_SUCCESS == material->Get(AI_MATKEY_METALLIC_FACTOR, metallicFactor)) resultMaterialFactor.metallicFactor = metallicFactor;
-
-	// PBR 러프니스 팩터
-	float roughnessFactor = 1.0f;
-	if (AI_SUCCESS == material->Get(AI_MATKEY_ROUGHNESS_FACTOR, roughnessFactor)) resultMaterialFactor.roughnessFactor = roughnessFactor;
-
-	// 굴절률 팩터
-	float iorFactor = 1.5f;
-	if (AI_SUCCESS == material->Get(AI_MATKEY_REFRACTI, iorFactor)) resultMaterialFactor.iorFactor = iorFactor;
-
-	return resultMaterialFactor;
 }
 
 void ResourceManager::CreateMeshBuffers(Mesh& mesh)

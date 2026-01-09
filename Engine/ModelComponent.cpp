@@ -42,8 +42,8 @@ void ModelComponent::Render()
 		m_deviceContext->IASetVertexBuffers(0, 1, mesh.vertexBuffer.GetAddressOf(), &stride, &offset);
 		m_deviceContext->IASetIndexBuffer(mesh.indexBuffer.Get(), DXGI_FORMAT_R32_UINT, 0);
 
-		// 재질 상수 버퍼 셰이더에 설정
-		m_deviceContext->UpdateSubresource(m_materialConstantBuffer.Get(), 0, nullptr, &mesh.materialFactor, 0, 0);
+		// 재질 팩터 설정
+		m_deviceContext->UpdateSubresource(m_materialConstantBuffer.Get(), 0, nullptr, &m_materialFactorData, 0, 0);
 
 		// 재질 텍스처 셰이더에 설정
 		m_deviceContext->PSSetShaderResources(static_cast<UINT>(TextureSlots::Albedo), 1, mesh.materialTexture.albedoTextureSRV.GetAddressOf());
@@ -73,6 +73,24 @@ void ModelComponent::RenderImGui()
 		m_model = ResourceManager::GetInstance().LoadModel(m_modelFileName);
 		CreateShaders();
 	}
+
+	ImGui::Separator();
+	// 재질 팩터
+	ImGui::ColorEdit4("Albedo Factor", &m_materialFactorData.albedoFactor.x);
+
+	ImGui::DragFloat("Ambient Occlusion Factor", &m_materialFactorData.ambientOcclusionFactor, 0.01f, 0.0f, 1.0f);
+	ImGui::DragFloat("Roughness Factor", &m_materialFactorData.roughnessFactor, 0.01f, 0.0f, 1.0f);
+	ImGui::DragFloat("Metallic Factor", &m_materialFactorData.metallicFactor, 0.01f, 0.0f, 1.0f);
+
+	ImGui::DragFloat("IOR", &m_materialFactorData.ior, 0.01f, 1.0f, 3.0f);
+
+	ImGui::DragFloat("Normal Scale", &m_materialFactorData.normalScale, 0.01f, 0.0f, 5.0f);
+	ImGui::DragFloat("Height Scale", &m_materialFactorData.heightScale, 0.001f, 0.0f, 0.2f);
+
+	ImGui::DragFloat("Light Factor", &m_materialFactorData.lightFactor, 0.01f, 0.0f, 1.0f);
+	ImGui::DragFloat("Luminance Factor", &m_materialFactorData.glowFactor, 0.01f, 0.0f, 1.0f);
+
+	ImGui::ColorEdit4("Emission Factor", &m_materialFactorData.emissionFactor.x);
 
 	ImGui::Separator();
 	int blendStateInt = static_cast<int>(m_blendState);

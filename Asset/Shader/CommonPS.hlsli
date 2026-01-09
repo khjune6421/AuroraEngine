@@ -21,10 +21,17 @@ cbuffer MaterialFactor : register(b2)
 {
     float4 AlbedoFactor;
     
-    float ambientOcclusionFactor;
+    float AmbientOcclusionFactor;
     float RoughnessFactor;
     float MetallicFactor;
-    float IorFactor;
+    
+    float Ior;
+    
+    float NormalScale;
+    float HeightScalef;
+
+    float LightFactor;
+    float glowFactor;
     
     float4 EmissionFactor;
 };

@@ -136,10 +136,11 @@ void SceneBase::BaseRenderImGui()
 	ImGui::ColorEdit3("Light Color", &m_globalLightData.lightColor.x);
 	ImGui::DragFloat("Ambient Intensity", &m_globalLightData.lightColor.w, 0.001f, 0.0f, 1.0f);
 
-	if (ImGui::DragFloat4("Light Direction / Intensity", &m_globalLightData.lightDirection.m128_f32[0], 0.001f, -1.0f, 1.0f))
+	if (ImGui::DragFloat3("Light Direction / Intensity", &m_globalLightData.lightDirection.m128_f32[0], 0.001f, -1.0f, 1.0f))
 	{
 		m_globalLightData.lightDirection = XMVector3Normalize(m_globalLightData.lightDirection);
 	}
+	ImGui::DragFloat("Directional Intensity", &m_globalLightData.lightDirection.m128_f32[3], 0.001f, 0.0f, 1.0f);
 
 	RenderImGui();
 
@@ -312,6 +313,7 @@ void SceneBase::UpdateConstantBuffers()
 void SceneBase::RenderSkybox()
 {
 	ResourceManager& resourceManager = ResourceManager::GetInstance();
+
 	resourceManager.SetDepthStencilState(DepthStencilState::Skybox);
 
 	resourceManager.SetBlendState(BlendState::Opaque);
@@ -335,6 +337,11 @@ void SceneBase::RenderSkybox()
 #ifdef _DEBUG
 void SceneBase::RenderDebugCoordinates()
 {
+	ResourceManager& resourceManager = ResourceManager::GetInstance();
+
+	resourceManager.SetBlendState(BlendState::Opaque);
+	resourceManager.SetRasterState(RasterState::Solid);
+
 	m_deviceContext->IASetInputLayout(m_debugCoordinateVertexShaderAndInputLayout.second.Get());
 	m_deviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_LINELIST);
 	m_deviceContext->VSSetShader(m_debugCoordinateVertexShaderAndInputLayout.first.Get(), nullptr, 0);

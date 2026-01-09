@@ -44,11 +44,14 @@ float GetLuminance(float3 color)
 
 // [0, 1] 범위의 텍스처 색상을 [-1, 1] 범위의 벡터로 변환
 // + 노말 강도 조절 (intensity) 기능 추가
-float3 UnpackNormal(float3 packedNormal, float intensity = 1.0f)
+// TBN 행렬을 사용하여 로컬 공간 노말을 월드 공간 노말로 변환
+float3 UnpackNormal(float3 packedNormal, float3x3 TBN, float intensity = 1.0f)
 {
     float3 localNormal = packedNormal * 2.0f - 1.0f;
-    localNormal.xy *= intensity; // x, y 축을 조절하여 굴곡의 세기 조절
-    return localNormal;
+    localNormal.xy *= intensity; // 노말 강도 조절
+    localNormal = normalize(localNormal);
+    
+    return normalize(mul(localNormal, TBN));
 }
 
 // --------------------------------------------------------

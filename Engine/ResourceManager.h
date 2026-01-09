@@ -92,8 +92,6 @@ private:
 	void ProcessNode(const aiNode* node, const aiScene* scene, Model& model);
 	// 메쉬 처리 함수
 	Mesh ProcessMesh(const aiMesh* mesh, const aiScene* scene);
-	// 재질 처리 함수
-	MaterialFactorBuffer ProcessMaterialFactor(aiMaterial* material);
 	// 메쉬 버퍼(GPU) 생성 함수
 	void CreateMeshBuffers(Mesh& mesh);
 

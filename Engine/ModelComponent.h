@@ -23,6 +23,8 @@ class ModelComponent : public ComponentBase
 	std::string m_modelFileName = "box.fbx"; // 기본 모델 파일 이름
 
 	const struct Model* m_model = nullptr;
+
+	MaterialFactorBuffer m_materialFactorData = {}; // 재질 상수 버퍼 데이터
 	com_ptr<ID3D11Buffer> m_materialConstantBuffer = nullptr; // 재질 상수 버퍼
 
 	BlendState m_blendState = BlendState::Opaque; // 기본 블렌드 상태
