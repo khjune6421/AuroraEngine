@@ -12,7 +12,7 @@ VS_OUTPUT_STD main(VS_INPUT_STD input)
     
     output.TBN[2] = normalize(mul(float4(input.Normal, 0.0f), NormalMatrix).xyz); // 이거 normalize 꼭 필요하나?
     output.TBN[0] = normalize(mul(float4(input.Tangent, 0.0f), NormalMatrix).xyz);
-    output.TBN[1] = cross(output.TBN[2], output.TBN[0]);
+    output.TBN[1] = cross(output.TBN[2], output.TBN[0]); // TODO
     
     return output;
 }
