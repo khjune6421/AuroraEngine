@@ -28,7 +28,7 @@ float4 main(PS_INPUT_STD input) : SV_TARGET
     
     float3 radiance = LightColor.rgb * NdotL; // 조명 세기
     
-    float3 ambient = LightColor.rgb * albedo.xyz * orm.r; // 앰비언트 조명
+    float3 ambient = LightColor.rgb * albedo.xyz * orm.r * radiance; // 앰비언트 조명
     float3 Lo = (kD * albedo.rgb / PI + specular) * radiance; // 최종 조명 계산
     
     albedo.xyz = ambient + Lo;
