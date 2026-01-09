@@ -1,27 +1,4 @@
 #pragma once
-
-// NetManager 내부에서 사용하는 boost::asio 타입들
-#include <boost/asio.hpp>
-#include <boost/asio/executor_work_guard.hpp>
-
-// json
-#include <nlohmann/json.hpp>
-
-// std 타입들
-#include <array>            // std::array
-#include <atomic>           // std::atomic
-#include <cstdint>          // uint16_t, uint32_t, uint8_t
-#include <functional>       // std::function
-#include <memory>           // std::unique_ptr
-#include <mutex>            // std::mutex
-#include <optional>         // std::optional
-#include <queue>            // std::queue
-#include <string>           // std::string
-#include <thread>           // std::thread
-#include <unordered_map>    // std::unordered_map
-#include <utility>          // std::move (SetOnConnected 등에서)
-#include <vector>           // std::vector
-///////////////////////////////////////////////////////////////////////
 #include "Singleton.h"
 
 class NetManager : public Singleton<NetManager>
@@ -74,6 +51,9 @@ public:
     bool SendRaw(MsgId msgId, const void* data, size_t size);
     bool SendRaw(MsgId msgId, const std::vector<uint8_t>& bytes);
 
+    bool IsHost() const { return m_isHost; }
+    PeerId GetSelfPeerId() const { return m_peerIdSelf; }
+
     // ----- message dispatch -----
     void RegisterHandler(MsgId msgId, Handler handler);
     void UnregisterHandler(MsgId msgId);
@@ -108,7 +88,7 @@ private:
     void PushEvent(NetEvent&& ev);
 
     void DoWrite(std::vector<uint8_t>&& framedPacket);
-
+    void DoWriteNext();
     // 프레임: [u32 length][u16 msgId][payload...]
     static std::vector<uint8_t> BuildFrame(MsgId msgId, const uint8_t* payload, size_t payloadSize);
 

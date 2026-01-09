@@ -35,9 +35,6 @@
     <ClCompile Include="ClientTestScene.cpp">
       <Filter>Scene</Filter>
     </ClCompile>
-    <ClCompile Include="HostTestScene.cpp">
-      <Filter>Scene</Filter>
-    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stdafx.h" />
@@ -73,9 +70,6 @@
     </ClInclude>
     <ClInclude Include="YdmTestObject.h">
       <Filter>GameObject</Filter>
-    </ClInclude>
-    <ClInclude Include="HostTestScene.h">
-      <Filter>Scene</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

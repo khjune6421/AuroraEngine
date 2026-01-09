@@ -2,8 +2,6 @@
 #include "ComponentBase.h"
 #include "NetworkWorld.h"
 
-void ForceLink_NetworkIdentityComponent();
-
 class NetworkIdentityComponent : public ComponentBase
 {
 public:
@@ -13,7 +11,7 @@ public:
     bool NeedsUpdate() const override { return true; }
     bool NeedsRender() const override { return false; }
 
-    void SetNetId(uint32_t id) { m_netId = id; }
+    void SetNetId(uint32_t id);
     uint32_t GetNetId() const { return m_netId; }
 
     void SetAuthority(bool a) { m_isAuthority = a; }

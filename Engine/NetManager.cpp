@@ -363,6 +363,8 @@ void NetManager::DoWrite(std::vector<uint8_t>&& framedPacket)
     std::lock_guard lock(m_writeMtx);
     m_writeQueue.push(std::move(framedPacket));
 
+    printf("[WRITE] push q=%zu writing=%d\n", m_writeQueue.size(), m_writing ? 1 : 0);
+
     if (m_writing) return;
     m_writing = true;
 

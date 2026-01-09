@@ -157,7 +157,6 @@
     <ClCompile Include="CamRotObject.cpp" />
     <ClCompile Include="ClientTestScene.cpp" />
     <ClCompile Include="CoordinateSystemObject.cpp" />
-    <ClCompile Include="HostTestScene.cpp" />
     <ClCompile Include="HyojeTestObject.cpp" />
     <ClCompile Include="LineObject.cpp" />
     <ClCompile Include="main.cpp" />
@@ -174,7 +173,6 @@
     </ClInclude>
     <ClInclude Include="CamRotObject.h" />
     <ClInclude Include="CoordinateSystemObject.h" />
-    <ClInclude Include="HostTestScene.h" />
     <ClInclude Include="HyojeTestScene.h" />
     <ClInclude Include="HyojeTestObject.h" />
     <ClInclude Include="LineObject.h" />

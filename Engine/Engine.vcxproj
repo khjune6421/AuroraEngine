@@ -148,6 +148,7 @@
     <ClInclude Include="KeyCode.h" />
     <ClInclude Include="LineComponent.h" />
     <ClInclude Include="ModelComponent.h" />
+    <ClInclude Include="NetAction.h" />
     <ClInclude Include="NetManager.h" />
     <ClInclude Include="NetworkIdentityComponent.h" />
     <ClInclude Include="NetworkTestComponent.h" />
@@ -178,6 +179,7 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="NetworkWorld.cpp" />
+    <ClCompile Include="NetworkWorld_Action.cpp" />
     <ClCompile Include="Renderer.cpp" />
     <ClCompile Include="ResourceManager.cpp" />
     <ClCompile Include="SceneBase.cpp" />

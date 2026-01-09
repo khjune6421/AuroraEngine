@@ -11,6 +11,18 @@
 #endif
 #include <typeindex>
 #include <unordered_map>
+#include <queue>		
+#include <optional>		
+#include <cstdint>
+#include <type_traits>
+#include <cstring>
+#include <string>
+#include <atomic>           // std::atomic
+#include <memory>           // std::unique_ptr
+#include <mutex>            // std::mutex
+#include <vector>           // std::vector
+#include <thread>           // std::thread
+#include <utility>          // std::move
 
 // 윈도우 헤더
 #include <wrl/client.h>
@@ -42,6 +54,10 @@
 
 // JSON 헤더
 #include <nlohmann/json.hpp>
+
+// boost-asio 
+#include <boost/asio.hpp>
+#include <boost/asio/executor_work_guard.hpp>
 
 // using 정의
 #ifdef _DEBUG

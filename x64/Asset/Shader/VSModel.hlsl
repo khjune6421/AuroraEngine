@@ -1,4 +1,4 @@
-/// VSModel.hlslÀÇ ½ÃÀÛ
+/// VSModel.hlslì˜ ì‹œì‘
 #include "CommonVS.hlsli"
 
 VS_OUTPUT_STD main(VS_INPUT_STD input)
@@ -10,11 +10,11 @@ VS_OUTPUT_STD main(VS_INPUT_STD input)
     
     output.UV = input.UV;
     
-    output.TBN[2] = normalize(mul(float4(input.Normal, 0.0f), NormalMatrix).xyz); // ÀÌ°Å normalize ²À ÇÊ¿äÇÏ³ª?
+    output.TBN[2] = normalize(mul(float4(input.Normal, 0.0f), NormalMatrix).xyz); // ì´ê±° normalize ê¼­ í•„ìš”í•˜ë‚˜?
     output.TBN[0] = normalize(mul(float4(input.Tangent, 0.0f), NormalMatrix).xyz);
     output.TBN[1] = cross(output.TBN[2], output.TBN[0]);
     
     
     return output;
 }
-/// VSModel.hlslÀÇ ³¡
+/// VSModel.hlslì˜ ë

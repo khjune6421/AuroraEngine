@@ -7,13 +7,14 @@
 #include "NetworkIdentityComponent.h"
 #include "ModelComponent.h"
 
+static inline uint32_t s_nextNetId = 1;
+
 void NetworkWorld::Initialize()
 {
     if (s_inited) return;
     s_inited = true;
     RegisterHandlers();
     printf("[NET] RegisterHandler SPAWN=%u STATE=%u\n", MSG_SPAWN, MSG_STATE);
-
 }
 
 void NetworkWorld::Finalize()
@@ -40,11 +41,20 @@ void NetworkWorld::Register(uint32_t netId, GameObjectBase* obj)
 {
     if (!obj) return;
     s_objects[netId] = obj;
+
+    printf("[%s] Register netId=%u obj=%p\n",
+        NetManager::GetInstance().IsHost() ? "HOST" : "CLIENT",
+        netId, obj);
 }
 
 void NetworkWorld::Unregister(uint32_t netId)
 {
     s_objects.erase(netId);
+}
+
+uint32_t NetworkWorld::AllocateNetId()
+{
+    return s_nextNetId++;
 }
 
 GameObjectBase* NetworkWorld::Find(uint32_t netId)
@@ -67,6 +77,11 @@ void NetworkWorld::RegisterHandlers()
         {
             NetworkWorld::OnState(ev);
         });
+
+    net.RegisterHandler(MSG_ACTION, [](const NetManager::NetEvent& ev)
+        {
+            NetworkWorld::OnAction(ev);
+        });
 }
 
 void NetworkWorld::UnregisterHandlers()
@@ -74,6 +89,19 @@ void NetworkWorld::UnregisterHandlers()
     auto& net = NetManager::GetInstance();
     net.UnregisterHandler(MSG_SPAWN);
     net.UnregisterHandler(MSG_STATE);
+    net.UnregisterHandler(MSG_ACTION);
+}
+
+void NetworkIdentityComponent::SetNetId(uint32_t id)
+{
+    m_netId = id;
+
+    if (m_netId == 0) return;
+
+    auto* owner = static_cast<GameObjectBase*>(GetOwner());
+    if (!owner) return;
+
+    NetworkWorld::Register(m_netId, owner);
 }
 
 // ---------------------
@@ -82,16 +110,11 @@ void NetworkWorld::UnregisterHandlers()
 
 void NetworkWorld::OnSpawn(const NetManager::NetEvent& ev)
 {
-    printf("[NET] OnSpawn ENTER msgId=%u payloadSize=%zu\n",
-        (unsigned)ev.msgId, ev.payload.size());
-
     auto j = NetManager::BytesToJson(ev.payload);
-    if (j.is_discarded()) { printf("[NET] OnSpawn JSON discard\n"); return; }
+    if (j.is_discarded()) {return; }
 
-    printf("[NET] OnSpawn JSON=%s\n", j.dump().c_str());
-
-    if (!j.contains("netId")) { printf("[NET] OnSpawn no netId\n"); return; }
-    if (!j.contains("type")) { printf("[NET] OnSpawn no type\n"); return; }
+    if (!j.contains("netId")) { return; }
+    if (!j.contains("type")) { return; }
 
     const uint32_t netId = j["netId"].get<uint32_t>();
     const std::string typeName = j["type"].get<std::string>();
@@ -136,9 +159,6 @@ void NetworkWorld::OnSpawn(const NetManager::NetEvent& ev)
             // 나중에 다른 컴포넌트도 여기에 추가
         }
     }
-
-    Register(netId, obj);
-    printf("[NET] Spawned object. netId=%u type=%s\n", netId, typeName.c_str());
 }
 
 void NetworkWorld::OnState(const NetManager::NetEvent& ev)

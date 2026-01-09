@@ -1,4 +1,4 @@
-/// CommonPS.hlsliÀÇ ½ÃÀÛ
+/// CommonPS.hlsliì˜ ì‹œì‘
 #ifndef __COMMON_PS_HLSLI__
 #define __COMMON_PS_HLSLI__
 
@@ -20,16 +20,13 @@ cbuffer DirectionalLight : register(b1)
 cbuffer MaterialFactor : register(b2)
 {
     float4 AlbedoFactor;
-    float  MetallicFactor;
-    float  RoughnessFactor;
-    float  AmbientOcclusionFactor;
-    float  LightFactor;
+    
+    float ambientOcclusionFactor;
+    float RoughnessFactor;
+    float MetallicFactor;
+    float iorFactor;
+    
     float4 EmissionFactor;
-};
-
-cbuffer LineColor : register(b3)
-{
-    float4 LineColor;
 };
 
 // --------------------------------------------------------
@@ -44,15 +41,15 @@ SamplerState SamplerLinearWrap : register(s1); // Model, Skybox
 // Textures
 // --------------------------------------------------------
 Texture2D sceneTexture : register(t0);
-TextureCube environmentMapTexture : register(t1); // ³ªÁß¿¡ ¹İ»ç±¤¿¡ »ç¿ë?
+TextureCube environmentMapTexture : register(t1); // ë‚˜ì¤‘ì— ë°˜ì‚¬ê´‘ì— ì‚¬ìš©?
+
+// PBR ì¬ì§ˆ
 Texture2D albedoTexture : register(t2);
-Texture2D normalTexture : register(t3);
-Texture2D metallicTexture : register(t4);
-Texture2D roughnessTexture : register(t5);
-Texture2D ambientOcclusionTexture : register(t6);
+Texture2D ORMTexture : register(t3); // ambient occlusion(R) + roughness(G) + metallic(B)
+Texture2D normalTexture : register(t4);
 
 // --------------------------------------------------------
-// Input Structures (VS Ãâ·Â°ú ¸ÅÄªµÇ¾î¾ß ÇÔ)
+// Input Structures (VS ì¶œë ¥ê³¼ ë§¤ì¹­ë˜ì–´ì•¼ í•¨)
 // --------------------------------------------------------
 
 struct PS_INPUT_STD
@@ -76,4 +73,4 @@ struct PS_INPUT_POS
 
 
 #endif // __COMMON_PS_HLSLI__
-/// CommonPS.hlsliÀÇ ³¡
+/// CommonPS.hlsliì˜ ë

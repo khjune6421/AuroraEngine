@@ -1,4 +1,4 @@
-/// CommonVS.hlsliÀÇ ½ÃÀÛ
+/// CommonVS.hlsliì˜ ì‹œì‘
 #ifndef __COMMON_VS_HLSLI__
 #define __COMMON_VS_HLSLI__
 
@@ -7,20 +7,20 @@
 // --------------------------------------------------------
 cbuffer ViewProjection : register(b0)
 {
-    matrix ViewMatrix; // ÀüÄ¡ ¾ÈµÈ ºä Çà·Ä
-    matrix ProjectionMatrix; // ÀüÄ¡ ¾ÈµÈ Åõ¿µ Çà·Ä
-    matrix VPMatrix; // ÀüÄ¡ µÈ ºä Çà·Ä°ú Åõ¿µ Çà·ÄÀÇ °ö
+    matrix ViewMatrix; // ì „ì¹˜ ì•ˆëœ ë·° í–‰ë ¬
+    matrix ProjectionMatrix; // ì „ì¹˜ ì•ˆëœ íˆ¬ì˜ í–‰ë ¬
+    matrix VPMatrix; // ì „ì¹˜ ëœ ë·° í–‰ë ¬ê³¼ íˆ¬ì˜ í–‰ë ¬ì˜ ê³±
 }
 
 cbuffer Skybox : register(b1)
 {
-    matrix SkyboxVPMatrix; // ºä Çà·Ä¿¡¼­ À§Ä¡ ¼ººĞÀ» Á¦°ÅÇÑ Çà·Ä°ú Åõ¿µ Çà·ÄÀÇ °öÀÇ ¿ªÇà·Ä
+    matrix SkyboxVPMatrix; // ë·° í–‰ë ¬ì—ì„œ ìœ„ì¹˜ ì„±ë¶„ì„ ì œê±°í•œ í–‰ë ¬ê³¼ íˆ¬ì˜ í–‰ë ¬ì˜ ê³±ì˜ ì—­í–‰ë ¬
 }
 
 cbuffer World : register(b2)
 {
     matrix WorldMatrix;
-    matrix NormalMatrix; // ½ºÄÉÀÏ ¿ªÇà·ÄÀ» Àû¿ëÇÑ ¿ùµå Çà·Ä
+    matrix NormalMatrix; // ìŠ¤ì¼€ì¼ ì—­í–‰ë ¬ì„ ì ìš©í•œ ì›”ë“œ í–‰ë ¬
 }
 
 // --------------------------------------------------------
@@ -70,4 +70,4 @@ struct VS_OUTPUT_POS
 };
 
 #endif // __COMMON_VS_HLSLI__
-/// CommonVS.hlsliÀÇ ³¡
+/// CommonVS.hlsliì˜ ë

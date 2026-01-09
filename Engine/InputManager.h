@@ -5,8 +5,6 @@
 #pragma once
 
 #include "Singleton.h"
-#include <array>
-#include <cstdint>   
 #include "KeyCode.h" 
 
 struct MousePos

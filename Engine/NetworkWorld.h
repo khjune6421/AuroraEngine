@@ -1,9 +1,6 @@
 #pragma once
-#include <unordered_map>
-#include <string>
-#include <cstdint>
-
 #include "NetManager.h"
+#include "NetAction.h"
 
 class SceneBase;
 class GameObjectBase;
@@ -12,8 +9,9 @@ class NetworkWorld
 {
 public:
     // msg id
-    static constexpr NetManager::MsgId MSG_SPAWN = 100;
-    static constexpr NetManager::MsgId MSG_STATE = 101; // 다음 단계(상태 동기화)
+    static constexpr NetManager::MsgId MSG_SPAWN    = 100;
+    static constexpr NetManager::MsgId MSG_STATE    = 101; // 다음 단계(상태 동기화)
+    static constexpr NetManager::MsgId MSG_ACTION   = 200;
 
 public:
     // lifecycle
@@ -36,6 +34,12 @@ public:
         const DirectX::XMVECTOR& rotEuler,
         const DirectX::XMVECTOR& scale);
 
+    // Client -> Host send wrappers
+    static void SendActionMove(uint32_t turn, uint32_t actorNetId, uint8_t dir, float dist);
+    static void SendActionEndTurn(uint32_t turn, uint32_t actorNetId);
+
+    //key 저장보장
+    static uint32_t AllocateNetId();
 private:
     // handlers
     static void RegisterHandlers();
@@ -44,6 +48,13 @@ private:
     static void OnSpawn(const NetManager::NetEvent& ev);
     static void OnState(const NetManager::NetEvent& ev);
 
+    //  Receive 
+    static void OnAction(const NetManager::NetEvent& ev);
+
+    //  Host only: apply game rule 
+    static void HandleMoveAction(const ActionHeader& h, const ActionMove& mv);
+    static void HandleEndTurnAction(const ActionHeader& h);
+
     // json helpers
     static nlohmann::json Vec3ToJson(const DirectX::XMVECTOR& v);
     static DirectX::XMVECTOR JsonToVec3(const nlohmann::json& a, float w);
@@ -51,6 +62,8 @@ private:
 private:
     static inline bool s_inited = false;
     static inline SceneBase* s_scene = nullptr;
+
+    static inline uint32_t s_localActionSeq = 0;
 
     static inline std::unordered_map<uint32_t, GameObjectBase*> s_objects;
 };

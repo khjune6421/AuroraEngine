@@ -1,12 +1,12 @@
-/// CommonMath.hlsliÀÇ ½ÃÀÛ
-/// [È¿Á¦] Á¹·Á¼­ °ËÅä ¸øÇÏ°í Á¦¹Ì³ªÀÌ°¡ Â§ ÄÚµå ¹Ù·Î ´øÁø°ÅÀÓ.
-/// °ËÅä ÇÊ¿ä
+/// CommonMath.hlsliì˜ ì‹œì‘
+/// [íš¨ì œ] ì¡¸ë ¤ì„œ ê²€í†  ëª»í•˜ê³  ì œë¯¸ë‚˜ì´ê°€ ì§  ì½”ë“œ ë°”ë¡œ ë˜ì§„ê±°ì„.
+/// ê²€í†  í•„ìš”
 
 #ifndef __COMMON_MATH_HLSLI__
 #define __COMMON_MATH_HLSLI__
 
 // --------------------------------------------------------
-// 1. ¼öÇĞ »ó¼ö (Math Constants)
+// 1. ìˆ˜í•™ ìƒìˆ˜ (Math Constants)
 // --------------------------------------------------------
 static const float PI = 3.14159265359f;
 static const float TWO_PI = 6.28318530718f;
@@ -14,67 +14,67 @@ static const float INV_PI = 0.31830988618f;
 static const float EPSILON = 1e-6f;
 
 // --------------------------------------------------------
-// 2. »ö»ó °ø°£ º¯È¯ (Color Space Conversion)
+// 2. ìƒ‰ìƒ ê³µê°„ ë³€í™˜ (Color Space Conversion)
 // --------------------------------------------------------
 
-// ¼±Çü °ø°£ -> sRGB °ø°£ (¸ğ´ÏÅÍ Ãâ·Â¿ë, Gamma Correction)
-// º¸Åë ÇÈ¼¿ ¼ÎÀÌ´õÀÇ ¸Ç ¸¶Áö¸· ¸®ÅÏ Á÷Àü¿¡ »ç¿ë
+// ì„ í˜• ê³µê°„ -> sRGB ê³µê°„ (ëª¨ë‹ˆí„° ì¶œë ¥ìš©, Gamma Correction)
+// ë³´í†µ í”½ì…€ ì…°ì´ë”ì˜ ë§¨ ë§ˆì§€ë§‰ ë¦¬í„´ ì§ì „ì— ì‚¬ìš©
 float3 LinearToSRGB(float3 color)
 {
-    // ±Ù»çÄ¡ (pow 1/2.2) »ç¿ë. Á¤È®ÇÑ sRGB º¯È¯ °ø½Äº¸´Ù ºü¸§.
+    // ê·¼ì‚¬ì¹˜ (pow 1/2.2) ì‚¬ìš©. ì •í™•í•œ sRGB ë³€í™˜ ê³µì‹ë³´ë‹¤ ë¹ ë¦„.
     return pow(abs(color), 1.0f / 2.2f);
 }
 
-// sRGB °ø°£ -> ¼±Çü °ø°£ (ÅØ½ºÃ³ ·Îµå Á÷ÈÄ)
-// ¾Ëº£µµ ÅØ½ºÃ³ µî »ö»ó µ¥ÀÌÅÍ´Â ¿¬»ê Àü¿¡ ¹İµå½Ã ¼±Çü °ø°£À¸·Î º¯È¯ÇØ¾ß ÇÔ
+// sRGB ê³µê°„ -> ì„ í˜• ê³µê°„ (í…ìŠ¤ì²˜ ë¡œë“œ ì§í›„)
+// ì•Œë² ë„ í…ìŠ¤ì²˜ ë“± ìƒ‰ìƒ ë°ì´í„°ëŠ” ì—°ì‚° ì „ì— ë°˜ë“œì‹œ ì„ í˜• ê³µê°„ìœ¼ë¡œ ë³€í™˜í•´ì•¼ í•¨
 float3 SRGBToLinear(float3 color)
 {
     return pow(abs(color), 2.2f);
 }
 
-// ÈÖµµ(Luminance) °è»ê (ÀÎ°£ÀÇ ´«ÀÌ ´À³¢´Â ¹à±â)
+// íœ˜ë„(Luminance) ê³„ì‚° (ì¸ê°„ì˜ ëˆˆì´ ëŠë¼ëŠ” ë°ê¸°)
 float GetLuminance(float3 color)
 {
     return dot(color, float3(0.2126f, 0.7152f, 0.0722f));
 }
 
 // --------------------------------------------------------
-// 3. ³ë¸» ¸ÊÇÎ À¯Æ¿¸®Æ¼ (Normal Mapping Utils)
+// 3. ë…¸ë§ ë§µí•‘ ìœ í‹¸ë¦¬í‹° (Normal Mapping Utils)
 // --------------------------------------------------------
 
-// [0, 1] ¹üÀ§ÀÇ ÅØ½ºÃ³ »ö»óÀ» [-1, 1] ¹üÀ§ÀÇ º¤ÅÍ·Î º¯È¯
-// + ³ë¸» °­µµ Á¶Àı (intensity) ±â´É Ãß°¡
+// [0, 1] ë²”ìœ„ì˜ í…ìŠ¤ì²˜ ìƒ‰ìƒì„ [-1, 1] ë²”ìœ„ì˜ ë²¡í„°ë¡œ ë³€í™˜
+// + ë…¸ë§ ê°•ë„ ì¡°ì ˆ (intensity) ê¸°ëŠ¥ ì¶”ê°€
 float3 UnpackNormal(float3 packedNormal, float intensity = 1.0f)
 {
     float3 localNormal = packedNormal * 2.0f - 1.0f;
-    localNormal.xy *= intensity; // x, y ÃàÀ» Á¶ÀıÇÏ¿© ±¼°îÀÇ ¼¼±â Á¶Àı
+    localNormal.xy *= intensity; // x, y ì¶•ì„ ì¡°ì ˆí•˜ì—¬ êµ´ê³¡ì˜ ì„¸ê¸° ì¡°ì ˆ
     return localNormal;
 }
 
-// ÅºÁ¨Æ® °ø°£ÀÇ ³ë¸»À» ¿ùµå °ø°£À¸·Î º¯È¯
+// íƒ„ì  íŠ¸ ê³µê°„ì˜ ë…¸ë§ì„ ì›”ë“œ ê³µê°„ìœ¼ë¡œ ë³€í™˜
 float3 TransformTangentToWorld(float3 tangentNormal, float3x3 TBN)
 {
-    // TBN Çà·ÄÀ» °öÇØ¼­ ¿ùµå °ø°£À¸·Î º¯È¯ ¹× Á¤±ÔÈ­
+    // TBN í–‰ë ¬ì„ ê³±í•´ì„œ ì›”ë“œ ê³µê°„ìœ¼ë¡œ ë³€í™˜ ë° ì •ê·œí™”
     return normalize(mul(tangentNormal, TBN));
 }
 
 // --------------------------------------------------------
-// 4. ±âÅ¸ À¯Æ¿¸®Æ¼ (Misc Utils)
-// [È¿Á¦] ¿©±â´Ù°¡ ¸¸µé°ÍÀÎ°¡... µû·Î ¸¸µé °ÍÀÌ°¡...
+// 4. ê¸°íƒ€ ìœ í‹¸ë¦¬í‹° (Misc Utils)
+// [íš¨ì œ] ì—¬ê¸°ë‹¤ê°€ ë§Œë“¤ê²ƒì¸ê°€... ë”°ë¡œ ë§Œë“¤ ê²ƒì´ê°€...
 // --------------------------------------------------------
 
-// °ªÀÇ ¹üÀ§¸¦ ÀçÁ¶Á¤ (Remap)
-// value°¡ iMin~iMax »çÀÌÀÏ ¶§, oMin~oMax »çÀÌÀÇ °ªÀ¸·Î º¯È¯
+// ê°’ì˜ ë²”ìœ„ë¥¼ ì¬ì¡°ì • (Remap)
+// valueê°€ iMin~iMax ì‚¬ì´ì¼ ë•Œ, oMin~oMax ì‚¬ì´ì˜ ê°’ìœ¼ë¡œ ë³€í™˜
 float Remap(float value, float iMin, float iMax, float oMin, float oMax)
 {
     return oMin + (value - iMin) * (oMax - oMin) / (iMax - iMin);
 }
 
-// ÇÁ·¹³Ú È¿°ú (Schlick ±Ù»ç) - PBRÀÌ³ª ¸² ¶óÀÌÆ® °è»ê¿¡ ÇÊ¼ö
+// í”„ë ˆë„¬ íš¨ê³¼ (Schlick ê·¼ì‚¬) - PBRì´ë‚˜ ë¦¼ ë¼ì´íŠ¸ ê³„ì‚°ì— í•„ìˆ˜
 float3 FresnelSchlick(float cosTheta, float3 F0)
 {
     return F0 + (1.0f - F0) * pow(saturate(1.0f - cosTheta), 5.0f);
 }
 
 #endif // __COMMON_MATH_HLSLI__
-/// CommonMath.hlsliÀÇ ³¡
+/// CommonMath.hlsliì˜ ë

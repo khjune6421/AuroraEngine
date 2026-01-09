@@ -157,9 +157,9 @@ void GameObjectBase::BaseInitialize()
 
 void GameObjectBase::BaseUpdate()
 {
-	#ifdef NDEBUG
+	//#ifdef NDEBUG
 	Update();
-	#endif
+	//#endif
 
 	// 월드 행렬 업데이트
 	UpdateWorldMatrix();

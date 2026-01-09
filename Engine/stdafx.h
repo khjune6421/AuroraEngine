@@ -1,5 +1,4 @@
 #pragma once
-//�߰�~
 #ifndef WIN32_LEAN_AND_MEAN		
 #define WIN32_LEAN_AND_MEAN
 #endif
@@ -26,8 +25,18 @@
 #include <iostream>
 #include <typeindex>
 #include <unordered_map>
-#include <queue>		//�߰�
-#include <optional>		//�߰�
+#include <queue>		
+#include <optional>		
+#include <cstdint>
+#include <type_traits>
+#include <cstring>
+#include <string>
+#include <atomic>           // std::atomic
+#include <memory>           // std::unique_ptr
+#include <mutex>            // std::mutex
+#include <vector>           // std::vector
+#include <thread>           // std::thread
+#include <utility>          // std::move
 
 // DirectX 헤더
 #include <d3d11.h>
@@ -56,7 +65,7 @@
 // JSON 헤더
 #include <nlohmann/json.hpp>
 
-// boost-asio ���//�߰�
+// boost-asio 
 #include <boost/asio.hpp>
 #include <boost/asio/executor_work_guard.hpp>
 

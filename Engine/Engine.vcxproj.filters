@@ -84,6 +84,9 @@
     <ClCompile Include="NetworkIdentityComponent.cpp">
       <Filter>Scene\GameObject\Component\Network</Filter>
     </ClCompile>
+    <ClCompile Include="NetworkWorld_Action.cpp">
+      <Filter>Scene\GameObject\Component\Network</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Renderer.h">
@@ -151,6 +154,9 @@
       <Filter>Scene\GameObject\Component\Network</Filter>
     </ClInclude>
     <ClInclude Include="NetworkIdentityComponent.h">
+      <Filter>Scene\GameObject\Component\Network</Filter>
+    </ClInclude>
+    <ClInclude Include="NetAction.h">
       <Filter>Scene\GameObject\Component\Network</Filter>
     </ClInclude>
   </ItemGroup>
