@@ -88,7 +88,7 @@ void NetworkIdentityComponent::RenderImGui()
         m_typeName = buf;
 
     ImGui::InputFloat("Send Interval", &m_sendInterval);
-    if (m_sendInterval < 0.01f) m_sendInterval = 0.01f;
+    //if (m_sendInterval < 0.01f) m_sendInterval = 0.01f;
 
     if (ImGui::Button("Register"))
     {
@@ -129,5 +129,5 @@ void NetworkIdentityComponent::Deserialize(const nlohmann::json& jsonData)
     if (jsonData.contains("sendInterval")) m_sendInterval = jsonData["sendInterval"].get<float>();
     if (jsonData.contains("typeName"))     m_typeName = jsonData["typeName"].get<std::string>();
 
-    if (m_sendInterval < 0.01f) m_sendInterval = 0.01f;
+    //if (m_sendInterval < 0.01f) m_sendInterval = 0.01f;
 }

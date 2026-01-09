@@ -189,6 +189,14 @@ void NetManager::Disconnect()
 {
     m_connected.store(false);
 
+    // write 큐 비우기
+    {
+        std::lock_guard lock(m_writeMtx);
+        std::queue<std::vector<uint8_t>> empty;
+        std::swap(m_writeQueue, empty);
+        m_writing = false;
+    }
+
     boost::asio::post(m_io, [this]()
         {
             if (m_socket)
@@ -360,45 +368,80 @@ void NetManager::DoWrite(std::vector<uint8_t>&& framedPacket)
 {
     if (!m_socket) return;
 
-    std::lock_guard lock(m_writeMtx);
-    m_writeQueue.push(std::move(framedPacket));
+    {
+        std::lock_guard lock(m_writeMtx);
+        m_writeQueue.push(std::move(framedPacket));
 
-    printf("[WRITE] push q=%zu writing=%d\n", m_writeQueue.size(), m_writing ? 1 : 0);
+        if (m_writing) return;
+        m_writing = true;
+    }
 
-    if (m_writing) return;
-    m_writing = true;
+    // 락 밖에서 펌프 시작
+    DoWriteNext();
+}
 
-    auto& front = m_writeQueue.front();
-    boost::asio::async_write(*m_socket, boost::asio::buffer(front),
-        [this](const boost::system::error_code& ec, std::size_t)
+void NetManager::DoWriteNext()
+{
+    if (!m_socket || !m_socket->is_open())
+    {
+        std::lock_guard lock(m_writeMtx);
+        m_writing = false;
+        return;
+    }
+
+    // front는 pop 전까지 유효해야 하므로 pop은 "성공 콜백"에서만 한다
+    std::vector<uint8_t>* pkt = nullptr;
+
+    {
+        std::lock_guard lock(m_writeMtx);
+        if (m_writeQueue.empty())
         {
-            std::lock_guard lock(m_writeMtx);
+            m_writing = false;
+            return;
+        }
+        pkt = &m_writeQueue.front();
+    }
 
+    boost::asio::async_write(*m_socket, boost::asio::buffer(*pkt),
+        [this](const boost::system::error_code& ec, std::size_t bytes)
+        {
             if (ec)
             {
-                m_writing = false;
-                PushEvent(NetEvent{ .type = NetEvent::Type::Error, .errorMessage = ec.message() });
-                return;
-            }
-
-            m_writeQueue.pop();
-            if (m_writeQueue.empty())
-            {
-                m_writing = false;
-                return;
-            }
-
-            auto& next = m_writeQueue.front();
-            boost::asio::async_write(*m_socket, boost::asio::buffer(next),
-                [this](const boost::system::error_code& ec2, std::size_t)
+                //  여기서 반드시 상태 정리해야 "disconnect 안 뜨는데 안 보내짐"이 사라짐
                 {
-                    if (ec2)
-                    {
-                        std::lock_guard lock2(m_writeMtx);
-                        m_writing = false;
-                        PushEvent(NetEvent{ .type = NetEvent::Type::Error, .errorMessage = ec2.message() });
-                    }
-                });
+                    std::lock_guard lock(m_writeMtx);
+                    m_writing = false;
+
+                    // 큐 비우기(끊긴 뒤 밀림 방지)
+                    std::queue<std::vector<uint8_t>> empty;
+                    std::swap(m_writeQueue, empty);
+                }
+
+                m_connected.store(false);
+
+                // 소켓 닫기
+                boost::system::error_code ignore;
+                if (m_socket)
+                {
+                    m_socket->shutdown(tcp::socket::shutdown_both, ignore);
+                    m_socket->close(ignore);
+                    // m_socket.reset(); // 단일연결이면 닫고 reset도 OK
+                }
+
+                PushEvent(NetEvent{ .type = NetEvent::Type::Error, .errorMessage = ec.message() });
+                PushEvent(NetEvent{ .type = NetEvent::Type::Disconnected, .peerId = 0, .errorMessage = ec.message() });
+                return;
+            }
+
+            // 성공 → front pop 후 다음 계속
+            {
+                std::lock_guard lock(m_writeMtx);
+                if (!m_writeQueue.empty())
+                    m_writeQueue.pop();
+            }
+
+            // 계속 펌프
+            DoWriteNext();
         });
 }
 
@@ -409,6 +452,9 @@ bool NetManager::SendRaw(MsgId msgId, const void* data, size_t size)
     auto frame = BuildFrame(msgId, reinterpret_cast<const uint8_t*>(data), size);
     boost::asio::post(m_io, [this, frame = std::move(frame)]() mutable
         {
+            if (!m_connected.load() || !m_socket || !m_socket->is_open())
+                return;
+
             DoWrite(std::move(frame));
         });
     return true;

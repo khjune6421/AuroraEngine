@@ -13,7 +13,7 @@ class NetworkTestComponent : public ComponentBase
     int m_port = 7777;
 
     float m_sendAccum = 0.0f;
-    float m_sendInterval = 0.05f;
+    float m_sendInterval = 0.016f;
 
 	// 핸들러 등록 여부
     bool m_handlersRegistered = false;

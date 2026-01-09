@@ -43,7 +43,7 @@ private:
 
     // 상태 전송 주기(테스트용: 20Hz)
     float m_sendAccum = 0.0f;
-    float m_sendInterval = 0.05f;
+    float m_sendInterval = 0.016f;
 
     std::vector<std::string> m_replicateComponents = { "ModelComponent" };
     // 스폰할 타입 이름(상대가 TypeRegistry로 생성할 때 필요)
