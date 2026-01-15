@@ -1,5 +1,6 @@
 #include "stdafx.h"
 #include "NetworkIdentityComponent.h"
+#include "NetworkWorld.h"
 #include "GameObjectBase.h"
 #include "TimeManager.h"
 #include "InputManager.h"   
@@ -34,7 +35,28 @@ void NetworkIdentityComponent::Update()
         GameObjectBase* owner = static_cast<GameObjectBase*>(GetOwner());
         if (!owner) return;
 
-        if (m_netId == 0) { m_netId = NetworkWorld::AllocateNetId(); return; }
+        if (m_netId == 0 && NetManager::GetInstance().IsHost()) { m_netId = NetworkWorld::AllocateNetId(); return; }
+
+        if (m_netId != 0 && s_localClaimedNetId == 0)
+        {
+            // 이 머신에서 첫 번째로 netId가 생긴 NetworkIdentity를 내 조종 대상으로 삼는다
+            s_localClaimedNetId = m_netId;
+            m_isLocalPlayer = true;
+            m_isPlayerPawn = true; // 테스트용: 이게 actor
+        }
+        else
+        {
+            // 내 것이 아니면 입력 금지
+            m_isLocalPlayer = (m_netId == s_localClaimedNetId);
+            m_isPlayerPawn = (m_netId == s_localClaimedNetId);
+        }
+
+        if (!m_registeredActor && NetManager::GetInstance().IsHost() && m_isPlayerPawn)
+        {
+            uint32_t myPeerId = NetManager::GetInstance().GetSelfPeerId();
+            NetworkWorld::HostRegisterExpectedPeer(myPeerId);
+            m_registeredActor = true;
+        }
 
         if (m_autoSpawn && !m_spawnSent && !m_typeName.empty())
         {
@@ -42,30 +64,38 @@ void NetworkIdentityComponent::Update()
             NetworkWorld::SendSpawn(owner, m_netId, m_typeName);
             m_spawnSent = true;
         }
-
-        m_sendAccum += TimeManager::GetInstance().GetDeltaTime();
-        if (m_sendAccum >= m_sendInterval)
-        {
-            m_sendAccum = 0.0f;
-            NetworkWorld::SendState(m_netId, owner->GetPosition(), owner->GetRotation(), owner->GetScale());
-        }
     }
 
-    //TODO:임시 테스트용 PlayerControllerComponent 같은게 필요하고 내부에 넣는게 맞을듯
+    //TODO:임시 테스트용 입력송신을 담당해서 묶을 함수 하나 만들기 UpdateClientInput
     auto& net = NetManager::GetInstance();
     if (!net.IsConnected()) return;
-    if (net.IsHost()) { return; }//  클라만 테스트
     if (m_netId == 0) return;
 
-    // 여기서 "내가 조종하는 오브젝트"만 보내야 함.
-    // 일단 테스트로는 이 컴포넌트가 붙은 오브젝트가 내 유닛이라고 가정.
-    InputManager& input = InputManager::GetInstance();
-    
-    if (input.GetKey(KeyCode::Left))
-        NetworkWorld::SendActionMove(/*turn*/0, m_netId, (uint8_t)MoveDir::Left, 1.0f);
+    if (!m_isLocalPlayer) return;
 
+    uint32_t turn = NetworkWorld::GetLocalTurn(); // 아래에서 만들기
+    uint32_t myPeerId = NetManager::GetInstance().GetSelfPeerId();
+    InputManager& input = InputManager::GetInstance();
+
+    if (input.GetKey(KeyCode::Left))
+    {
+        if (net.IsHost()) NetworkWorld::QueueActionMove(turn, myPeerId, m_netId, (uint8_t)MoveDir::Left, 1.0f);
+        else             NetworkWorld::SendActionMove(turn, myPeerId, m_netId, (uint8_t)MoveDir::Left, 1.0f);
+    }
     if (input.GetKey(KeyCode::Right))
-        NetworkWorld::SendActionMove(0, m_netId, (uint8_t)MoveDir::Right, 1.0f);
+    {
+        if (net.IsHost()) NetworkWorld::QueueActionMove(turn, myPeerId, m_netId, (uint8_t)MoveDir::Right, 1.0f);
+        else             NetworkWorld::SendActionMove(turn, myPeerId, m_netId, (uint8_t)MoveDir::Right, 1.0f);
+    }
+
+    if (input.GetKeyDown(KeyCode::Enter))
+    {
+        
+        //printf("[CLIENT] EndTurn send myPeerId=%u netId=%u\n", myPeerId, m_netId);
+
+        //if (net.IsHost()) NetworkWorld::QueueActionEndTurn(turn, myPeerId, m_netId);
+        //else             NetworkWorld::SendActionEndTurn(turn, myPeerId, m_netId);
+    }
 }
 
 void NetworkIdentityComponent::Finalize()

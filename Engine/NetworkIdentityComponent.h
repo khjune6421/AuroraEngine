@@ -45,6 +45,12 @@ private:
     float m_sendAccum = 0.0f;
     float m_sendInterval = 0.016f;
 
+    bool m_isPlayerPawn = false; // 이 오브젝트가 플레이어 유닛인가?
+    bool m_isLocalPlayer = false; // 이 오브젝트가 이 클라이언트가 조종하는가?
+    bool m_registeredActor = false; // expectedActors 등록 여부
+
+    static inline uint32_t s_localClaimedNetId = 0;
+
     std::vector<std::string> m_replicateComponents = { "ModelComponent" };
     // 스폰할 타입 이름(상대가 TypeRegistry로 생성할 때 필요)
     // 보통은 owner->GetType() 같은 게 있으면 그걸 쓰는 게 맞음

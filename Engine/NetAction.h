@@ -12,6 +12,7 @@ enum class MoveDir : uint8_t { Up, Down, Left, Right };
 struct ActionHeader
 {
     uint32_t turn;
+    uint32_t actorPeerId;
     uint32_t actorNetId;
     uint32_t targetNetId; // 없으면 0
     uint16_t kind;        // ActionKind
@@ -19,7 +20,7 @@ struct ActionHeader
     uint32_t seq;         // client local seq
 };
 #pragma pack(pop)
-static_assert(sizeof(ActionHeader) == 20);
+static_assert(sizeof(ActionHeader) == 24);
 
 #pragma pack(push, 1)
 struct ActionMove
@@ -65,4 +66,10 @@ struct ByteReader
     }
 
     size_t Remaining() const { return n - off; }
+
+};
+
+struct TurnSync
+{
+    uint32_t currentTurn = 0;
 };

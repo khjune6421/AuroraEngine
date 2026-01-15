@@ -8,6 +8,9 @@ class NetManager : public Singleton<NetManager>
 public:
     using MsgId = uint16_t;
     using PeerId = uint32_t;
+    using PlayerId = PeerId;
+
+    PeerId m_remotePeerId = 0;  // 상대방(peer)
 
     struct NetEvent
     {
@@ -53,6 +56,7 @@ public:
 
     bool IsHost() const { return m_isHost; }
     PeerId GetSelfPeerId() const { return m_peerIdSelf; }
+    void SetSelfPeerId(PeerId id) { m_peerIdSelf = id; }
 
     // ----- message dispatch -----
     void RegisterHandler(MsgId msgId, Handler handler);
@@ -62,7 +66,7 @@ public:
     void SetOnConnected(std::function<void(PeerId)> cb) { m_onConnected = std::move(cb); }
     void SetOnDisconnected(std::function<void(PeerId)> cb) { m_onDisconnected = std::move(cb); }
     void SetOnError(std::function<void(const std::string&)> cb) { m_onError = std::move(cb); }
-
+      
     // payload json 헬퍼
     static std::vector<uint8_t> JsonToBytes(const nlohmann::json& j);
     static nlohmann::json BytesToJson(const std::vector<uint8_t>& bytes);
@@ -110,7 +114,7 @@ private:
     std::atomic<bool> m_running{ false };
     std::atomic<bool> m_connected{ false };
     bool m_isHost = false;
-    PeerId m_peerIdSelf = 1; // 일단 1로 두고, 나중에 핸드셰이크로 배정
+    PeerId m_peerIdSelf = 0; // 일단 1로 두고, 나중에 핸드셰이크로 배정
 
     // read buffers
     std::array<uint8_t, 4> m_readLenBuf{};    // length (u32)

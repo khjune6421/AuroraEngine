@@ -32,7 +32,7 @@ void SceneManager::Run()
 
 	TimeManager::GetInstance().UpdateTime();
 	NetManager::GetInstance().Update();
-
+	NetworkWorld::HostTick();
 	m_currentScene->BaseUpdate();
 
 

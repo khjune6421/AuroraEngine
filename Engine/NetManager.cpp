@@ -88,7 +88,7 @@ bool NetManager::StartHost(uint16_t port)
 {
     Initialize();
     m_isHost = true;
-
+    m_peerIdSelf = 1;
     try
     {
         tcp::endpoint ep(tcp::v4(), port);
@@ -127,6 +127,8 @@ void NetManager::DoAccept()
             m_socket = std::make_unique<tcp::socket>(std::move(*sock));
             m_connected.store(true);
 
+            m_remotePeerId = 2;
+
             PushEvent(NetEvent{ .type = NetEvent::Type::Connected, .peerId = 2 });
             BeginReadHeader();
 
@@ -139,7 +141,7 @@ bool NetManager::Connect(const std::string& host, uint16_t port)
 {
     Initialize();
     m_isHost = false;
-
+    m_peerIdSelf = 0;
     try
     {
         DoConnect(host, port);
@@ -179,6 +181,8 @@ void NetManager::DoConnect(const std::string& host, uint16_t port)
                     m_socket = std::make_unique<tcp::socket>(std::move(*sock));
                     m_connected.store(true);
 
+                    m_remotePeerId = 1;
+
                     PushEvent(NetEvent{ .type = NetEvent::Type::Connected, .peerId = 1 });
                     BeginReadHeader();
                 });
@@ -188,7 +192,7 @@ void NetManager::DoConnect(const std::string& host, uint16_t port)
 void NetManager::Disconnect()
 {
     m_connected.store(false);
-
+    m_remotePeerId = 0;
     // write 큐 비우기
     {
         std::lock_guard lock(m_writeMtx);
@@ -225,7 +229,7 @@ void NetManager::BeginReadHeader()
             if (ec)
             {
                 m_connected.store(false);
-                PushEvent(NetEvent{ .type = NetEvent::Type::Disconnected, .peerId = 0, .errorMessage = ec.message() });
+                PushEvent(NetEvent{ .type = NetEvent::Type::Disconnected, .peerId = m_remotePeerId, .errorMessage = ec.message() });
                 return;
             }
 
@@ -258,7 +262,7 @@ void NetManager::BeginReadBody(std::size_t bodyLen)
             if (ec)
             {
                 m_connected.store(false);
-                PushEvent(NetEvent{ .type = NetEvent::Type::Disconnected, .peerId = 0, .errorMessage = ec.message() });
+                PushEvent(NetEvent{ .type = NetEvent::Type::Disconnected, .peerId = m_remotePeerId, .errorMessage = ec.message() });
                 return;
             }
 
@@ -274,7 +278,7 @@ void NetManager::BeginReadBody(std::size_t bodyLen)
 
             PushEvent(NetEvent{
                 .type = NetEvent::Type::Message,
-                .peerId = 0,
+                .peerId = m_remotePeerId,
                 .msgId = msgId,
                 .payload = std::move(payload)
                 });
@@ -429,7 +433,7 @@ void NetManager::DoWriteNext()
                 }
 
                 PushEvent(NetEvent{ .type = NetEvent::Type::Error, .errorMessage = ec.message() });
-                PushEvent(NetEvent{ .type = NetEvent::Type::Disconnected, .peerId = 0, .errorMessage = ec.message() });
+                PushEvent(NetEvent{ .type = NetEvent::Type::Disconnected, .peerId = m_remotePeerId, .errorMessage = ec.message() });
                 return;
             }
 

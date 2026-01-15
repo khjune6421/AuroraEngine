@@ -1,11 +1,21 @@
 #include "stdafx.h"
 #include "NetworkTestComponent.h"
+#include "NetworkWorld.h"
 
 REGISTER_TYPE(NetworkTestComponent)
+
+#pragma pack(push, 1)
+struct AssignPeerId
+{
+    NetManager::PeerId assignedId;
+};
+#pragma pack(pop)
 
 void NetworkTestComponent::Initialize()
 {
 	// 핸들러 등록
+    auto& net = NetManager::GetInstance();
+
     RegisterHandlers();
 
     if (m_autoConnect)
@@ -23,6 +33,16 @@ void NetworkTestComponent::Finalize()
     UnregisterHandlers();
 }
 
+void NetworkTestComponent::UnregisterHandlers()
+{
+    if (!m_handlersRegistered) return;
+    m_handlersRegistered = false;
+
+    auto& net = NetManager::GetInstance();
+    net.UnregisterHandler(MSG_HELLO);
+    net.UnregisterHandler(MSG_ASSIGN_ID);
+}
+
 void NetworkTestComponent::RegisterHandlers()
 {
     if (m_handlersRegistered) return;
@@ -30,15 +50,43 @@ void NetworkTestComponent::RegisterHandlers()
 
     auto& net = NetManager::GetInstance();
 
-    net.RegisterHandler(MSG_HELLO, [](const NetManager::NetEvent& ev)
+    // client -> host: hello 받으면 assign 보내기
+    net.RegisterHandler(MSG_HELLO, [&](const NetManager::NetEvent& ev)
         {
-            auto j = NetManager::BytesToJson(ev.payload);
-            printf("[NET] MSG_HELLO received: %s\n", j.dump().c_str());
+            if (!net.IsHost()) return;
+
+            AssignPeerId msg{ 2 }; // 단일 클라 테스트용 고정
+            NetworkWorld::HostRegisterExpectedPeer(msg.assignedId);
+            net.SendRaw(MSG_ASSIGN_ID, &msg, sizeof(msg));
+            
+            printf("[HOST] assign peerId=%u (from peer=%u)\n", msg.assignedId, ev.peerId);
         });
 
-    net.SetOnConnected([](NetManager::PeerId)
+    // host -> client: assign 받으면 self peerId 설정
+    net.RegisterHandler(MSG_ASSIGN_ID, [&](const NetManager::NetEvent& ev)
         {
-            printf("[NET] Connected!\n");
+            if (ev.payload.size() != sizeof(AssignPeerId)) return;
+
+            AssignPeerId msg{};
+            memcpy(&msg, ev.payload.data(), sizeof(msg));
+
+            net.SetSelfPeerId(msg.assignedId);
+            printf("[CLIENT] received assigned peerId=%u\n", msg.assignedId);
+        });
+
+    net.SetOnConnected([&](NetManager::PeerId)
+        {
+            printf("[NET] Connected! host=%d\n", (int)net.IsHost());
+
+            if (net.IsHost())
+            {
+                net.SetSelfPeerId(1);
+                NetworkWorld::HostRegisterExpectedPeer(net.GetSelfPeerId());
+            }
+            else
+            {
+                SendHello();
+            }
         });
 
     net.SetOnDisconnected([](NetManager::PeerId)
@@ -50,25 +98,18 @@ void NetworkTestComponent::RegisterHandlers()
         {
             printf("[NET] Error: %s\n", e.c_str());
         });
-
 }
 
-void NetworkTestComponent::UnregisterHandlers()
-{
-    if (!m_handlersRegistered) return;
-    m_handlersRegistered = false;
-
-    auto& net = NetManager::GetInstance();
-    net.UnregisterHandler(MSG_HELLO);
-}
 
 void NetworkTestComponent::SendHello()
 {
-    nlohmann::json j;
-    j["hello"] = "ping";
-    j["time"] = static_cast<int>(time(nullptr));
+    auto& net = NetManager::GetInstance();
+    if (!net.IsConnected()) return;
 
-    NetManager::GetInstance().SendJson(MSG_HELLO, j);
+    uint8_t dummy = 0;
+    net.SendRaw(MSG_HELLO, &dummy, sizeof(dummy));
+
+    printf("[CLIENT] SendHello\n");
 }
 
 void NetworkTestComponent::RenderImGui()
@@ -93,6 +134,7 @@ void NetworkTestComponent::RenderImGui()
 	// 상태 표시
     ImGui::Text("Running: %s", net.IsRunning() ? "true" : "false");
     ImGui::Text("Connected: %s", net.IsConnected() ? "true" : "false");
+    ImGui::Text("SelfPeerId: %u", net.GetSelfPeerId());
 
 	// 버튼들
     if (ImGui::Button("Initialize Net"))

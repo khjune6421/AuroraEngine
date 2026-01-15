@@ -64,6 +64,39 @@ GameObjectBase* NetworkWorld::Find(uint32_t netId)
     return it->second;
 }
 
+uint32_t NetworkWorld::GetLocalTurn()
+{
+    auto& net = NetManager::GetInstance();
+    // 호스트는 자기 currentTurn을 쓰고, 클라는 동기화된 clientTurn을 쓴다
+    return net.IsHost() ? s_currentTurn : s_clientTurn;
+}
+
+void NetworkWorld::HostRegisterExpectedActor(uint32_t peerId)
+{
+    auto& net = NetManager::GetInstance();
+    if (!net.IsHost()) return;
+    if (peerId == 0) return;
+
+    if (s_expectedActors.size() >= (size_t)s_expectedLimit) return;
+    s_expectedActors.insert(peerId);
+
+    // 디버그
+    printf("[HOST] register expected actor %u (before=%zu)\n", peerId, s_expectedActors.size());
+}
+
+void NetworkWorld::HostRegisterExpectedPeer(uint32_t peerId)
+{
+    auto& net = NetManager::GetInstance();
+    if (!net.IsHost()) return;
+    if (peerId == 0) return;
+
+    if (s_expectedPeers.size() >= (size_t)s_expectedLimit) return;
+    s_expectedPeers.insert(peerId);
+
+    // 디버그
+    printf("[HOST] register expected Peer %u (before=%zu)\n", peerId, s_expectedPeers.size());
+}
+
 void NetworkWorld::RegisterHandlers()
 {
     auto& net = NetManager::GetInstance();
@@ -81,6 +114,10 @@ void NetworkWorld::RegisterHandlers()
     net.RegisterHandler(MSG_ACTION, [](const NetManager::NetEvent& ev)
         {
             NetworkWorld::OnAction(ev);
+        });
+    net.RegisterHandler(MSG_TURN, [](const NetManager::NetEvent& ev)
+        {
+            NetworkWorld::OnTurn(ev);
         });
 }
 

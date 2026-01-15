@@ -24,7 +24,6 @@ public:
 
     bool NeedsUpdate() const override { return false; }
     bool NeedsRender() const override { return false; }
-
 private:
     void Initialize() override;
     void RenderImGui() override;
@@ -34,7 +33,8 @@ private:
     void Deserialize(const nlohmann::json& jsonData) override;
 
 private:
-    static constexpr NetManager::MsgId MSG_HELLO = 1;
+    static constexpr NetManager::MsgId MSG_HELLO = 1;      // client->host (optional)
+    static constexpr NetManager::MsgId MSG_ASSIGN_ID = 2;  // host->client
 
     void RegisterHandlers();
     void UnregisterHandlers();
