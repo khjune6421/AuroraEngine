@@ -134,3 +134,17 @@ constexpr void CheckResult(HRESULT hr, const char* msg)
 
 // 사용자 정의 헤더
 #include "Singleton.h"
+
+// use this define when release GAME
+#define GAMERELEASE
+
+// 
+#ifdef _DEBUG
+	#define LOG(msg) std::cout << msg << std::endl
+#else
+	#ifdef GAMERELEASE
+		#define LOG(msg) 
+	#else
+		#define LOG(msg) std::cout << msg << std::endl
+	#endif
+#endif

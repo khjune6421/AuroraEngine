@@ -15,14 +15,26 @@
 
 using namespace std;
 
-int main()
-{
-	#ifdef _DEBUG
+#ifdef _DEBUG
+int main(){
 	IMGUI_CHECKVERSION();
 	ImGui::CreateContext();
 	ImGuiIO& io = ImGui::GetIO();
 	io.ConfigFlags |= ImGuiConfigFlags_DockingEnable | ImGuiConfigFlags_ViewportsEnable;
-	#endif
+#else
+
+#ifdef GAMERELEASE
+int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow) {
+#else
+int main() {
+	IMGUI_CHECKVERSION();
+	ImGui::CreateContext();
+	ImGuiIO& io = ImGui::GetIO();
+	io.ConfigFlags |= ImGuiConfigFlags_DockingEnable | ImGuiConfigFlags_ViewportsEnable;
+
+#endif
+
+#endif
 
 	WindowManager& windowManager = WindowManager::GetInstance();
 	windowManager.Initialize(L"DeadOnBeat");
