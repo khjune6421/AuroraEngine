@@ -44686,7 +44686,7 @@
             "childGameObjects": [],
             "components": [
                 {
-                    "NoiseIndex": 0,
+                    "NoiseIndex": 1,
                     "blendState": 0,
                     "dissolveData": {
                         "DissolveEdgeColor": [
@@ -44725,15 +44725,10 @@
                             "modelFileName": "boss_final_ani_2.fbx"
                         }
                     ],
-                    "psShaderName": "PSModel.hlsl",
+                    "psShaderName": "PSModel_Dissolve.hlsl",
                     "rasterState": 1,
                     "type": "SkinnedModelComponent",
                     "vsShaderName": "VSModelSkinAnim.hlsl"
-                },
-                {
-                    "current_state": "Chase",
-                    "start_state": "Chase",
-                    "type": "FSMComponentBoss"
                 },
                 {
                     "boundingBoxes": [],
@@ -44759,6 +44754,11 @@
                         }
                     ],
                     "type": "ColliderComponent"
+                },
+                {
+                    "current_state": "Chase",
+                    "start_state": "Chase",
+                    "type": "FSMComponentBoss"
                 }
             ],
             "name": "Boss",
