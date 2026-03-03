@@ -12,6 +12,8 @@ class EndingScene : public SceneBase
 	class Panel* n100000 = nullptr;
 	class Panel* namu_pan = nullptr;
 	class Panel* Grade = nullptr;
+	class Panel* pass = nullptr;
+	class Panel* fail = nullptr;
 
 public:
 	EndingScene() = default;

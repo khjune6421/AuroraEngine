@@ -1,4 +1,4 @@
-// TestScene.h?쓽 ?떆?옉
+//BOF TestScene.h
 #pragma once
 #include "SceneBase.h"
 #include <array>

@@ -10,8 +10,8 @@
 #include "TestScene.h"
 #include "TitleScene.h"
 #include "EndingScene.h"
-#include "HyojeTestScene.h"
-#include "TaehyeonTestScene.h"
+//#include "HyojeTestScene.h"
+//#include "TaehyeonTestScene.h"
 
 using namespace std;
 
@@ -27,11 +27,6 @@ int main(){
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow) {
 #else
 int main() {
-	IMGUI_CHECKVERSION();
-	ImGui::CreateContext();
-	ImGuiIO& io = ImGui::GetIO();
-	io.ConfigFlags |= ImGuiConfigFlags_DockingEnable | ImGuiConfigFlags_ViewportsEnable;
-
 #endif
 
 #endif

@@ -122,7 +122,7 @@ constexpr std::string GetTypeName(T& obj)
 	return typeName;
 }
 
-// use this define when release GAME
+// use this define when release GAME + 추가로 진입점 변경까지 필수임
 #define GAMERELEASE
 
 #ifdef _DEBUG

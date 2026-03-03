@@ -55,6 +55,8 @@ void EndingScene::BindUIActions()
 			else if (panel->GetName() == "100000") n100000 = panel;
 			else if (panel->GetName() == "namu_pan") namu_pan = panel;
 			else if (panel->GetName() == "Grade") Grade = panel;
+			else if (panel->GetName() == "pass") pass = panel;
+			else if (panel->GetName() == "fail") fail = panel;
 		}
 	}
 
@@ -115,4 +117,13 @@ void EndingScene::SetSucessUI(bool isSuccess)
 		const std::string prefix = isSuccess ? "UI_Result_Sign_Clear" : "UI_Result_Sign_Gameover";
 		namu_pan->SetTextureAndOffset(prefix + std::to_string(variant) + ".png");
 	}
+
+	if (isSuccess) 		{
+		pass->SetActive(true);
+		fail->SetActive(false);
+	} else {
+		pass->SetActive(false);
+		fail->SetActive(true);
+	}
+
 }

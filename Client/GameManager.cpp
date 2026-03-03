@@ -148,7 +148,11 @@ void GameManager::OnSceneEnter(EScene type)
 	m_Pause = false;
 	if (type != EScene::Main) m_optionPanel = nullptr;
 	if (type != EScene::Main) m_cheatPanel = nullptr;
-	if (type == EScene::Title || type == EScene::Main) m_isSuccess = false;
+	if (type == EScene::Title || type == EScene::Main)
+	{
+		m_isSuccess = false;
+		m_isResultCommitted = false;
+	}
 
 	switch (type)
 	{
