@@ -61,30 +61,28 @@ void SoundManager::Initialize()
 
 		if (CheckMainBGMBeatver())
 		{
-			std::cerr << "Not Found _Beat Source" << std::endl;
+			LOG_ERROR("Not Found _Beat Source");
 		}
 
-		std::cout << "##BGM_List##" << std::endl;
+		LOG("##BGM_List##");
 		for (auto& n : BGM_List)
 		{
-			std::cout << n.first << std::endl;
+			LOG(n.first);
 			CreateNodeData(n.first);
 		}
-		std::cout << "##BGM_End##" << std::endl << std::endl;
-
-		std::cout << "##SFX_List##" << std::endl;
+		LOG("##BGM_End##");
+		LOG("##SFX_List##");
 		for (auto& n : SFX_List)
 		{
-			std::cout << n.first << std::endl;
+			LOG(n.first);
 		}
-		std::cout << "##SFX_End##" << std::endl << std::endl;
-
-		std::cout << "##UI_List##" << std::endl;
+		LOG("##SFX_End##");
+		LOG("##UI_List##");
 		for (auto& n : UI_List)
 		{
-			std::cout << n.first << std::endl;
+			LOG(n.first);
 		}
-		std::cout << "##UI_End##" << std::endl << std::endl;
+		LOG("##UI_End##");
 		SoundManager::GetInstance().LoadNodeData();
 
 
@@ -211,7 +209,7 @@ void SoundManager::ConvertBGMSource()
 					err = "FMOD_SOUND_FORMAT_FORCEINT";
 					break;
 				}
-				std::cerr << "Error format incompatible, Name: " << fileName << " Format: " << err << std::endl;
+				LOG_ERROR("Error format incompatible, Name: " << fileName << " Format: " << err);
 				continue;
 			}
 
@@ -220,12 +218,12 @@ void SoundManager::ConvertBGMSource()
 
 		if (!hasfile)
 		{
-			std::cerr << "BGM resource not found" << std::endl;
+			LOG_ERROR("BGM resource not found");
 		}
 	}
 	else
 	{
-		std::cerr << "BGM path not found" << std::endl;
+		LOG_ERROR("BGM path not found");
 	}
 }
 
@@ -256,12 +254,12 @@ void SoundManager::ConvertSFXSource()
 
 		if (!hasfile)
 		{
-			std::cerr << "SFX resource not found" << std::endl;
+			LOG_ERROR("SFX resource not found");
 		}
 	}
 	else
 	{
-		std::cerr << "SFX path not found" << std::endl;
+		LOG_ERROR("SFX path not found");
 	}
 }
 
@@ -291,12 +289,12 @@ void SoundManager::ConvertUISource()
 		}
 		if (!hasfile)
 		{
-			std::cerr << "UI resource not found" << std::endl;
+			LOG_ERROR("UI resource not found");
 		}
 	}
 	else
 	{
-		std::cerr << "UI path not found" << std::endl;
+		LOG_ERROR("UI path not found");
 	}
 }
 
@@ -545,7 +543,7 @@ void SoundManager::LoadNodeData()
 {
 	/*if (strcmp(m_CurrentTrackName.c_str(), "Invaild") == 0)
 	{
-		std::cerr << "Invaild Node Data" << std::endl;
+		LOG_ERROR("Invaild Node Data");
 		return;
 	}*/
 
@@ -640,7 +638,7 @@ void SoundManager::Main_BGM_Shot(const std::string filename, float delay)
 	auto it = BGM_List.find(filename);
 	if (it == BGM_List.end())
 	{
-		std::cerr << "Cannot play: invalid track name." << filename << std::endl;
+		LOG_ERROR("Cannot play: invalid track name." << filename);
 		CheckResult(-1, "invalid track name");
 	}
 
@@ -681,7 +679,7 @@ void SoundManager::Sub_BGM_Shot(const std::string filename, float delay)
 	auto it = BGM_List.find(filename);
 	if (it == BGM_List.end())
 	{
-		std::cerr << "Cannot play: invalid track name : " << filename << std::endl;
+		LOG_ERROR("Cannot play: invalid track name : " << filename);
 		CheckResult(-1, "invalid track name");
 	}
 
@@ -706,14 +704,14 @@ void SoundManager::Ambience_Shot(const std::string filename)
 {
 	if (filename.empty())
 	{
-		std::cerr << "Cannot play: Ambience filename is empty" << std::endl;
+		LOG_ERROR("Cannot play: Ambience filename is empty");
 		return;
 	}
 
 	auto it = BGM_List.find(filename);
 	if (it == BGM_List.end())
 	{
-		std::cerr << "Cannot play: invalid track name : " << filename << std::endl;
+		LOG_ERROR("Cannot play: invalid track name : " << filename);
 		CheckResult(-1, "invalid track name");
 	}
 	it->second->setMode(FMOD_LOOP_NORMAL);
@@ -737,7 +735,7 @@ void SoundManager::SFX_Shot(const DirectX::XMVECTOR pos, const std::string filen
 	}
 	else
 	{
-		std::cout << "Not Found SFX FileName : " << filename << std::endl;
+		LOG("Not Found SFX FileName : " << filename);
 		return;
 	}
 }

@@ -102,8 +102,7 @@ void FSMComponentEnemy::OnUpdateState(StateID state)
 				float distSq = XMVectorGetX(XMVector3LengthSq(diff));
 
 					if (distSq <= kAttackRange * kAttackRange) {
-					cout << "Player Hit! Damage: " << kDamage << endl;
-
+					LOG("Player Hit! Damage: " << kDamage);
 					player_->TakeHit();
 
 					}

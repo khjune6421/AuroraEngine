@@ -228,15 +228,14 @@ void SceneBase::BaseUpdate()
 	{
 		if (inputManager.GetKeyDown(KeyCode::S))
 		{
-			cout << "[System] Saving Scene: " << m_type << "..." << endl;
-
+			LOG("[System] Saving Scene: " << m_type << "...");
 			const filesystem::path sceneFilePath = "../Asset/Scene/" + m_type + ".json";
 
 			ofstream sceneFile(sceneFilePath);
 			sceneFile << BaseSerialize().dump(4);
 			sceneFile.close();
 
-			cout << "[System] Scene: " << m_type << " saved successfully!" << endl;
+			LOG("[System] Scene: " << m_type << " saved successfully!");
 		}
 
 		if (inputManager.GetKeyDown(KeyCode::Z)) Undo();

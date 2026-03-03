@@ -84,7 +84,7 @@ void HyojeTestScene::OnHyojeStateEnter(EHyojeState type)
 {
 	switch (type) {
 	case EHyojeState::Title:
-		cout << "[HyojeTestScene] Title State Enter" << endl;
+		LOG("[HyojeTestScene] Title State Enter");
 		//ShowCursor(TRUE);
 		ForceShowCursor(TRUE);
 		if (titlePanel) titlePanel->SetActive(true);
@@ -94,13 +94,13 @@ void HyojeTestScene::OnHyojeStateEnter(EHyojeState type)
 	case EHyojeState::Main:
 		m_player_hp = kPlayerHP;
 		m_survivalTime = 0.0f;
-		cout << "[HyojeTestScene] Game Start! HP Reset" << endl;
+		LOG("[HyojeTestScene] Game Start! HP Reset");
 		//ShowCursor(FALSE);
 		ForceShowCursor(FALSE);
 		break;
 
 	case EHyojeState::Result:
-		cout << "[HyojeTestScene] Game Over / Result Show" << endl;
+		LOG("[HyojeTestScene] Game Over / Result Show");
 		//ShowCursor(TRUE);
 		ForceShowCursor(TRUE);
 		if (resultPanel) resultPanel->SetActive(true);
@@ -161,20 +161,20 @@ void HyojeTestScene::OnHyojeStateExit(EHyojeState type)
 	switch (type) {
 	case EHyojeState::Title:
 		// [Title 정리]
-		cout << "[HyojeTestScene] OnHyojeStateExit(Title)" << endl;
+		LOG("[HyojeTestScene] OnHyojeStateExit(Title)");
 		if(titlePanel) titlePanel->SetActive(false);
 
 		break;
 
 	case EHyojeState::Main:
 		// [Main 정리]
-		cout << "[HyojeTestScene] OnHyojeStateExit(Main)" << endl;
+		LOG("[HyojeTestScene] OnHyojeStateExit(Main)");
 		SoundManager::GetInstance().Stop_ChannelGroup();
 		break;
 
 	case EHyojeState::Result:
 		// [Result 정리]
-		cout << "[HyojeTestScene] OnHyojeStateExit(Result)" << endl;
+		LOG("[HyojeTestScene] OnHyojeStateExit(Result)");
 		if (resultPanel) resultPanel->SetActive(false);
 
 		break;

@@ -47,7 +47,7 @@ void FlipbookParticleComponent::Update()
 			{
 				m_currentFrame = maxFrames - 1;
 				m_playing = false;
-				if (destroy_on_finish_) cout << "FlipbookParticleComponent: destroy_on_finish_ requested." << endl;
+				if (destroy_on_finish_) LOG("FlipbookParticleComponent: destroy_on_finish_ requested.");
 				break;
 			}
 		}

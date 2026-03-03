@@ -122,29 +122,31 @@ constexpr std::string GetTypeName(T& obj)
 	return typeName;
 }
 
-// HRESULT 결과 확인
+// use this define when release GAME
+#define GAMERELEASE
+
+#ifdef _DEBUG
+	#define LOG(msg) do { std::cout << msg << std::endl; } while (0)
+	#define LOG_ERROR(msg) do { std::cerr << msg << std::endl; } while (0)
+#else
+	#ifdef GAMERELEASE
+		#define LOG(msg) do { } while (0)
+		#define LOG_ERROR(msg) do { } while (0)
+	#else
+		#define LOG(msg) do { std::cout << msg << std::endl; } while (0)
+		#define LOG_ERROR(msg) do { std::cerr << msg << std::endl; } while (0)
+	#endif
+#endif
+
+// HRESULT result check
 constexpr void CheckResult(HRESULT hr, const char* msg)
 {
 	if (FAILED(hr))
 	{
-		std::cerr << msg << " 에러 코드: " << std::hex << hr << std::endl;
+		LOG_ERROR(msg << " 에러 코드: " << std::hex << hr);
 		exit(EXIT_FAILURE);
 	}
 }
 
-// 사용자 정의 헤더
+// common definitions
 #include "Singleton.h"
-
-// use this define when release GAME
-#define GAMERELEASE
-
-// 
-#ifdef _DEBUG
-	#define LOG(msg) std::cout << msg << std::endl
-#else
-	#ifdef GAMERELEASE
-		#define LOG(msg) 
-	#else
-		#define LOG(msg) std::cout << msg << std::endl
-	#endif
-#endif

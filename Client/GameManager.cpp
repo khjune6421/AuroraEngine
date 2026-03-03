@@ -272,8 +272,7 @@ void GameManager::ChangeMainState(EMainState next)
 	if (m_MainState == next)
 		return;
 
-	std::cout << "Cur Scene : " << GameManager::ToString(m_MainState) << " ->  Next Scene : " << GameManager::ToString(next) << std::endl;
-
+	LOG("Cur Scene : " << GameManager::ToString(m_MainState) << " ->  Next Scene : " << GameManager::ToString(next));
 	if (m_MainState != EMainState::None)
 		OnStageExit(m_MainState);
 
@@ -290,14 +289,14 @@ void GameManager::OnStageEnter(EMainState state)
 	switch (state)
 	{
 	case EMainState::Tutorial:
-		std::cout << "Tutorial Enter\n";
+		LOG("Tutorial Enter\n");
 		sm.Main_BGM_Shot(Config::Tutori_BGM, 3.0f);
 		StartLutCrossfade(0);
 
 		break;
 
 	case EMainState::Stage1:
-		std::cout << "Stage1 Enter\n";
+		LOG("Stage1 Enter\n");
 		sm.Main_BGM_Shot(Config::Stage1_BGM, 3.0f);
 		StartLutCrossfade(4);
 
@@ -318,14 +317,14 @@ void GameManager::OnStageEnter(EMainState state)
 		break;
 
 	case EMainState::Stage2:
-		std::cout << "Stage2 Enter\n";
+		LOG("Stage2 Enter\n");
 		sm.Main_BGM_Shot(Config::Stage2_BGM, 3.0f);
 		StartLutCrossfade(0);
 
 		break;
 
 	case EMainState::StageBoss:
-		std::cout << "StageBoss Enter\n";
+		LOG("StageBoss Enter\n");
 		sm.Main_BGM_Shot(Config::Stage3_BGM, 3.0f);
 		StartLutCrossfade(4);
 
@@ -483,13 +482,13 @@ void GameManager::OnStageExit(EMainState state)
 	switch (state)
 	{
 	case EMainState::Tutorial:
-		std::cout << "Tutorial Exit\n";
+		LOG("Tutorial Exit\n");
 		sm.FadeOut(sm.GetBGMCh1(), 1.0f, true);
 		m_Player->RestoreHitPoint();
 		break;
 
 	case EMainState::Stage1:
-		std::cout << "Stage1 Exit\n";
+		LOG("Stage1 Exit\n");
 		sm.FadeOut(sm.GetBGMCh1(), 1.0f, true);
 		m_Player->RestoreHitPoint();
 		break;
@@ -509,7 +508,7 @@ void GameManager::OnStageExit(EMainState state)
 Player* GameManager::GetPlayerPtr()
 {
 	Player* temp = dynamic_cast<Player*>(SceneManager::GetInstance().GetCurrentScene()->GetRootGameObject("Player"));
-	std::cout << "GM Player Get" << temp << std::endl;
+	LOG("GM Player Get" << temp);
 	return temp;
 }
 
@@ -676,11 +675,10 @@ void GameManager::TempPrint()
 	scorePrintTimer += dt;
 	if (scorePrintTimer >= 0.5f) {
 		scorePrintTimer = 0.0f;
-		std::cout << std::endl << "[Score] "
+		LOG(std::endl << "[Score] "
 			<< GameManager::GetInstance().GetScore()
 			<< " x"
-			<< GameManager::GetInstance().GetMultiplier()
-			<< std::endl;
+			<< GameManager::GetInstance().GetMultiplier());
 	}
 }
 
@@ -779,7 +777,7 @@ void GameManager::RegisterTutorialUI(Panel* dark, Panel* popup)
 	m_tutorialPanel = dark;
 	m_tutorialPopup = popup;
 
-	std::cout << m_tutorialPanel << " " << m_tutorialPopup << std::endl;
+	LOG(m_tutorialPanel << " " << m_tutorialPopup);
 }
 
 void GameManager::ShowTutorialPopup()

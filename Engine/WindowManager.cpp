@@ -86,7 +86,7 @@ void WindowManager::Initialize(const wchar_t* windowTitle, int width, int height
 	};
 	if (!RegisterClass(&wc))
 	{
-		cerr << "윈도우 클래스 등록 실패. 에러 코드: " << hex << GetLastError() << endl;
+		LOG_ERROR("윈도우 클래스 등록 실패. 에러 코드: " << hex << GetLastError());
 		exit(EXIT_FAILURE);
 	}
 
@@ -111,7 +111,7 @@ void WindowManager::Initialize(const wchar_t* windowTitle, int width, int height
 	);
 	if (!m_hWnd)
 	{
-		cerr << "윈도우 생성 실패. 에러 코드: " << hex << GetLastError() << endl;
+		LOG_ERROR("윈도우 생성 실패. 에러 코드: " << hex << GetLastError());
 		exit(EXIT_FAILURE);
 	}
 

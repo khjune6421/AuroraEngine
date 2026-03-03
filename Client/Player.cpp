@@ -144,15 +144,15 @@ void Player::Update()
 		switch (sm.CheckRhythm(Config::InputCorrection))
 		{
 		case InputType::Early:
-			std::cout << "Early" << std::endl;
+			LOG("Early");
 			PlayerReload(0);
 			break;
 		case InputType::Perfect:
-			std::cout << "Perfect" << std::endl;
+			LOG("Perfect");
 			PlayerReload(0);
 			break;
 		case InputType::Late:
-			std::cout << "Late" << std::endl;
+			LOG("Late");
 			PlayerReload(0);
 			break;
 		}

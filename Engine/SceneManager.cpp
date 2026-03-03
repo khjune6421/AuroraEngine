@@ -98,7 +98,6 @@ const nlohmann::json* SceneManager::GetPrefabData(const string& prefabName)
 	auto it = m_prefabCache.find(prefabName);
 	if (it != m_prefabCache.end()) return &it->second;
 
-	cerr << "프리팹 캐시에서 '" << prefabName << "' 을(를) 찾을 수 없습니다." << endl;
-
+	LOG_ERROR("프리팹 캐시에서 '" << prefabName << "' 을(를) 찾을 수 없습니다.");
 	return nullptr;
 }

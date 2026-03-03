@@ -270,8 +270,7 @@ com_ptr<ID3D11ShaderResourceView> ResourceManager::GetTexture(const string& file
 	const auto cacheIt = m_textureCaches.find(fileName);
 	if (cacheIt == m_textureCaches.end())
 	{
-		cerr << "텍스처 캐시에서 파일을 찾을 수 없습니다: " << fileName << endl;
-
+		LOG_ERROR("텍스처 캐시에서 파일을 찾을 수 없습니다: " << fileName);
 		switch (type)
 		{
 		case TextureType::BaseColor:
@@ -366,7 +365,7 @@ void ResourceManager::CacheAllModel()
 	const filesystem::path modelDir = "../Asset/Model/";
 	if (!filesystem::exists(modelDir) || !filesystem::is_directory(modelDir))
 	{
-		cerr << "모델 디렉토리가 존재하지 않거나 디렉토리가 아닙니다: " << modelDir.string() << endl;
+		LOG_ERROR("모델 디렉토리가 존재하지 않거나 디렉토리가 아닙니다: " << modelDir.string());
 		return;
 	}
 
@@ -421,7 +420,7 @@ const Model* ResourceManager::LoadModel(const string& fileName)
 
 	if (!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode)
 	{
-		cerr << "모델 " << fullPath << " 로드 실패 : " << importer.GetErrorString() << endl;
+		LOG_ERROR("모델 " << fullPath << " 로드 실패 : " << importer.GetErrorString());
 		exit(EXIT_FAILURE);
 	}
 
@@ -579,9 +578,9 @@ void ResourceManager::CacheAllTexture()
 				vector<char> fileData(static_cast<size_t>(fileSize));
 
 				if (fileStream.read(fileData.data(), fileSize)) m_textureCaches[fileName] = vector<uint8_t>(fileData.begin(), fileData.end());
-				else cerr << "텍스처 파일 읽기 실패: " << fileName << endl;
+				else LOG_ERROR("텍스처 파일 읽기 실패: " << fileName);
 			}
-			else cerr << "텍스처 파일 열기 실패: " << fileName << endl;
+			else LOG_ERROR("텍스처 파일 열기 실패: " << fileName);
 		}
 	}
 }
@@ -917,7 +916,7 @@ void ResourceManager::LoadAnimations(const aiScene* scene, Model& model)
 		}
 
 		#ifdef _DEBUG
-		cout << "[LoadAnim] Name: " << clip.name << " | Original Duration: " << animation->mDuration<< " -> Fixed: " << clip.duration << " (FPS: " << clip.ticks_per_second << ")" << endl;
+		LOG("[LoadAnim] Name: " << clip.name << " | Original Duration: " << animation->mDuration<< " -> Fixed: " << clip.duration << " (FPS: " << clip.ticks_per_second << ")");
 		#endif
 
 		// 5. 저장
@@ -950,8 +949,7 @@ com_ptr<ID3DBlob> ResourceManager::CompileShader(const string& shaderName, const
 		shaderCode.GetAddressOf(),
 		errorBlob.GetAddressOf()
 	);
-	if (errorBlob) cerr << shaderName << " 셰이더 컴파일 오류: " << static_cast<const char*>(errorBlob->GetBufferPointer()) << endl;
-
+	if (errorBlob) LOG_ERROR(shaderName << " 셰이더 컴파일 오류: " << static_cast<const char*>(errorBlob->GetBufferPointer()));
 	return shaderCode;
 }
 

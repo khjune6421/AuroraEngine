@@ -13,9 +13,9 @@ using namespace DirectX;
 void FSMComponentGun2::Initialize()
 {
 	gun = GetOwner();
-	body = gun->GetChildGameObject("body"); if (body == nullptr) cout << "[FSMComponentGun2] gun need body \n";
-	cylinder = gun->GetChildGameObject("cylinder"); if (cylinder == nullptr) cout << "[FSMComponentGun2] gun need cylinder \n";
-	pin = gun->GetChildGameObject("pin"); if (pin == nullptr) cout << "[FSMComponentGun2] gun need pin \n";
+	body = gun->GetChildGameObject("body"); if (body == nullptr) LOG("[FSMComponentGun2] gun need body \n");
+	cylinder = gun->GetChildGameObject("cylinder"); if (cylinder == nullptr) LOG("[FSMComponentGun2] gun need cylinder \n");
+	pin = gun->GetChildGameObject("pin"); if (pin == nullptr) LOG("[FSMComponentGun2] gun need pin \n");
 
 }
 

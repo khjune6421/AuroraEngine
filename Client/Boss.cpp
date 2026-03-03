@@ -38,8 +38,7 @@ void Boss::Initialize()
 	m_fsm = GetComponent<FSMComponentBoss>();
 
 	m_player = static_cast<Player*>(SceneManager::GetInstance().GetCurrentScene()->GetGameObjectRecursive("Player"));
-	if (!m_player) cout << "Boss 초기화 오류: Player 게임 오브젝트를 찾을 수 없습니다." << endl;
-
+	if (!m_player) LOG("Boss 초기화 오류: Player 게임 오브젝트를 찾을 수 없습니다.");
 	GameObjectBase* triggerObj = SceneManager::GetInstance().GetCurrentScene()->GetGameObjectRecursive(m_triggerColliderName);
 	if (triggerObj) m_triggerCollider = triggerObj->GetComponent<ColliderComponent>();
 

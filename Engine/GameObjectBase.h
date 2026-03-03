@@ -154,7 +154,7 @@ inline T* GameObjectBase::CreateComponent()
 {
 	if (m_components[std::type_index(typeid(T))])
 	{
-		std::cerr << "오류: 게임 오브젝트 '" << m_name << "'에 이미 컴포넌트 '" << typeid(T).name() << "'가 존재합니다." << std::endl;
+		LOG_ERROR("오류: 게임 오브젝트 '" << m_name << "'에 이미 컴포넌트 '" << typeid(T).name() << "'가 존재합니다.");
 		return nullptr;
 	}
 

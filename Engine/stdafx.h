@@ -118,12 +118,19 @@ constexpr std::string GetTypeName(T& obj)
 	return typeName;
 }
 
+#ifdef _DEBUG
+	#define LOG(msg) do { std::cout << msg << std::endl; } while (0)
+	#define LOG_ERROR(msg) do { std::cerr << msg << std::endl; } while (0)
+#else
+	#define LOG(msg) do { } while (0)
+	#define LOG_ERROR(msg) do { } while (0)
+#endif
 // HRESULT 결과 확인
 constexpr void CheckResult(HRESULT hr, const char* msg)
 {
 	if (FAILED(hr))
 	{
-		std::cerr << msg << " 에러 코드: " << std::hex << hr << std::endl;
+		LOG_ERROR(msg << " 에러 코드: " << std::hex << hr);
 		exit(EXIT_FAILURE);
 	}
 }

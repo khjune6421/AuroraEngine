@@ -109,7 +109,7 @@ ComponentBase* GameObjectBase::CreateComponent(const string& typeName)
 
 	if (m_components[type_index(typeid(*component))])
 	{
-		cerr << "오류: 게임 오브젝트 '" << m_name << "'에 이미 컴포넌트 '" << typeName << "'가 존재합니다." << endl;
+		LOG_ERROR("오류: 게임 오브젝트 '" << m_name << "'에 이미 컴포넌트 '" << typeName << "'가 존재합니다.");
 		return nullptr;
 	}
 
@@ -438,8 +438,7 @@ void GameObjectBase::BaseDeserialize(const nlohmann::json& jsonData)
 		string typeName = componentData["type"].get<string>();
 		unique_ptr<ComponentBase> component = TypeRegistry::GetInstance().CreateComponent(typeName);
 
-		if (m_components[type_index(typeid(*component))]) cerr << "오류: 게임 오브젝트 '" << m_name << "'에 이미 컴포넌트 '" << typeName << "'가 존재합니다." << endl;
-
+		if (m_components[type_index(typeid(*component))]) LOG_ERROR("오류: 게임 오브젝트 '" << m_name << "'에 이미 컴포넌트 '" << typeName << "'가 존재합니다.");
 		component->SetOwner(this);
 		if (component->NeedsFixedUpdate()) m_fixedUpdateComponents.push_back(component.get());
 		if (component->NeedsUpdate()) m_updateComponents.push_back(component.get());
@@ -466,8 +465,7 @@ void GameObjectBase::BaseDeserialize(const nlohmann::json& jsonData)
 
 void GameObjectBase::SaveAsPrefab()
 {
-	cout << "게임 오브젝트 '" << m_name << " 저장 중..." << endl;
-
+	LOG("게임 오브젝트 '" << m_name << " 저장 중...");
 	const filesystem::path prefabFilePath = "../Asset/Prefab/" + m_name + ".json";
 
 	ofstream prefabFile(prefabFilePath);
@@ -476,7 +474,7 @@ void GameObjectBase::SaveAsPrefab()
 
 	SceneManager::GetInstance().LoadAllPrefabs();
 
-	cout << "게임 오브젝트 '" << m_name << " 저장 완료!" << endl;
+	LOG("게임 오브젝트 '" << m_name << " 저장 완료!");
 }
 
 void GameObjectBase::RemovePending()
