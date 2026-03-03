@@ -238,13 +238,25 @@ void FSMComponentGun2::OnUpdateState(StateID state)
 
 void FSMComponentGun2::OnExitState(StateID state)
 {
-	switch (state)
-	{
-	case EIdle:
-		break;
-	case EAttack:
-		break;
-	}
+    switch (state) {
+    case EIdle:
+        break;
+    case EAttack:
+        // 사격 상태가 도중에 끊기더라도, 각도를 강제로 기준점으로 스냅(Snap)
+        if (gun) gun->SetRotation(m_originRotGun);
+        if (pin) pin->SetRotation(m_originRotPin);
+        if (cylinder) {
+            // 실린더는 돌아가야 했던 최종 목표치(60도 더해진 값)로 맞춰줌
+            XMVECTOR finalCyl = m_originRotCylinder;
+            finalCyl.m128_f32[0] += 60.0f;
+            cylinder->SetRotation(finalCyl);
+        }
+        break;
+    case EReload:
+        // 장전이 도중에 끊길 경우 총체 각도 원상복구
+        if (gun) gun->SetRotation(m_originRotGun);
+        break;
+    }
 }
 
 #ifdef _DEBUG
